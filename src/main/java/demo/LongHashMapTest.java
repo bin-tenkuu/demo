@@ -10,6 +10,7 @@ import java.util.HashMap;
  * @author bin
  * @since 2024/05/08
  */
+@SuppressWarnings("preview")
 public class LongHashMapTest {
     public static void main() {
         val length = 1;

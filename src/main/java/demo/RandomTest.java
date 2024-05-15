@@ -16,6 +16,7 @@ import java.util.concurrent.Future;
 import java.util.function.IntSupplier;
 import java.util.function.Supplier;
 
+@SuppressWarnings("preview")
 public class RandomTest {
     private static final int MAX_X = 1 << 12;
     private static final int MAX_Y = 1 << 12;

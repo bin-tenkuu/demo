@@ -9,6 +9,7 @@ import java.util.HashMap;
  * @author bin
  * @since 2024/05/07
  */
+@SuppressWarnings("preview")
 public class LongArrayHashMapTest {
     public static void main() {
         HashMap<long[], Integer> map = new HashMap<>(100000);
