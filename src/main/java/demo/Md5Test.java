@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
+import java.time.Duration;
 
 /**
  * @author bin
@@ -26,10 +27,12 @@ public class Md5Test {
             show();
         }));
         try {
+            var time = System.currentTimeMillis();
             while (!Md5Calc.flag) {
                 show();
                 Thread.sleep(10000);
             }
+            System.out.println(Duration.ofMillis(System.currentTimeMillis() - time));
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
