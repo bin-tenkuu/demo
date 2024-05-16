@@ -7,14 +7,13 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
-import java.time.Duration;
-import java.util.Arrays;
 
 /**
  * @author bin
  * @since 2024/05/15
  */
-@SuppressWarnings("preview")
+// @SuppressWarnings("preview")
+@SuppressWarnings({"InfiniteLoopStatement", "BusyWait"})
 public class Md5Test {
 
     public static void main() {
@@ -27,29 +26,29 @@ public class Md5Test {
         show(calcs);
     }
 
-    @SuppressWarnings("BusyWait")
     private static void show(Md5Calc[] md5Calcs) {
         try {
-            long time = System.currentTimeMillis();
-            while (!Md5Calc.flag) {
-                long a = md5Calcs[0].a;
-                long b = md5Calcs[0].b;
+            // long time = System.currentTimeMillis();
+            while (true) {
+                Md5Calc min = md5Calcs[0];
+                Md5Calc max = md5Calcs[0];
                 for (int i = 1, length = md5Calcs.length; i < length; i++) {
-                    Md5Calc md5Calc = md5Calcs[i];
-                    if (b > md5Calc.b) {
-                        b = md5Calc.b;
-                        if (a > md5Calc.a) {
-                            a = md5Calc.a;
-                        }
+                    Md5Calc calc = md5Calcs[i];
+                    if (min.compareTo(calc) > 0) {
+                        min = calc;
+                    } else if (max.compareTo(calc) < 0) {
+                        max = calc;
                     }
                 }
-                System.out.println(Arrays.toString(new long[]{a, b}));
+                System.out.print(min);
+                System.out.print(" ~ ");
+                System.out.println(max);
                 while (!Md5Calc.msgs.isEmpty()) {
                     writeFile(Md5Calc.msgs.removeFirst());
                 }
                 Thread.sleep(10000);
             }
-            System.out.println(STR."time: \{Duration.ofMillis(System.currentTimeMillis() - time)}");
+            // System.out.println(STR."time: \{Duration.ofMillis(System.currentTimeMillis() - time)}");
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
