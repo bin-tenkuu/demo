@@ -1,10 +1,14 @@
 package demo.md5;
 
+import cn.hutool.crypto.digest.DigestAlgorithm;
+import cn.hutool.crypto.digest.Digester;
 import lombok.val;
 
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.VarHandle;
 import java.nio.ByteOrder;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -16,7 +20,7 @@ import java.util.List;
 @SuppressWarnings("preview")
 public final class Md5Calc extends Thread {
     private static final long[] init = {
-            0, 2105668443402L
+            0, 0// 2105668443402L
     };
     private static final int length = 4;
     public static final List<String> msgs = new LinkedList<>();
@@ -74,19 +78,28 @@ public final class Md5Calc extends Thread {
     }
 
     public static void main() {
-        val in = new byte[]{
-                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -97, 94, -60, -33
+        final byte[] in = new byte[]{
+                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 62, 92, -97, 88
         };
-        for (byte b : in) {
-            // hex
-            System.out.printf("%02x", b);
+        printf(in);
+        byte[] out = new Digester(DigestAlgorithm.MD5).digest(in);
+        printf(out);
+        try {
+            val md5 = MessageDigest.getInstance("MD5");
+            printf(md5.digest(in));
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
         }
-        val out = new byte[16];
         MD5.digest(in, out);
-        System.out.println();
-        for (byte b : out) {
+        printf(out);
+    }
+
+    private static void printf(byte[] bs) {
+        for (byte b : bs) {
             // hex
             System.out.printf("%02x", b);
+
         }
+        System.out.println();
     }
 }

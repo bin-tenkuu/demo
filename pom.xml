@@ -46,6 +46,7 @@
             <version>${jmh.version}</version>
             <scope>provided</scope>
         </dependency>
+        <!--jol 类占用内存分析 -->
         <dependency>
             <groupId>org.openjdk.jol</groupId>
             <artifactId>jol-core</artifactId>
@@ -55,6 +56,12 @@
             <groupId>org.apache.lucene</groupId>
             <artifactId>lucene-core</artifactId>
             <version>9.10.0</version>
+        </dependency>
+        <!-- 工具类 -->
+        <dependency>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-crypto</artifactId>
+            <version>5.8.26</version>
         </dependency>
     </dependencies>
 
