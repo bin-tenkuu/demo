@@ -1,6 +1,6 @@
 package demo;
 
-import demo.test.LongArrayHashMap;
+import demo.map.LongArrayHashMap;
 import org.apache.lucene.util.RamUsageEstimator;
 
 import java.util.HashMap;

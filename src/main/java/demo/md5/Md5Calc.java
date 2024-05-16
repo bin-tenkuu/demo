@@ -9,16 +9,17 @@ import java.util.*;
  * @author bin
  * @since 2024/05/15
  */
-@SuppressWarnings({"preview", "InfiniteLoopStatement"})
 public final class Md5Calc extends Thread implements Comparable<Md5Calc> {
     public static final Deque<String> msgs = new ArrayDeque<>();
     private static final long[] init = {
-            0, 382694920337L
+            0, 750813598// 698582501387L
     };
     private static final VarHandle Long_ARRAY = MethodHandles.byteArrayViewVarHandle(long[].class,
             ByteOrder.BIG_ENDIAN).withInvokeExactBehavior();
     public static final VarHandle INT_ARRAY = MethodHandles.byteArrayViewVarHandle(int[].class,
             ByteOrder.LITTLE_ENDIAN).withInvokeExactBehavior();
+
+    public static boolean flag = false;
 
     private final int n;
     private final int part;
@@ -37,7 +38,7 @@ public final class Md5Calc extends Thread implements Comparable<Md5Calc> {
         add(n);
         md5();
         compare();
-        while (true) {
+        while (!flag) {
             add(part);
             md5();
             compare();
@@ -48,42 +49,68 @@ public final class Md5Calc extends Thread implements Comparable<Md5Calc> {
         var r = (long) Long_ARRAY.getAndAdd(before, 8, (long) n);
         if (r < 0 && r + n > 0) {
             /* var _ = (long) */
-            Long_ARRAY.getAndAdd(before, 0, 1L);
+            // Long_ARRAY.getAndAdd(before, 0, 1L);
+            System.out.println("overflow");
+            System.exit(0);
         }
     }
 
     private void compare() {
         // 4 bytes = 1 int
-        if ((int) INT_ARRAY.get(before, 0) == (int) INT_ARRAY.get(after, 0)) {
-            var msg = STR."same: raw:\{toString()} \{Arrays.toString(before)} md5:\{Arrays.toString(after)}\n";
-            msgs.add(msg);
-            System.out.print(msg);
+        // if ((int) INT_ARRAY.get(before, 0) != (int) INT_ARRAY.get(after, 0)) {
+        if (0 != (int) INT_ARRAY.get(after, 0)) {
+            return;
         }
+        if (after[4] != 0) {
+            return;
+        }
+        flag = true;
+        var builder = new StringBuilder(150);
+        builder.append(this).append(' ');
+        toString(builder, before, 8);
+        builder.append('\t');
+        toString(builder, after, 0);
+        builder.append('\n');
+        var msg = builder.toString();
+        msgs.add(msg);
+        System.out.print(msg);
     }
 
     @Override
     public int compareTo(Md5Calc o) {
         var compare = Long.compare((long) Long_ARRAY.get(before, 8), (long) Long_ARRAY.get(o.before, 8));
-        if (compare == 0) {
-            return Long.compare((long) Long_ARRAY.get(before, 0), (long) Long_ARRAY.get(o.before, 0));
-        }
+        // if (compare == 0) {
+        //     return Long.compare((long) Long_ARRAY.get(before, 0), (long) Long_ARRAY.get(o.before, 0));
+        // }
         return compare;
     }
 
     @Override
     public String toString() {
-        return Arrays.toString(new long[]{
-                (long) Long_ARRAY.get(before, 0),
-                (long) Long_ARRAY.get(before, 8),
-        });
+        return Long.toString((long) Long_ARRAY.get(before, 8));
+        // return Arrays.toString(new long[]{
+        //         // (long) Long_ARRAY.get(before, 0),
+        //         (long) 0,
+        //         (long) Long_ARRAY.get(before, 8),
+        // });
+    }
+
+    private static void toString(StringBuilder b, byte[] a, int start) {
+        b.append('[');
+        for (int i = start; i < 15; i++) {
+            b.append(a[i]);
+            b.append(", ");
+        }
+        b.append(a[15]);
+        b.append(']');
     }
 
     public static void main() {
         final var calc = new Md5Calc(0, 1);
         final var in = new byte[]{
-                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, -23, 109, 29, 99
+                0, 0, 0, 7, 78, 28, -9, -112
         };
-        System.arraycopy(in, 0, calc.before, 0, 16);
+        System.arraycopy(in, 0, calc.before, 8, 8);
         printf(calc.before);
         calc.md5();
         printf(calc.after);
@@ -119,8 +146,8 @@ public final class Md5Calc extends Thread implements Comparable<Md5Calc> {
     }
 
     private void md5() {
-        final var x0 = (int) INT_ARRAY.get(before, 0);
-        final var x1 = (int) INT_ARRAY.get(before, 4);
+        final var x0 = 0;// (int) INT_ARRAY.get(before, 0);
+        final var x1 = 0;// (int) INT_ARRAY.get(before, 4);
         final var x2 = (int) INT_ARRAY.get(before, 8);
         final var x3 = (int) INT_ARRAY.get(before, 12);
         var a = 0x67452301;

@@ -1,6 +1,6 @@
 package demo;
 
-import demo.test.LongHashMap;
+import demo.map.LongHashMap;
 import lombok.val;
 import org.apache.lucene.util.RamUsageEstimator;
 

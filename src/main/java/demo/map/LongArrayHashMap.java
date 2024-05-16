@@ -23,7 +23,7 @@
  * questions.
  */
 
-package demo.test;
+package demo.map;
 
 import java.util.*;
 import java.util.function.BiConsumer;

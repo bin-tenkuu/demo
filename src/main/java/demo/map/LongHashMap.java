@@ -1,9 +1,7 @@
-package demo.test;
+package demo.map;
 
 import java.util.*;
-import java.util.function.BiFunction;
-import java.util.function.Consumer;
-import java.util.function.LongFunction;
+import java.util.function.*;
 
 /**
  * Hash table based implementation of the {@code Map} interface.  This
@@ -103,7 +101,7 @@ import java.util.function.LongFunction;
  * @since 1.2
  */
 @SuppressWarnings({"DuplicatedCode"})
-public final class IntegerHashMap<V> {
+public final class LongHashMap<V> {
 
     /**
      * The default initial capacity - MUST be a power of two.
@@ -124,18 +122,18 @@ public final class IntegerHashMap<V> {
 
     public static class Node<V> {
         final int hash;
-        final int key;
+        final long key;
         V value;
         Node<V> next;
 
-        Node(int hash, int key, V value, Node<V> next) {
+        Node(int hash, long key, V value, Node<V> next) {
             this.hash = hash;
             this.key = key;
             this.value = value;
             this.next = next;
         }
 
-        public final int getKey() {
+        public final long getKey() {
             return key;
         }
 
@@ -186,11 +184,11 @@ public final class IntegerHashMap<V> {
      * to incorporate impact of the highest bits that would otherwise
      * never be used in index calculations because of table bounds.
      */
-    private static int hash(int key) {
-        return key;
+    private static int hash(long key) {
+        return Long.hashCode(key);
     }
 
-    private static boolean equal(int k, int x) {
+    private static boolean equal(long k, long x) {
         return k == x;
     }
 
@@ -257,7 +255,7 @@ public final class IntegerHashMap<V> {
      * @throws IllegalArgumentException if the initial capacity is negative
      * or the load factor is nonpositive
      */
-    public IntegerHashMap(int initialCapacity, float loadFactor) {
+    public LongHashMap(int initialCapacity, float loadFactor) {
         if (initialCapacity < 0) {
             throw new IllegalArgumentException("Illegal initial capacity: " +
                                                initialCapacity);
@@ -280,7 +278,7 @@ public final class IntegerHashMap<V> {
      * @param initialCapacity the initial capacity.
      * @throws IllegalArgumentException if the initial capacity is negative.
      */
-    public IntegerHashMap(int initialCapacity) {
+    public LongHashMap(int initialCapacity) {
         this(initialCapacity, DEFAULT_LOAD_FACTOR);
     }
 
@@ -288,7 +286,7 @@ public final class IntegerHashMap<V> {
      * Constructs an empty {@code HashMap} with the default initial capacity
      * (16) and the default load factor (0.75).
      */
-    public IntegerHashMap() {
+    public LongHashMap() {
         this.loadFactor = DEFAULT_LOAD_FACTOR; // all other fields defaulted
     }
 
@@ -297,7 +295,7 @@ public final class IntegerHashMap<V> {
      *
      * @param m the map
      */
-    private void putMapEntries(IntegerHashMap<? extends V> m) {
+    private void putMapEntries(LongHashMap<? extends V> m) {
         int s = m.size();
         if (s > 0) {
             if (table == null) { // pre-size
@@ -357,9 +355,9 @@ public final class IntegerHashMap<V> {
      * The {@link #containsKey containsKey} operation may be used to
      * distinguish these two cases.
      *
-     * @see #put(int, Object)
+     * @see #put(long, Object)
      */
-    public V get(int key) {
+    public V get(long key) {
         Node<V> e;
         return (e = getNode(key)) == null ? null : e.value;
     }
@@ -370,7 +368,7 @@ public final class IntegerHashMap<V> {
      * @param key the key
      * @return the node, or null if none
      */
-    private Node<V> getNode(int key) {
+    private Node<V> getNode(long key) {
         Node<V>[] tab;
         Node<V> first, e;
         int n, hash;
@@ -396,7 +394,7 @@ public final class IntegerHashMap<V> {
      * @return {@code true} if this map contains a mapping for the specified
      * key.
      */
-    public boolean containsKey(int key) {
+    public boolean containsKey(long key) {
         return getNode(key) != null;
     }
 
@@ -412,7 +410,7 @@ public final class IntegerHashMap<V> {
      * (A {@code null} return can also indicate that the map
      * previously associated {@code null} with {@code key}.)
      */
-    public V put(int key, V value) {
+    public V put(long key, V value) {
         return putVal(hash(key), key, value, false);
     }
 
@@ -425,7 +423,7 @@ public final class IntegerHashMap<V> {
      * @param onlyIfAbsent if true, don't change existing value
      * @return previous value, or null if none
      */
-    private V putVal(int hash, int key, V value, boolean onlyIfAbsent) {
+    private V putVal(int hash, long key, V value, boolean onlyIfAbsent) {
         Node<V>[] tab;
         Node<V> p;
         int n, i;
@@ -557,7 +555,7 @@ public final class IntegerHashMap<V> {
      * @param m mappings to be stored in this map
      * @throws NullPointerException if the specified map is null
      */
-    public void putAll(IntegerHashMap<? extends V> m) {
+    public void putAll(LongHashMap<? extends V> m) {
         putMapEntries(m);
     }
 
@@ -570,7 +568,7 @@ public final class IntegerHashMap<V> {
      * (A {@code null} return can also indicate that the map
      * previously associated {@code null} with {@code key}.)
      */
-    public V remove(int key) {
+    public V remove(long key) {
         Node<V> e;
         return (e = removeNode(hash(key), key, null, false, true)) == null ?
                 null : e.value;
@@ -586,7 +584,7 @@ public final class IntegerHashMap<V> {
      * @param movable if false do not move other nodes while removing
      * @return the node, or null if none
      */
-    private Node<V> removeNode(int hash, int key, Object value,
+    private Node<V> removeNode(int hash, long key, Object value,
             boolean matchValue, boolean movable) {
         Node<V>[] tab;
         Node<V> p;
@@ -686,8 +684,8 @@ public final class IntegerHashMap<V> {
      *
      * @return supplied array
      */
-    private int[] keysToArray() {
-        int[] r = new int[size];
+    private long[] keysToArray() {
+        long[] r = new long[size];
         Node<V>[] tab;
         int idx = 0;
         if (size > 0 && (tab = table) != null) {
@@ -753,7 +751,7 @@ public final class IntegerHashMap<V> {
         }
 
         public void clear() {
-            IntegerHashMap.this.clear();
+            LongHashMap.this.clear();
         }
 
         public Iterator<V> iterator() {
@@ -765,7 +763,7 @@ public final class IntegerHashMap<V> {
         }
 
         public Spliterator<V> spliterator() {
-            return new ValueSpliterator<>(IntegerHashMap.this, 0, -1, 0, 0);
+            return new ValueSpliterator<>(LongHashMap.this, 0, -1, 0, 0);
         }
 
         public Object[] toArray() {
@@ -822,7 +820,7 @@ public final class IntegerHashMap<V> {
         }
 
         public void clear() {
-            IntegerHashMap.this.clear();
+            LongHashMap.this.clear();
         }
 
         public Iterator<Node<V>> iterator() {
@@ -833,14 +831,14 @@ public final class IntegerHashMap<V> {
             if (!(o instanceof Node<?> e)) {
                 return false;
             }
-            int key = e.getKey();
+            long key = e.getKey();
             Node<V> candidate = getNode(key);
             return candidate != null && candidate.equals(e);
         }
 
         public boolean remove(Object o) {
             if (o instanceof Node<?> e) {
-                int key = e.getKey();
+                long key = e.getKey();
                 Object value = e.getValue();
                 return removeNode(hash(key), key, value, true, true) != null;
             }
@@ -848,7 +846,7 @@ public final class IntegerHashMap<V> {
         }
 
         public Spliterator<Node<V>> spliterator() {
-            return new EntrySpliterator<>(IntegerHashMap.this, 0, -1, 0, 0);
+            return new EntrySpliterator<>(LongHashMap.this, 0, -1, 0, 0);
         }
 
         public void forEach(Consumer<? super Node<V>> action) {
@@ -872,20 +870,20 @@ public final class IntegerHashMap<V> {
 
     // Overrides of JDK8 Map extension methods
 
-    public V getOrDefault(int key, V defaultValue) {
+    public V getOrDefault(long key, V defaultValue) {
         Node<V> e;
         return (e = getNode(key)) == null ? defaultValue : e.value;
     }
 
-    public V putIfAbsent(int key, V value) {
+    public V putIfAbsent(long key, V value) {
         return putVal(hash(key), key, value, true);
     }
 
-    public boolean remove(int key, Object value) {
+    public boolean remove(long key, Object value) {
         return removeNode(hash(key), key, value, true, true) != null;
     }
 
-    public boolean replace(int key, V oldValue, V newValue) {
+    public boolean replace(long key, V oldValue, V newValue) {
         Node<V> e;
         V v;
         if ((e = getNode(key)) != null &&
@@ -896,7 +894,7 @@ public final class IntegerHashMap<V> {
         return false;
     }
 
-    public V replace(int key, V value) {
+    public V replace(long key, V value) {
         Node<V> e;
         if ((e = getNode(key)) != null) {
             V oldValue = e.value;
@@ -916,7 +914,7 @@ public final class IntegerHashMap<V> {
      * @throws ConcurrentModificationException if it is detected that the
      * mapping function modified this map
      */
-    public V computeIfAbsent(int key,
+    public V computeIfAbsent(long key,
             LongFunction<? extends V> mappingFunction) {
         if (mappingFunction == null) {
             throw new NullPointerException();
@@ -972,7 +970,7 @@ public final class IntegerHashMap<V> {
      * @throws ConcurrentModificationException if it is detected that the
      * remapping function modified this map
      */
-    public V merge(int key, V value,
+    public V merge(long key, V value,
             BiFunction<? super V, ? super V, ? extends V> remappingFunction) {
         if (value == null || remappingFunction == null) {
             throw new NullPointerException();
@@ -1093,15 +1091,15 @@ public final class IntegerHashMap<V> {
     // spliterators
 
     private static class HashMapSpliterator<V> {
-        final IntegerHashMap<V> map;
+        final LongHashMap<V> map;
         Node<V> current;          // current node
         int index;                  // current index, modified on advance/split
         int fence;                  // one past last index
-        long est;                    // size estimate
+        int est;                    // size estimate
         int expectedModCount;       // for comodification checks
 
-        HashMapSpliterator(IntegerHashMap<V> m, int origin,
-                int fence, long est,
+        HashMapSpliterator(LongHashMap<V> m, int origin,
+                int fence, int est,
                 int expectedModCount) {
             this.map = m;
             this.index = origin;
@@ -1113,7 +1111,7 @@ public final class IntegerHashMap<V> {
         final int getFence() { // initialize fence and size on first use
             int hi;
             if ((hi = fence) < 0) {
-                IntegerHashMap<V> m = map;
+                LongHashMap<V> m = map;
                 est = m.size;
                 expectedModCount = m.modCount;
                 Node<V>[] tab = m.table;
@@ -1131,7 +1129,7 @@ public final class IntegerHashMap<V> {
     private static final class ValueSpliterator<V>
             extends HashMapSpliterator<V>
             implements Spliterator<V> {
-        ValueSpliterator(IntegerHashMap<V> m, int origin, int fence, long est,
+        ValueSpliterator(LongHashMap<V> m, int origin, int fence, int est,
                 int expectedModCount) {
             super(m, origin, fence, est, expectedModCount);
         }
@@ -1148,7 +1146,7 @@ public final class IntegerHashMap<V> {
             if (action == null) {
                 throw new NullPointerException();
             }
-            IntegerHashMap<V> m = map;
+            LongHashMap<V> m = map;
             Node<V>[] tab = m.table;
             if ((hi = fence) < 0) {
                 mc = expectedModCount = m.modCount;
@@ -1206,7 +1204,7 @@ public final class IntegerHashMap<V> {
     private static final class EntrySpliterator<V>
             extends HashMapSpliterator<V>
             implements Spliterator<Node<V>> {
-        EntrySpliterator(IntegerHashMap<V> m, int origin, int fence, long est,
+        EntrySpliterator(LongHashMap<V> m, int origin, int fence, int est,
                 int expectedModCount) {
             super(m, origin, fence, est, expectedModCount);
         }
@@ -1223,7 +1221,7 @@ public final class IntegerHashMap<V> {
             if (action == null) {
                 throw new NullPointerException();
             }
-            IntegerHashMap<V> m = map;
+            LongHashMap<V> m = map;
             Node<V>[] tab = m.table;
             if ((hi = fence) < 0) {
                 mc = expectedModCount = m.modCount;
@@ -1280,7 +1278,7 @@ public final class IntegerHashMap<V> {
     }
 
     // Create a regular (non-tree) node
-    private static <V> Node<V> newNode(int hash, int key, V value, Node<V> next) {
+    private static <V> Node<V> newNode(int hash, long key, V value, Node<V> next) {
         return new Node<>(hash, key, value, next);
     }
 

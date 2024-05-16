@@ -1,7 +1,6 @@
 package demo;
 
 import demo.md5.Md5Calc;
-import lombok.val;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -12,53 +11,53 @@ import java.nio.file.StandardOpenOption;
  * @author bin
  * @since 2024/05/15
  */
-// @SuppressWarnings("preview")
-@SuppressWarnings({"InfiniteLoopStatement", "BusyWait"})
+@SuppressWarnings({"BusyWait"})
 public class Md5Test {
+    private static final Md5Calc[] calcs = new Md5Calc[10];
 
     public static void main() {
-        val core = 10;
-        val calcs = new Md5Calc[core];
-        for (int i = 0; i < core; i++) {
+        int core = calcs.length;
+        for (var i = 0; i < core; i++) {
             calcs[i] = new Md5Calc(i, core);
             calcs[i].start();
         }
-        show(calcs);
-    }
-
-    private static void show(Md5Calc[] md5Calcs) {
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            Md5Calc.flag = true;
+            show();
+        }));
         try {
-            // long time = System.currentTimeMillis();
-            while (true) {
-                Md5Calc min = md5Calcs[0];
-                Md5Calc max = md5Calcs[0];
-                for (int i = 1, length = md5Calcs.length; i < length; i++) {
-                    Md5Calc calc = md5Calcs[i];
-                    if (min.compareTo(calc) > 0) {
-                        min = calc;
-                    } else if (max.compareTo(calc) < 0) {
-                        max = calc;
-                    }
-                }
-                System.out.print(min);
-                System.out.print(" ~ ");
-                System.out.println(max);
-                while (!Md5Calc.msgs.isEmpty()) {
-                    writeFile(Md5Calc.msgs.removeFirst());
-                }
+            while (!Md5Calc.flag) {
+                show();
                 Thread.sleep(10000);
             }
-            // System.out.println(STR."time: \{Duration.ofMillis(System.currentTimeMillis() - time)}");
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
     }
 
+    private static void show() {
+        var min = calcs[0];
+        var max = calcs[0];
+        for (int i = 1, length = calcs.length; i < length; i++) {
+            var calc = calcs[i];
+            if (min.compareTo(calc) > 0) {
+                min = calc;
+            } else if (max.compareTo(calc) < 0) {
+                max = calc;
+            }
+        }
+        System.out.print(min);
+        System.out.print(" ~ ");
+        System.out.println(max);
+        while (!Md5Calc.msgs.isEmpty()) {
+            writeFile(Md5Calc.msgs.removeFirst());
+        }
+    }
+
     private static void writeFile(String msg) {
-        try (val writer = Files.newBufferedWriter(
+        try (var writer = Files.newBufferedWriter(
                 Path.of("./md5.txt"),
-                StandardOpenOption.APPEND,
-                StandardOpenOption.CREATE
+                StandardOpenOption.APPEND
         )) {
             writer.write(msg);
         } catch (IOException e) {
