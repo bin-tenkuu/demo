@@ -16,14 +16,13 @@ import java.util.List;
 @SuppressWarnings("preview")
 public final class Md5Calc extends Thread {
     private static final long[] init = {
-            0, 17094188568L// 348556822170L
+            0, 2105668443402L
     };
     private static final int length = 4;
     public static final List<String> msgs = new LinkedList<>();
     public static boolean flag = false;
     private final int n;
     private final int part;
-    private final MD5 md5 = new MD5();
 
     public long a = init[0];
     public long b = init[1];
@@ -39,11 +38,11 @@ public final class Md5Calc extends Thread {
         byte[] after = new byte[16];
         add(n);
         toArray(before, a, b);
-        md5.digest(before, after);
+        MD5.digest(before, after);
         while (!flag) {
             add(part);
             toArray(before, a, b);
-            md5.digest(before, after);
+            MD5.digest(before, after);
             compare(before, after);
         }
     }
@@ -74,4 +73,20 @@ public final class Md5Calc extends Thread {
         System.out.print(msg);
     }
 
+    public static void main() {
+        val in = new byte[]{
+                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -97, 94, -60, -33
+        };
+        for (byte b : in) {
+            // hex
+            System.out.printf("%02x", b);
+        }
+        val out = new byte[16];
+        MD5.digest(in, out);
+        System.out.println();
+        for (byte b : out) {
+            // hex
+            System.out.printf("%02x", b);
+        }
+    }
 }

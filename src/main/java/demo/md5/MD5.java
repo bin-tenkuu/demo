@@ -10,10 +10,6 @@ final class MD5 {
             ByteOrder.LITTLE_ENDIAN).withInvokeExactBehavior();
 
     // state of this object
-    private final int[] state = new int[4];
-
-    public MD5() {
-    }
 
     private static int FF(int a, int b, int c, int d, int x, int s, int ac) {
         a += ((b & c) | ((~b) & d)) + x + ac;
@@ -35,25 +31,22 @@ final class MD5 {
         return Integer.rotateLeft(a, s) + b;
     }
 
-    public void digest(byte[] in, byte[] out) {
+    public static void digest(byte[] in, byte[] out) {
         implCompress(
                 (int) INT_ARRAY.get(in, 0),
                 (int) INT_ARRAY.get(in, 4),
                 (int) INT_ARRAY.get(in, 8),
-                (int) INT_ARRAY.get(in, 12)
+                (int) INT_ARRAY.get(in, 12),
+                out
         );
-
-        INT_ARRAY.set(out, 0, state[0]);
-        INT_ARRAY.set(out, 4, state[1]);
-        INT_ARRAY.set(out, 8, state[2]);
-        INT_ARRAY.set(out, 12, state[3]);
     }
 
-    private void implCompress(
+    private static void implCompress(
             final int x0,
             final int x1,
             final int x2,
-            final int x3
+            final int x3,
+            byte[] out
     ) {
         int a = 0x67452301;
         int b = 0xefcdab89;
@@ -132,10 +125,10 @@ final class MD5 {
         c = II(c, d, a, b, x2, 15, 0x2ad7d2bb); /* 63 */
         b = II(b, c, d, a, 0, 21, 0xeb86d391); /* 64 */
 
-        state[0] += a;
-        state[1] += b;
-        state[2] += c;
-        state[3] += d;
+        INT_ARRAY.set(out, 0, a);
+        INT_ARRAY.set(out, 4, b);
+        INT_ARRAY.set(out, 8, c);
+        INT_ARRAY.set(out, 12, d);
     }
 
 }
