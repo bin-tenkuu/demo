@@ -12,7 +12,7 @@ import java.util.*;
 public final class Md5Calc extends Thread implements Comparable<Md5Calc> {
     public static final Deque<String> msgs = new ArrayDeque<>();
     private static final long[] init = {
-            0, 774313849178L
+            0, 2708257604158L
     };
     private static final VarHandle Long_ARRAY = MethodHandles.byteArrayViewVarHandle(long[].class,
             ByteOrder.BIG_ENDIAN).withInvokeExactBehavior();
