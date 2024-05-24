@@ -13,7 +13,7 @@ import java.util.Locale;
 @SuppressWarnings({"preview", "SqlNoDataSourceInspection"})
 public class SqlSplit {
     private static final String SPLIT = "\t";
-    @Language(value = "MySQL", prefix = "create table test\n(\n    _id int,\n", suffix = "    index(_id)\n)")
+    @Language(value = "MySQL", prefix = "create table test(\n", suffix = "index)")
     private static final String STR = """
                 """;
 
