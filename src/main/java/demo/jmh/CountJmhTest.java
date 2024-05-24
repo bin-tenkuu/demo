@@ -1,4 +1,4 @@
-package demo;
+package demo.jmh;
 
 import jdk.incubator.vector.*;
 import org.openjdk.jmh.annotations.*;
