@@ -24,8 +24,9 @@ import java.util.concurrent.TimeUnit;
 @Warmup(iterations = 2)
 @Measurement(iterations = 3)
 public class BitArrayTest {
-    public static final VarHandle LONG_ARRAY_B = MethodHandles.byteArrayViewVarHandle(long[].class,
-            ByteOrder.BIG_ENDIAN).withInvokeExactBehavior();
+    public static final VarHandle LONG_ARRAY_B = MethodHandles
+            .byteArrayViewVarHandle(long[].class, ByteOrder.BIG_ENDIAN)
+            .withInvokeExactBehavior();
     private static final long M = 0x0101010101010101L;
 
     public static void main() {
