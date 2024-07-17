@@ -28,12 +28,12 @@ public class MethodHandlerTest {
     private static final MethodHandles.Lookup lookup = MethodHandles.lookup();
 
     public static void main() throws Throwable {
-        test(NormalClass.class);
-        test(NormalClass.class, 1, "2");
-        test(RecordClass.class, 1, "2");
+        testNoArg(NormalClass.class);
+        test2Arg(NormalClass.class, 1, "2");
+        test2Arg(RecordClass.class, 1, "2");
     }
 
-    private static void test(Class<?> clazz) throws Throwable {
+    private static void testNoArg(Class<?> clazz) throws Throwable {
         val methodType = MethodType.methodType(void.class);
         val constructor = lookup.findConstructor(clazz, methodType);
         val object = constructor.invoke();
@@ -41,11 +41,12 @@ public class MethodHandlerTest {
         val getA = clazz.getDeclaredField("a");
         getA.setAccessible(true);
         val getter = lookup.unreflectGetter(getA);
-        val a = getter.invoke(object);
-        System.out.println(a);
+        System.out.println(getter.invoke(object));
+        val varHandle = lookup.unreflectVarHandle(getA);
+        System.out.println(varHandle.get(object));
     }
 
-    private static void test(Class<?> clazz, int argA, String argB) throws Throwable {
+    private static void test2Arg(Class<?> clazz, int argA, String argB) throws Throwable {
         val methodType = MethodType.methodType(void.class, int.class, String.class);
         val constructor = lookup.findConstructor(clazz, methodType);
         val object = constructor.invoke(argA, argB);
@@ -55,5 +56,7 @@ public class MethodHandlerTest {
         val getter = lookup.unreflectGetter(getA);
         val a = getter.invoke(object);
         System.out.println(a);
+        val varHandle = lookup.unreflectVarHandle(getA);
+        System.out.println(varHandle.get(object));
     }
 }
