@@ -26,6 +26,28 @@ public class FFMTest {
         strlen();
         qsort();
         struct();
+        structString();
+    }
+
+    private static void structString() throws Throwable {
+        // struct Handle {
+        //     char x[8];
+        //     char y[256];
+        // } h_service;
+        StructLayout handleLayout = MemoryLayout.structLayout(
+                MemoryLayout.sequenceLayout(8, JAVA_CHAR).withName("x"),
+                MemoryLayout.sequenceLayout(256, JAVA_CHAR).withName("y")
+        );
+        MethodHandle xHandle = handleLayout.sliceHandle(PathElement.groupElement("x"));
+        MethodHandle yHandle = handleLayout.sliceHandle(PathElement.groupElement("y"));
+        MemorySegment xString = arena.allocateFrom("12345678");
+        MemorySegment yString = arena.allocateFrom("abcdefghijklmnopqrstuvwxyz");
+        val segment = arena.allocate(handleLayout);
+        ((MemorySegment) xHandle.invoke(segment, 0L)).copyFrom(xString);
+        ((MemorySegment) yHandle.invoke(segment, 0L)).copyFrom(yString);
+        System.out.println(((MemorySegment) xHandle.invoke(segment, 0L)).getString(0));
+        System.out.println(((MemorySegment) yHandle.invoke(segment, 0L)).getString(0));
+
     }
 
     private static void struct() throws Throwable {

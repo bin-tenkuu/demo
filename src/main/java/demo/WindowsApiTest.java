@@ -3,13 +3,16 @@ package demo;
 import demo.ffm.Kernel32;
 import lombok.val;
 
+import java.lang.foreign.Arena;
+import java.lang.foreign.ValueLayout;
+
 /**
  * @author bin
  * @version 1.0.0
  * @since 2024/07/21
  */
 public class WindowsApiTest {
-    // private static final Arena arena = Arena.ofAuto();
+    private static final Arena arena = Arena.ofAuto();
     private static final long PROCESS_ALL_ACCESS = 0x1FFFFF;
 
     public static void main() throws Throwable {
@@ -21,9 +24,15 @@ public class WindowsApiTest {
         System.out.println(Kernel32.GetLastError());
         val currentProcessId = Kernel32.GetCurrentProcessId();
         System.out.println(currentProcessId);
-        val memorySegment = Kernel32.OpenProcess(PROCESS_ALL_ACCESS, false, currentProcessId);
-        System.out.println(memorySegment);
+        val handle = Kernel32.OpenProcess(PROCESS_ALL_ACCESS, false, currentProcessId);
+        System.out.println(Integer.toHexString(Kernel32.GetPriorityClass(handle)));
         System.out.println(Kernel32.GetLastError());
+        val low = arena.allocate(ValueLayout.JAVA_LONG);
+        val high = arena.allocate(ValueLayout.JAVA_LONG);
+        Kernel32.GetCurrentThreadStackLimits(low, high);
+        System.out.println("LowLimit:" + low.get(ValueLayout.JAVA_LONG, 0));
+        System.out.println("HighLimit" + high.get(ValueLayout.JAVA_LONG, 0));
+        System.out.println(Kernel32.CloseHandle(handle));
     }
 
     private static void testExitThread() throws Throwable {
