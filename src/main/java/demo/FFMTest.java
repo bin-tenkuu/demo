@@ -1,5 +1,7 @@
 package demo;
 
+import lombok.val;
+
 import java.lang.foreign.*;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
@@ -26,56 +28,67 @@ public class FFMTest {
         struct();
     }
 
-    private static void struct() {
+    private static void struct() throws Throwable {
         // struct Point {
         //     int x;
         //     int y;
         // } pts[10];
-        SequenceLayout ptsLayout = MemoryLayout.sequenceLayout(10,
-                MemoryLayout.structLayout(
-                        ValueLayout.JAVA_INT.withName("x"),
-                        ValueLayout.JAVA_INT.withName("y")
-                )
+        StructLayout pointLayout = MemoryLayout.structLayout(
+                JAVA_INT.withName("x"),
+                JAVA_INT.withName("y")
         );
-        VarHandle xHandle = ptsLayout.varHandle(PathElement.sequenceElement(),
+        SequenceLayout pointsLayout = MemoryLayout.sequenceLayout(10,
+                pointLayout
+        );
+        MethodHandle sliceHandle = pointsLayout.sliceHandle(PathElement.sequenceElement());
+        VarHandle xHandle = pointsLayout.varHandle(PathElement.sequenceElement(),
                 PathElement.groupElement("x"));
-        VarHandle yHandle = ptsLayout.varHandle(PathElement.sequenceElement(),
+        VarHandle yHandle = pointsLayout.varHandle(PathElement.sequenceElement(),
                 PathElement.groupElement("y"));
-        MemorySegment segment = arena.allocate(ptsLayout);
-        for (int i = 0; i < ptsLayout.elementCount(); i++) {
+        MemorySegment segment = arena.allocate(pointsLayout);
+        for (int i = 0; i < pointsLayout.elementCount(); i++) {
             xHandle.set(segment,
                     /* base */ 0L,
                     /* index */ (long) i,
-                    /* value to write */ i); // x
+                    /* value to write */ 10 + i); // x
             yHandle.set(segment,
                     /* base */ 0L,
                     /* index */ (long) i,
-                    /* value to write */ i); // y
+                    /* value to write */ 100 + i); // y
         }
-        for (int i = 0; i < ptsLayout.elementCount(); i++) {
-            System.out.println("index[" + i + "].x=" + xHandle.get(segment, 0L, i));
-            System.out.println("index[" + i + "].y=" + yHandle.get(segment, 0L, i));
+        VarHandle xPHandle = pointLayout.varHandle(PathElement.groupElement("x"));
+        VarHandle yPHandle = pointLayout.varHandle(PathElement.groupElement("y"));
+        for (int i = 0; i < pointsLayout.elementCount(); i++) {
+            val point = (MemorySegment) sliceHandle.invoke(segment, 0L, (long) i);
+            System.out.printf("index[%d].x=%s,%s%n",
+                    i, xHandle.get(segment, 0L, i), xPHandle.get(point, 0));
+            System.out.printf("index[%d].y=%s,%s%n",
+                    i, yHandle.get(segment, 0L, i), yPHandle.get(point, 0));
         }
     }
 
     private static void qsort() throws Throwable {
-        MemorySegment array = arena.allocateFrom(JAVA_INT,
-                0, 9, 3, 4, 6, 5, 1, 8, 2, 7);
+        // MethodHandles.lookup().unreflect(FFMTest.class.getDeclaredMethod("qsortCompare", MemorySegment.class, MemorySegment.class));
         MethodHandle comparHandle = MethodHandles.lookup().findStatic(FFMTest.class, "qsortCompare",
-                MethodType.methodType(int.class, MemorySegment.class, MemorySegment.class));
+                MethodType.methodType(int.class, MemorySegment.class, MemorySegment.class)
+        );
         MemorySegment comparFunc = linker.upcallStub(comparHandle,
                 FunctionDescriptor.of(JAVA_INT,
                         ADDRESS.withTargetLayout(JAVA_INT),
                         ADDRESS.withTargetLayout(JAVA_INT)),
-                Arena.ofAuto());
+                arena
+        );
         // void qsort(void *base, size_t nmemb, size_t size, int (*compar)(const void *, const void *));
         MethodHandle qsort = linker.downcallHandle(
                 lookup.find("qsort").get(),
                 FunctionDescriptor.ofVoid(ADDRESS, JAVA_LONG, JAVA_LONG, ADDRESS)
         );
+        MemorySegment array = arena.allocateFrom(JAVA_INT,
+                0, 9, 3, 4, 6, 5, 1, 8, 2, 7
+        );
         qsort.invoke(array, 10L, JAVA_INT.byteSize(), comparFunc);
-        int[] sorted = array.toArray(JAVA_INT);    // [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 ]
-        System.out.println(Arrays.toString(sorted));
+        int[] sorted = array.toArray(JAVA_INT);
+        System.out.println(Arrays.toString(sorted)); // [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 ]
     }
 
     private static int qsortCompare(MemorySegment elem1, MemorySegment elem2) {
@@ -89,8 +102,8 @@ public class FFMTest {
                 FunctionDescriptor.of(JAVA_LONG, ADDRESS)
         );
         MemorySegment str = arena.allocateFrom("Hello");
-        long len = (long) strlen.invoke(str);    // 5
-        System.out.println(len);
+        long len = (long) strlen.invoke(str);
+        System.out.println(len); // 5
     }
 
     private static void stringTest() {
