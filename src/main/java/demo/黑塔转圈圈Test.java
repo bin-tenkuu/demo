@@ -8,7 +8,7 @@ import java.util.function.BiConsumer;
 /**
  * 黑塔转圈圈问题 TODO
  */
-@SuppressWarnings({"NonAsciiCharacters", "preview"})
+@SuppressWarnings({"NonAsciiCharacters"})
 public class 黑塔转圈圈Test {
     // 题目
     // 黑塔女士的普通攻击可以对一名敌人造成一点伤害。此外，黑塔女士的天赋，会在敌人的生命值首次降低到初始值的二分之一（向下取整）时，立即发动追加攻击，对所有敌人造成一点伤害。
@@ -36,11 +36,11 @@ public class 黑塔转圈圈Test {
     // 作者：xyzlancehe
     // 链接：https://leetcode.cn/circle/discuss/hrR0Gy/
 
-    public static void main(String[] args) {
+    public static void main() {
         BiConsumer<int[], Integer> test = (a, n) -> {
             val run = run(a);
             if (run != n) {
-                System.out.println(STR."测试失败:\{n} != \{run} <- \{Arrays.toString(a)}");
+                System.out.println("测试失败:" + n + " != " + run + " <- " + Arrays.toString(a));
             }
         };
         // 原题

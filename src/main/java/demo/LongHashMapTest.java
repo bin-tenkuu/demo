@@ -6,11 +6,7 @@ import org.apache.lucene.util.RamUsageEstimator;
 
 import java.util.HashMap;
 
-/**
- * @author bin
- * @since 2024/05/08
- */
-@SuppressWarnings("preview")
+
 public class LongHashMapTest {
     public static void main() {
         val length = 1;
@@ -21,11 +17,11 @@ public class LongHashMapTest {
             longMap.put(i, i);
         }
         long size = RamUsageEstimator.sizeOfMap(map);
-        System.out.println(STR."map value is \{size}");
-        System.out.println(STR."map value is \{RamUsageEstimator.humanReadableUnits(size)}");
+        System.out.println("map value is " + size);
+        System.out.println("map value is " + RamUsageEstimator.humanReadableUnits(size));
         size = sizeOfMap(longMap);
-        System.out.println(STR."arrayMap value is \{size}");
-        System.out.println(STR."arrayMap value is \{RamUsageEstimator.humanReadableUnits(size)}");
+        System.out.println("arrayMap value is " + size);
+        System.out.println("arrayMap value is " + RamUsageEstimator.humanReadableUnits(size));
     }
 
     private static long sizeOfMap(LongHashMap<?> map) {

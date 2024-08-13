@@ -5,7 +5,6 @@ import lombok.val;
 
 import java.util.concurrent.*;
 
-@SuppressWarnings("preview")
 public class TomcatThreadPoolExecutorTest {
     private static final ThreadGroup group = Thread.currentThread().getThreadGroup();
     private static final ThreadFactory threadFactory = r -> {
@@ -44,10 +43,11 @@ public class TomcatThreadPoolExecutorTest {
     private static void logStatus() {
         val size = taskqueue.size();
         val capacity = taskqueue.remainingCapacity();
-        System.out.println(java.util.FormatProcessor.FMT."""
-                核心线程数:%s\{executor.getCorePoolSize()}\
-                \t活动线程数:%2d\{executor.getActiveCount()}/%s\{executor.getMaximumPoolSize()}\
-                \t当前排队线程数:%2d\{size} + %2d\{capacity} = %s\{size + capacity}""");
+        System.out.printf("""
+                        核心线程数:%s	活动线程数:%2d/%s	当前排队线程数:%2d + %2d = %s%n""",
+                executor.getCorePoolSize(), executor.getActiveCount(), executor.getMaximumPoolSize(),
+                size, capacity, size + capacity
+        );
     }
 
 }

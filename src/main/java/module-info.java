@@ -1,8 +1,8 @@
 /**
  * @author bin
- * @version 1.0.0
  * @since 2024/07/23
- */module demo {
+ */
+module demo {
     requires static lombok;
     requires static org.jetbrains.annotations;
     requires jmh.core;

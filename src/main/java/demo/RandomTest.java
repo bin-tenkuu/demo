@@ -16,7 +16,6 @@ import java.util.concurrent.Future;
 import java.util.function.IntSupplier;
 import java.util.function.Supplier;
 
-@SuppressWarnings("preview")
 public class RandomTest {
     private static final int MAX_X = 1 << 12;
     private static final int MAX_Y = 1 << 12;
@@ -59,11 +58,11 @@ public class RandomTest {
     private static void toImage(final RandomType type, final int i) {
         Generator gen = new Generator(type);
         switch (i) {
-            case 0 -> toImage(STR."\{type.name}-1Bit", gen::get1Bit);
-            case 1 -> toImage(STR."\{type.name}-8Bit", gen::get8Bit);
-            case 2 -> toImage(STR."\{type.name}-24Bit", gen::get24Bit);
-            case 3 -> toImage(STR."\{type.name}-32Bit", gen::get32Bit);
-            default -> throw new IllegalArgumentException(STR."\{i}");
+            case 0 -> toImage(type.name + "-1Bit", gen::get1Bit);
+            case 1 -> toImage(type.name + "-8Bit", gen::get8Bit);
+            case 2 -> toImage(type.name + "-24Bit", gen::get24Bit);
+            case 3 -> toImage(type.name + "-32Bit", gen::get32Bit);
+            default -> throw new IllegalArgumentException("" + i);
         }
     }
 
@@ -75,12 +74,12 @@ public class RandomTest {
             }
         }
         try {
-            File file = new File(STR."\{name}.jpg");
-            System.out.println(STR."Writing to \{file.getAbsolutePath()}");
+            File file = new File(name + ".jpg");
+            System.out.println("Writing to " + file.getAbsolutePath());
 
             ImageIO.write(image, "jpg", file);
             if (!file.isFile()) {
-                System.err.println(STR."Failed to write to \{file.getAbsolutePath()}");
+                System.err.println("Failed to write to " + file.getAbsolutePath());
             }
         } catch (IOException e) {
             e.printStackTrace();

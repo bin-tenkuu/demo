@@ -10,12 +10,12 @@ import java.util.Locale;
  * @author bin
  * @since 2024/03/22
  */
-@SuppressWarnings({"preview", "SqlNoDataSourceInspection"})
+@SuppressWarnings({"SqlNoDataSourceInspection"})
 public class SqlSplit {
     private static final String SPLIT = "\t";
     @Language(value = "MySQL", prefix = "create table test(\n", suffix = "index)")
     private static final String STR = """
-                """;
+            """;
 
     private static void p(TableField field) {
         p(field.name);
@@ -41,7 +41,7 @@ public class SqlSplit {
             field.type = next(state);
             tmp = next(state);
             if (!tmp.isEmpty() && tmp.charAt(0) == '(') {
-                field.type = StringTemplate.STR."\{field.type} \{tmp}";
+                field.type = field.type + " " + tmp;
             }
             do {
                 switch (tmp) {
