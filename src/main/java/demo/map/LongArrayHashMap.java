@@ -128,7 +128,7 @@ import java.util.function.Function;
  * @see Hashtable
  * @since 1.2
  */
-@SuppressWarnings({"DuplicatedCode"})
+@SuppressWarnings({"DuplicatedCode", "unused"})
 public final class LongArrayHashMap<V> {
 
     /**

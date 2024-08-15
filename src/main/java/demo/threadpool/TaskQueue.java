@@ -14,6 +14,7 @@ import java.util.concurrent.ThreadPoolExecutor;
  * @version 1.0.0
  * @since 2024/07/04
  */
+@SuppressWarnings("unused")
 @Setter
 public class TaskQueue extends LinkedBlockingQueue<Runnable> {
     private transient volatile ThreadPoolExecutor parent = null;

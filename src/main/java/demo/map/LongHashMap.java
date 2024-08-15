@@ -100,7 +100,7 @@ import java.util.function.*;
  * @see Hashtable
  * @since 1.2
  */
-@SuppressWarnings({"DuplicatedCode"})
+@SuppressWarnings({"DuplicatedCode", "unused"})
 public final class LongHashMap<V> {
 
     /**

@@ -102,8 +102,8 @@ import java.util.function.LongFunction;
  * @see Hashtable
  * @since 1.2
  */
-@SuppressWarnings({"DuplicatedCode"})
-public final class IntegerHashMap<V> {
+@SuppressWarnings({"DuplicatedCode", "unused"})
+public final class IntHashMap<V> {
 
     /**
      * The default initial capacity - MUST be a power of two.
@@ -257,7 +257,7 @@ public final class IntegerHashMap<V> {
      * @throws IllegalArgumentException if the initial capacity is negative
      * or the load factor is nonpositive
      */
-    public IntegerHashMap(int initialCapacity, float loadFactor) {
+    public IntHashMap(int initialCapacity, float loadFactor) {
         if (initialCapacity < 0) {
             throw new IllegalArgumentException("Illegal initial capacity: " +
                                                initialCapacity);
@@ -280,7 +280,7 @@ public final class IntegerHashMap<V> {
      * @param initialCapacity the initial capacity.
      * @throws IllegalArgumentException if the initial capacity is negative.
      */
-    public IntegerHashMap(int initialCapacity) {
+    public IntHashMap(int initialCapacity) {
         this(initialCapacity, DEFAULT_LOAD_FACTOR);
     }
 
@@ -288,7 +288,7 @@ public final class IntegerHashMap<V> {
      * Constructs an empty {@code HashMap} with the default initial capacity
      * (16) and the default load factor (0.75).
      */
-    public IntegerHashMap() {
+    public IntHashMap() {
         this.loadFactor = DEFAULT_LOAD_FACTOR; // all other fields defaulted
     }
 
@@ -297,7 +297,7 @@ public final class IntegerHashMap<V> {
      *
      * @param m the map
      */
-    private void putMapEntries(IntegerHashMap<? extends V> m) {
+    private void putMapEntries(IntHashMap<? extends V> m) {
         int s = m.size();
         if (s > 0) {
             if (table == null) { // pre-size
@@ -557,7 +557,7 @@ public final class IntegerHashMap<V> {
      * @param m mappings to be stored in this map
      * @throws NullPointerException if the specified map is null
      */
-    public void putAll(IntegerHashMap<? extends V> m) {
+    public void putAll(IntHashMap<? extends V> m) {
         putMapEntries(m);
     }
 
@@ -753,7 +753,7 @@ public final class IntegerHashMap<V> {
         }
 
         public void clear() {
-            IntegerHashMap.this.clear();
+            IntHashMap.this.clear();
         }
 
         public Iterator<V> iterator() {
@@ -765,7 +765,7 @@ public final class IntegerHashMap<V> {
         }
 
         public Spliterator<V> spliterator() {
-            return new ValueSpliterator<>(IntegerHashMap.this, 0, -1, 0, 0);
+            return new ValueSpliterator<>(IntHashMap.this, 0, -1, 0, 0);
         }
 
         public Object[] toArray() {
@@ -822,7 +822,7 @@ public final class IntegerHashMap<V> {
         }
 
         public void clear() {
-            IntegerHashMap.this.clear();
+            IntHashMap.this.clear();
         }
 
         public Iterator<Node<V>> iterator() {
@@ -848,7 +848,7 @@ public final class IntegerHashMap<V> {
         }
 
         public Spliterator<Node<V>> spliterator() {
-            return new EntrySpliterator<>(IntegerHashMap.this, 0, -1, 0, 0);
+            return new EntrySpliterator<>(IntHashMap.this, 0, -1, 0, 0);
         }
 
         public void forEach(Consumer<? super Node<V>> action) {
@@ -1093,14 +1093,14 @@ public final class IntegerHashMap<V> {
     // spliterators
 
     private static class HashMapSpliterator<V> {
-        final IntegerHashMap<V> map;
+        final IntHashMap<V> map;
         Node<V> current;          // current node
         int index;                  // current index, modified on advance/split
         int fence;                  // one past last index
         long est;                    // size estimate
         int expectedModCount;       // for comodification checks
 
-        HashMapSpliterator(IntegerHashMap<V> m, int origin,
+        HashMapSpliterator(IntHashMap<V> m, int origin,
                 int fence, long est,
                 int expectedModCount) {
             this.map = m;
@@ -1113,7 +1113,7 @@ public final class IntegerHashMap<V> {
         final int getFence() { // initialize fence and size on first use
             int hi;
             if ((hi = fence) < 0) {
-                IntegerHashMap<V> m = map;
+                IntHashMap<V> m = map;
                 est = m.size;
                 expectedModCount = m.modCount;
                 Node<V>[] tab = m.table;
@@ -1131,7 +1131,7 @@ public final class IntegerHashMap<V> {
     private static final class ValueSpliterator<V>
             extends HashMapSpliterator<V>
             implements Spliterator<V> {
-        ValueSpliterator(IntegerHashMap<V> m, int origin, int fence, long est,
+        ValueSpliterator(IntHashMap<V> m, int origin, int fence, long est,
                 int expectedModCount) {
             super(m, origin, fence, est, expectedModCount);
         }
@@ -1148,7 +1148,7 @@ public final class IntegerHashMap<V> {
             if (action == null) {
                 throw new NullPointerException();
             }
-            IntegerHashMap<V> m = map;
+            IntHashMap<V> m = map;
             Node<V>[] tab = m.table;
             if ((hi = fence) < 0) {
                 mc = expectedModCount = m.modCount;
@@ -1206,7 +1206,7 @@ public final class IntegerHashMap<V> {
     private static final class EntrySpliterator<V>
             extends HashMapSpliterator<V>
             implements Spliterator<Node<V>> {
-        EntrySpliterator(IntegerHashMap<V> m, int origin, int fence, long est,
+        EntrySpliterator(IntHashMap<V> m, int origin, int fence, long est,
                 int expectedModCount) {
             super(m, origin, fence, est, expectedModCount);
         }
@@ -1223,7 +1223,7 @@ public final class IntegerHashMap<V> {
             if (action == null) {
                 throw new NullPointerException();
             }
-            IntegerHashMap<V> m = map;
+            IntHashMap<V> m = map;
             Node<V>[] tab = m.table;
             if ((hi = fence) < 0) {
                 mc = expectedModCount = m.modCount;

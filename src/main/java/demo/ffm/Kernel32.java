@@ -5,7 +5,7 @@ import java.lang.invoke.MethodHandle;
 
 import static java.lang.foreign.ValueLayout.*;
 
-@SuppressWarnings("OptionalGetWithoutIsPresent")
+@SuppressWarnings({"OptionalGetWithoutIsPresent", "unused"})
 public final class Kernel32 {
     private static final Linker linker = Linker.nativeLinker();
     public static final SymbolLookup kernel32 = SymbolLookup.libraryLookup("kernel32.dll", Arena.global());
