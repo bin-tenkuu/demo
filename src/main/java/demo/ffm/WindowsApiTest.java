@@ -1,6 +1,5 @@
-package demo;
+package demo.ffm;
 
-import demo.ffm.Kernel32;
 import lombok.val;
 
 import java.lang.foreign.Arena;

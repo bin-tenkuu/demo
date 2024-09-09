@@ -1,4 +1,4 @@
-package demo;
+package demo.jol;
 
 import org.apache.lucene.util.RamUsageEstimator;
 import org.openjdk.jol.info.ClassLayout;

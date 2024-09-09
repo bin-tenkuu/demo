@@ -1,4 +1,4 @@
-package demo;
+package demo.jol;
 
 import demo.map.LongArrayHashMap;
 import org.apache.lucene.util.RamUsageEstimator;

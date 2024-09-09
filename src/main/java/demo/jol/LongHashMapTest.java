@@ -1,4 +1,4 @@
-package demo;
+package demo.jol;
 
 import demo.map.LongHashMap;
 import lombok.val;

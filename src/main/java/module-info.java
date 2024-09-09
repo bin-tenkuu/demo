@@ -11,4 +11,5 @@ module demo {
     requires java.desktop;
     requires org.apache.lucene.core;
     requires jol.core;
+    requires org.java_websocket;
 }
