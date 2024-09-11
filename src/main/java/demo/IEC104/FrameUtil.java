@@ -135,6 +135,7 @@ public class FrameUtil {
         printfromString(
                 "68 2A 04 00 02 00 0D 04 14 00 01 00 01 40 00 00 78 DB 3F 00 02 40 00 00 D8 90 42 00 03 40 00 00 F4 92 42 00 04 40 00 60 50 9A 3F 00");
         printfromString("68 12 0E 00 10 00 0D 01 03 00 01 00 02 40 00 00 78 DB 3F 00");
+        printfromString("68 1A 02 00 02 00 03 04 14 00 01 00 01 00 00 01 02 00 00 02 03 00 00 01 04 00 00 02");
     }
 
     private static void printfromString(String string) {
@@ -154,10 +155,10 @@ public class FrameUtil {
                 sb.append("start=").append(frameU.getStart()).append(", ");
                 sb.append("stop=").append(frameU.getStop()).append(", ");
             }
-            case FrameS frameS -> sb.append("receiveCounter=").append(frameS.getReceiveCounter()).append(", ");
+            case FrameS frameS -> sb.append("receiveCounte=").append(frameS.getReceiveCounte()).append(", ");
             case FrameI frameI -> {
-                sb.append("sendCounter=").append(frameI.getSendCounter()).append(", ");
-                sb.append("receiveCounter=").append(frameI.getReceiveCounter()).append(", ");
+                sb.append("sendCounte=").append(frameI.getSendCounte()).append(", ");
+                sb.append("receiveCounte=").append(frameI.getReceiveCounte()).append(", ");
                 val typeID = TypeID.getByType(frameI.getTypeId());
                 sb.append("TypeId=").append(typeID.name).append(", ");
                 sb.append("SQ=").append(frameI.getSq()).append(", ");

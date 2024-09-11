@@ -29,19 +29,19 @@ public class FrameI extends Frame {
     }
 
     // region APCI
-    public int getSendCounter() {
+    public int getSendCounte() {
         return ByteUtil.getShort(data, 2) >> 1;
     }
 
-    public void setSendCounter(int sendCounter) {
+    public void setSendCounte(int sendCounter) {
         ByteUtil.setShort(data, 2, (short) (sendCounter << 1));
     }
 
-    public int getReceiveCounter() {
+    public int getReceiveCounte() {
         return ByteUtil.getShort(data, 4) >> 1;
     }
 
-    public void setReceiveCounter(int receiveCounter) {
+    public void setReceiveCounte(int receiveCounter) {
         ByteUtil.setShort(data, 4, (short) (receiveCounter << 1));
     }
 

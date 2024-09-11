@@ -15,11 +15,11 @@ public class FrameS extends Frame {
     }
 
     // region APCI
-    public int getReceiveCounter() {
+    public int getReceiveCounte() {
         return ByteUtil.getShort(data, 4) >> 1;
     }
 
-    public void setReceiveCounter(int receiveCounter) {
+    public void setReceiveCounte(int receiveCounter) {
         ByteUtil.setShort(data, 4, (short) (receiveCounter << 1));
     }
     // endregion
