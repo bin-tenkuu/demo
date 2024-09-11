@@ -90,7 +90,8 @@ public interface ByteUtil {
     }
 
     static String toString(byte b) {
-        return (b >= 0 && b < 16 ? "0" : "") + Integer.toHexString(b & 0xFF);
+        val i = b & 0xFF;
+        return (i < 16 ? "0" : "") + Integer.toHexString(i);
     }
 
     static byte[] fromString(String string) {
