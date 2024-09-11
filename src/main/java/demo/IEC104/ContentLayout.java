@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.val;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Map;
 
 /**
@@ -219,16 +220,22 @@ public enum ContentLayout {
         @Override
         public void parseContent(byte[] content, int offset, Map<String, Object> map) {
             val second = ByteUtil.getShort(content, offset);
+            val b2 = content[offset + 2];
+            val b4 = content[offset + 4];
+            val b3 = content[offset + 3];
             val time = LocalDateTime.of(
                     content[offset + 6] & 0b01111111,
                     content[offset + 5] & 0b00001111,
-                    content[offset + 4] & 0b00011111,
-                    content[offset + 3] & 0b00011111,
-                    content[offset + 2] & 0b00111111,
+                    b4 & 0b00011111,
+                    b3 & 0b00011111,
+                    b2 & 0b00111111,
                     second / 1000,
                     (second % 1000) * 1000000
             );
+            map.put("是否有效(IV)", ByteUtil.getBit(b2, 7));
+            map.put("夏令时(SU)", ByteUtil.getBit(b3, 7));
             map.put("时间(CP56Time2a)", time);
+            map.put("星期(CP56Time2a)", b4 >>> 5);
         }
     },
     /**
@@ -237,7 +244,16 @@ public enum ContentLayout {
     CP24Time2a(3) {
         @Override
         public void parseContent(byte[] content, int offset, Map<String, Object> map) {
-            super.parseContent(content, offset, map);
+            val second = ByteUtil.getShort(content, offset);
+            val b2 = content[offset + 2];
+            val time = LocalTime.of(
+                    0,
+                    b2 & 0b00111111,
+                    second / 1000,
+                    (second % 1000) * 1000000
+            );
+            map.put("是否有效(IV)", ByteUtil.getBit(b2, 7));
+            map.put("时间(CP24Time2a)", time);
         }
     },
     /**
@@ -246,7 +262,7 @@ public enum ContentLayout {
     CP16Time2a(2) {
         @Override
         public void parseContent(byte[] content, int offset, Map<String, Object> map) {
-            super.parseContent(content, offset, map);
+            map.put("时间(CP16Time2a)", ByteUtil.getShort(content, offset));
         }
     },
     // endregion
