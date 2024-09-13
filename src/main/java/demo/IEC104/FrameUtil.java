@@ -1,11 +1,10 @@
 package demo.IEC104;
 
+import demo.IEC104.content.BaseContent;
 import lombok.val;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author bin
@@ -52,56 +51,48 @@ public class FrameUtil {
         return FrameType.UNKNOWN;
     }
 
-    private static List<Map<String, Object>> parseContent(FrameI frameI) {
+    private static List<List<BaseContent>> parseContentsList(FrameI frameI) {
         val typeID = TypeID.getByType(frameI.getTypeId());
         val content = frameI.getContent();
         val number = frameI.getNumber();
-        val list = new ArrayList<Map<String, Object>>(number);
+        List<List<BaseContent>> contentList = new ArrayList<>(number);
         int offset = 0;
-        Map<String, Object> map;
+        List<BaseContent> contents;
+        val contentLayouts = typeID.layout;
         if (frameI.getSq()) {
-            val first = map = new LinkedHashMap<>();
-            offset = parseContent(ContentLayout.IOA, content, offset, map);
+            val first = contents = new ArrayList<>();
+            offset = parseContentsList(ContentLayout.IOA, content, offset, contents);
             for (int i = 0; i < number; i++) {
-                for (ContentLayout layout : typeID.layout) {
-                    offset = parseContent(layout, content, offset, map);
+                for (ContentLayout layout : contentLayouts) {
+                    offset = parseContentsList(layout, content, offset, contents);
                 }
-                list.add(map);
-                map = new LinkedHashMap<>();
+                contentList.add(contents);
+                contents = new ArrayList<>();
             }
-            offset = parseContent(typeID.timeLayout, content, offset, first);
+            offset = parseContentsList(typeID.timeLayout, content, offset, first);
         } else {
             while (offset < content.length) {
-                map = new LinkedHashMap<>();
-                offset = parseContent(ContentLayout.IOA, content, offset, map);
-                for (ContentLayout layout : typeID.layout) {
-                    offset = parseContent(layout, content, offset, map);
+                contents = new ArrayList<>();
+                offset = parseContentsList(ContentLayout.IOA, content, offset, contents);
+                for (ContentLayout layout : contentLayouts) {
+                    offset = parseContentsList(layout, content, offset, contents);
                 }
-                parseContent(typeID.timeLayout, content, offset, map);
-                list.add(map);
+                parseContentsList(typeID.timeLayout, content, offset, contents);
+                contentList.add(contents);
             }
         }
         if (offset != content.length) {
             throw new IllegalArgumentException("内容长度不正确");
         }
-        return list;
+        return contentList;
     }
 
-    private static int parseContent(ContentLayout layout, byte[] content, int offset, Map<String, Object> map) {
-        layout.parseContent(content, offset, map);
-        return offset + layout.length;
-    }
-
-    private static Map<String, Object> parseContent(byte[] content, TypeID typeID) {
-        int of = 0;
-        val map = new LinkedHashMap<String, Object>();
-        ContentLayout.IOA.parseContent(content, of, map);
-        for (ContentLayout layout : typeID.layout) {
-            layout.parseContent(content, of, map);
-            of += layout.length;
+    private static int parseContentsList(ContentLayout layout, byte[] content, int offset, List<BaseContent> list) {
+        if (layout == ContentLayout.NULL) {
+            return offset;
         }
-        typeID.timeLayout.parseContent(content, of, map);
-        return map;
+        list.add(layout.parseContent(content, offset));
+        return offset + layout.length;
     }
 
     public static void main(String[] args) {
@@ -169,18 +160,19 @@ public class FrameUtil {
                 sb.append("COT=").append(CauseOfTransmission.getByType(frameI.getCot()).name).append(", ");
                 sb.append("ORG=").append(frameI.getOrg()).append(", ");
                 sb.append("COA=").append(frameI.getCoa()).append(", ");
-                val content = frameI.getContent();
                 int contentLength = 3 + typeID.timeLayout.length;
                 for (ContentLayout layout : typeID.layout) {
                     contentLength += layout.length;
                 }
                 sb.append("contentLength=").append(contentLength).append(", ");
-                val maps = parseContent(frameI);
-                for (int i = 0; i < maps.size(); i++) {
-                    val map = maps.get(i);
+                val contentsList = parseContentsList(frameI);
+                for (int i = 0; i < contentsList.size(); i++) {
+                    val contents = contentsList.get(i);
                     sb.append("\ncontent").append(i).append(":\t");
-                    for (val entry : map.entrySet()) {
-                        sb.append(entry.getKey()).append("=").append(entry.getValue()).append(", ");
+                    for (val content : contents) {
+                        if (content != null) {
+                            sb.append(content).append(", ");
+                        }
                     }
                 }
             }

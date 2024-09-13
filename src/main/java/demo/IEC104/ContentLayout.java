@@ -1,15 +1,15 @@
 package demo.IEC104;
 
+import demo.IEC104.content.*;
 import lombok.AllArgsConstructor;
 import lombok.val;
 
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.Map;
 
 /**
  * @author bin
  * @version 1.0.0
+ * @see <a href="https://blog.csdn.net/changqing1990/article/details/134327980">详解IEC104 规约【最详细版】</a>
  * @since 2024/09/11
  */
 @AllArgsConstructor
@@ -24,8 +24,8 @@ public enum ContentLayout {
      */
     IOA(3) {
         @Override
-        public void parseContent(byte[] content, int offset, Map<String, Object> map) {
-            map.put("地址(IOA)", ByteUtil.getShort(content, offset));
+        public BaseContent parseContent(byte[] content, int offset) {
+            return new IOA(content, offset);
         }
     },
     // region 1监视方向的过程信息
@@ -34,10 +34,8 @@ public enum ContentLayout {
      */
     SIQ(1) {
         @Override
-        public void parseContent(byte[] content, int offset, Map<String, Object> map) {
-            val b = content[offset];
-            parseByte(b, map);
-            map.put("遥信状态值(SPI)", ByteUtil.getBit(b, 0));
+        public BaseContent parseContent(byte[] content, int offset) {
+            return new SIQ(content[offset]);
         }
     },
     /**
@@ -45,10 +43,8 @@ public enum ContentLayout {
      */
     DIQ(1) {
         @Override
-        public void parseContent(byte[] content, int offset, Map<String, Object> map) {
-            val b = content[offset];
-            parseByte(b, map);
-            map.put("遥信状态值(DPI)", b & 3);
+        public BaseContent parseContent(byte[] content, int offset) {
+            return new DIQ(content[offset]);
         }
     },
     /**
@@ -56,8 +52,8 @@ public enum ContentLayout {
      */
     BSI(4) {
         @Override
-        public void parseContent(byte[] content, int offset, Map<String, Object> map) {
-            map.put("数据(BSI)", ByteUtil.getInt(content, offset));
+        public BaseContent parseContent(byte[] content, int offset) {
+            return new BSI(content, offset);
         }
     },
     /**
@@ -65,8 +61,8 @@ public enum ContentLayout {
      */
     SCD(4) {
         @Override
-        public void parseContent(byte[] content, int offset, Map<String, Object> map) {
-            map.put("数据(SCD)", ByteUtil.getInt(content, offset));
+        public BaseContent parseContent(byte[] content, int offset) {
+            return new SCD(content, offset);
         }
     },
     /**
@@ -74,10 +70,8 @@ public enum ContentLayout {
      */
     QDS(1) {
         @Override
-        public void parseContent(byte[] content, int offset, Map<String, Object> map) {
-            val b = content[offset];
-            parseByte(b, map);
-            map.put("溢出标志位(OV)", ByteUtil.getBit(b, 0));
+        public BaseContent parseContent(byte[] content, int offset) {
+            return new QDS(content[offset]);
         }
     },
     /**
@@ -85,10 +79,8 @@ public enum ContentLayout {
      */
     VTI(1) {
         @Override
-        public void parseContent(byte[] content, int offset, Map<String, Object> map) {
-            val b = content[offset];
-            map.put("瞬变状态", ByteUtil.getBit(b, 7));
-            map.put("数据(VTI)", b << 1 >> 1);
+        public BaseContent parseContent(byte[] content, int offset) {
+            return new VTI(content[offset]);
         }
     },
     /**
@@ -96,10 +88,8 @@ public enum ContentLayout {
      */
     NVA(2) {
         @Override
-        public void parseContent(byte[] content, int offset, Map<String, Object> map) {
-            val s = ByteUtil.getShort(content, offset);
-            map.put("SVA", s);
-            map.put("归一值(NVA)", s / 32768F);
+        public BaseContent parseContent(byte[] content, int offset) {
+            return new NVA(content, offset);
         }
     },
     /**
@@ -107,8 +97,8 @@ public enum ContentLayout {
      */
     SVA(2) {
         @Override
-        public void parseContent(byte[] content, int offset, Map<String, Object> map) {
-            map.put("标量值(SVA)", ByteUtil.getShort(content, offset));
+        public BaseContent parseContent(byte[] content, int offset) {
+            return new SVA(content, offset);
         }
     },
     /**
@@ -116,8 +106,8 @@ public enum ContentLayout {
      */
     IEEE_STD_754(4) {
         @Override
-        public void parseContent(byte[] content, int offset, Map<String, Object> map) {
-            map.put("数据(IEEE_STD_754)", ByteUtil.getFloat(content, offset));
+        public BaseContent parseContent(byte[] content, int offset) {
+            return new IEEE_STD_754(content, offset);
         }
     },
     /**
@@ -125,12 +115,8 @@ public enum ContentLayout {
      */
     BCR(5) {
         @Override
-        public void parseContent(byte[] content, int offset, Map<String, Object> map) {
-            val b = content[offset];
-            map.put("计数量被调整(CA)", ByteUtil.getBit(b, 6));
-            map.put("是否有进位(CY)", ByteUtil.getBit(b, 5));
-            map.put("顺序号(SQ)", b & 0x1f);
-            map.put("读数(BCR)", ByteUtil.getInt(content, offset + 1));
+        public BaseContent parseContent(byte[] content, int offset) {
+            return new BCR(content, offset);
         }
     },
     // endregion
@@ -140,14 +126,8 @@ public enum ContentLayout {
      */
     SEP(1) {
         @Override
-        public void parseContent(byte[] content, int offset, Map<String, Object> map) {
-            val b = content[offset];
-            map.put("反向保护启动(SRD)", ByteUtil.getBit(b, 5));
-            map.put("接地电流保护启动(SIE)", ByteUtil.getBit(b, 4));
-            map.put("C相保护启动(SL3)", ByteUtil.getBit(b, 3));
-            map.put("B相保护启动(SL2)", ByteUtil.getBit(b, 2));
-            map.put("A相保护启动(SL1)", ByteUtil.getBit(b, 1));
-            map.put("总启动(GS)", ByteUtil.getBit(b, 0));
+        public BaseContent parseContent(byte[] content, int offset) {
+            return new SEP(content[offset]);
         }
     },
     /**
@@ -159,12 +139,8 @@ public enum ContentLayout {
      */
     OCI(1) {
         @Override
-        public void parseContent(byte[] content, int offset, Map<String, Object> map) {
-            val b = content[offset];
-            map.put("C相保护命令输出至输出电路(SL3)", ByteUtil.getBit(b, 3));
-            map.put("B相保护命令输出至输出电路(SL2)", ByteUtil.getBit(b, 2));
-            map.put("A相保护命令输出至输出电路(SL1)", ByteUtil.getBit(b, 1));
-            map.put("总命令输出至输出电路(GC)", ByteUtil.getBit(b, 0));
+        public BaseContent parseContent(byte[] content, int offset) {
+            return new OCI(content[offset]);
         }
     },
     /**
@@ -172,11 +148,8 @@ public enum ContentLayout {
      */
     QDP(1) {
         @Override
-        public void parseContent(byte[] content, int offset, Map<String, Object> map) {
-            val b = content[offset];
-            parseByte(b, map);
-            map.put("时间间隔值无效(EI)", ByteUtil.getBit(b, 3));
-            map.put("事件", b & 3);
+        public BaseContent parseContent(byte[] content, int offset) {
+            return new QDP(content[offset]);
         }
     },
     // endregion
@@ -186,9 +159,8 @@ public enum ContentLayout {
      */
     SCO(1) {
         @Override
-        public void parseContent(byte[] content, int offset, Map<String, Object> map) {
-            val b = content[offset];
-            parseCO(b, map);
+        public BaseContent parseContent(byte[] content, int offset) {
+            return new Command(content[offset]);
         }
     },
     /**
@@ -196,9 +168,8 @@ public enum ContentLayout {
      */
     DCO(1) {
         @Override
-        public void parseContent(byte[] content, int offset, Map<String, Object> map) {
-            val b = content[offset];
-            parseCO(b, map);
+        public BaseContent parseContent(byte[] content, int offset) {
+            return new Command(content[offset]);
         }
     },
     /**
@@ -206,9 +177,8 @@ public enum ContentLayout {
      */
     RCO(1) {
         @Override
-        public void parseContent(byte[] content, int offset, Map<String, Object> map) {
-            val b = content[offset];
-            parseCO(b, map);
+        public BaseContent parseContent(byte[] content, int offset) {
+            return new Command(content[offset]);
         }
     },
     // endregion
@@ -218,24 +188,17 @@ public enum ContentLayout {
      */
     CP56Time2a(7) {
         @Override
-        public void parseContent(byte[] content, int offset, Map<String, Object> map) {
-            val second = ByteUtil.getShort(content, offset);
-            val b2 = content[offset + 2];
-            val b4 = content[offset + 4];
-            val b3 = content[offset + 3];
-            val time = LocalDateTime.of(
-                    content[offset + 6] & 0b01111111,
-                    content[offset + 5] & 0b00001111,
-                    b4 & 0b00011111,
-                    b3 & 0b00011111,
-                    b2 & 0b00111111,
-                    second / 1000,
-                    (second % 1000) * 1000000
-            );
-            map.put("是否有效(IV)", ByteUtil.getBit(b2, 7));
-            map.put("夏令时(SU)", ByteUtil.getBit(b3, 7));
-            map.put("时间(CP56Time2a)", time);
-            map.put("星期(CP56Time2a)", b4 >>> 5);
+        public BaseContent parseContent(byte[] content, int offset) {
+            return new CP56Time2a(content, offset);
+        }
+    },
+    /**
+     * 三字节二进制时间
+     */
+    CP32Time2a(4) {
+        @Override
+        public BaseContent parseContent(byte[] content, int offset) {
+            return new CP32Time2a(content, offset);
         }
     },
     /**
@@ -243,17 +206,8 @@ public enum ContentLayout {
      */
     CP24Time2a(3) {
         @Override
-        public void parseContent(byte[] content, int offset, Map<String, Object> map) {
-            val second = ByteUtil.getShort(content, offset);
-            val b2 = content[offset + 2];
-            val time = LocalTime.of(
-                    0,
-                    b2 & 0b00111111,
-                    second / 1000,
-                    (second % 1000) * 1000000
-            );
-            map.put("是否有效(IV)", ByteUtil.getBit(b2, 7));
-            map.put("时间(CP24Time2a)", time);
+        public BaseContent parseContent(byte[] content, int offset) {
+            return new CP24Time2a(content, offset);
         }
     },
     /**
@@ -261,8 +215,8 @@ public enum ContentLayout {
      */
     CP16Time2a(2) {
         @Override
-        public void parseContent(byte[] content, int offset, Map<String, Object> map) {
-            map.put("时间(CP16Time2a)", ByteUtil.getShort(content, offset));
+        public BaseContent parseContent(byte[] content, int offset) {
+            return new CP16Time2a(content, offset);
         }
     },
     // endregion
@@ -272,8 +226,8 @@ public enum ContentLayout {
      */
     QOI(1) {
         @Override
-        public void parseContent(byte[] content, int offset, Map<String, Object> map) {
-            map.put("QOI", 0x14);
+        public BaseContent parseContent(byte[] content, int offset) {
+            return new QOI(content[offset]);
         }
     },
     /**
@@ -285,11 +239,8 @@ public enum ContentLayout {
      */
     QPM(1) {
         @Override
-        public void parseContent(byte[] content, int offset, Map<String, Object> map) {
-            val b = content[offset];
-            map.put("是否运行", ByteUtil.getBit(b, 7));
-            map.put("是否被改变", ByteUtil.getBit(b, 6));
-            map.put("类型", b & 0x3f);
+        public BaseContent parseContent(byte[] content, int offset) {
+            return new QPM(content[offset]);
         }
     },
     /**
@@ -297,8 +248,8 @@ public enum ContentLayout {
      */
     QPA(1) {
         @Override
-        public void parseContent(byte[] content, int offset, Map<String, Object> map) {
-            map.put("激活/停止(QPA)", content[offset]);
+        public BaseContent parseContent(byte[] content, int offset) {
+            return new QPA(content[offset]);
         }
     },
     /**
@@ -310,9 +261,8 @@ public enum ContentLayout {
      */
     QOC(1) {
         @Override
-        public void parseContent(byte[] content, int offset, Map<String, Object> map) {
-            val b = content[offset];
-            parseCO(b, map);
+        public BaseContent parseContent(byte[] content, int offset) {
+            return new Command(content[offset]);
         }
     },
     /**
@@ -320,10 +270,8 @@ public enum ContentLayout {
      */
     QOS(1) {
         @Override
-        public void parseContent(byte[] content, int offset, Map<String, Object> map) {
-            val b = content[offset];
-            map.put("S/E", ByteUtil.getBit(b, 7));
-            map.put("QOS", b << 1 >>> 1);
+        public BaseContent parseContent(byte[] content, int offset) {
+            return new QOS(content[offset]);
         }
     },
     // endregion
@@ -386,25 +334,11 @@ public enum ContentLayout {
     ;
     public final int length;
 
-    private static void parseByte(byte b, Map<String, Object> map) {
-        map.put("是否有效(IV)", ByteUtil.getBit(b, 7));
-        map.put("刷新标志位(NT)", ByteUtil.getBit(b, 6));
-        map.put("取代标志位(SB)", ByteUtil.getBit(b, 5));
-        map.put("封锁标志位(BL)", ByteUtil.getBit(b, 4));
-    }
-
-    private static void parseCO(byte b, Map<String, Object> map) {
-        map.put("选择/执行(S/E)", ByteUtil.getBit(b, 7));
-        map.put("CO", b << 1 >>> 3);
-        map.put("CS", b & 3);
+    public BaseContent parseContent(byte[] content, int offset) {
+        return new Unknown(content, offset, length, name());
     }
 
     public void parseContent(byte[] content, int offset, Map<String, Object> map) {
-        if (length == 0) {
-            return;
-        }
-        val bs = new byte[length];
-        System.arraycopy(content, offset, bs, 0, length);
-        map.put(name(), ByteUtil.toString(bs));
+        map.put(name(), parseContent(content, offset));
     }
 }
