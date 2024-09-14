@@ -20,7 +20,7 @@ public class Frame {
     }
 
     public int getLength() {
-        return data[1];
+        return data[1] & 0xFF;
     }
 
     public void setLength(int length) {

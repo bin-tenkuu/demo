@@ -166,18 +166,26 @@ public class FrameUtil {
         printfromString("68-1A-02-00-02-00-0F-02-25-00-01-00-01-00-00-00-00-00-00-00-02-00-00-00-00-00-00-00");
         printfromString("68-0E-04-00-02-00-65-01-0A-00-01-00-00-00-00-05");
         System.out.println("\n其他");
-        printfromString(
-                "68 1e 04 00 02 00 03 05 14 00 01 00 01 00 00 02 06 00 00 02 0a 00 00 01 0b 00 00 02 0c 00 00 01");
-        printfromString(
-                "68 13 06 00 02 00 09 82 14 00 01 00 01 07 00 a1 10 00 89 15 00");
-        printfromString(
-                "68 14 02 00 0a 00 67 01 06 00 01 00 00 00 00 16 23 32 10 13 05 08");
-        printfromString(
-                "68 3A 76 67 78 16 0F 06 03 00 01 00 06 64 00 45 47 09 00 00 4B 64 00 CF A2 00 00 00 4E 64 00 CF A2 00 00 00 5B 64 00 41 7A 00 00 00 5F 64 00 41 7A 00 00 00 72 64 00 14 6A 00 00 00");
-        printfromString(
-                "68 2A 04 00 02 00 0D 04 14 00 01 00 01 40 00 00 78 DB 3F 00 02 40 00 00 D8 90 42 00 03 40 00 00 F4 92 42 00 04 40 00 60 50 9A 3F 00");
+        printfromString("""
+                68 1e 04 00 02 00 03 05 14 00 01 00 01 00 00 02 06 00 00 02 0a 00 00 01 0b 00 00 02 0c 00 00 01""");
+        printfromString("68 13 06 00 02 00 09 82 14 00 01 00 01 07 00 a1 10 00 89 15 00");
+        printfromString("68 14 02 00 0a 00 67 01 06 00 01 00 00 00 00 16 23 32 10 13 05 08");
+        printfromString("""
+                68 3A 76 67 78 16 0F 06 03 00 01 00 06 64 00 45 47 09 00 00 4B 64 00 CF A2 00 00 00 4E 64 00 CF A2 00 00
+                00 5B 64 00 41 7A 00 00 00 5F 64 00 41 7A 00 00 00 72 64 00 14 6A 00 00 00""");
+        printfromString("""
+                68 2A 04 00 02 00 0D 04 14 00 01 00 01 40 00 00 78 DB 3F 00 02 40 00 00 D8 90 42 00 03 40 00 00 F4 92 42
+                00 04 40 00 60 50 9A 3F 00""");
         printfromString("68 12 0E 00 10 00 0D 01 03 00 01 00 02 40 00 00 78 DB 3F 00");
         printfromString("68 1A 02 00 02 00 03 04 14 00 01 00 01 00 00 01 02 00 00 02 03 00 00 01 04 00 00 02");
+        printfromString("""
+                68 d5 9c 07 f6 20 0f a8 25 00 01 00 01 64 00 00 00 00 00 80 00 00 00 00 80 00 00 00 00 80 00 00 00 00 80
+                00 00 00 00 80 00 00 00 00 80 00 00 00 00 80 00 00 00 00 80 00 00 00 00 80 00 00 00 00 80 00 00 00 00 80
+                00 00 00 00 80 00 00 00 00 80 00 00 00 00 80 00 00 00 00 80 00 00 00 00 80 00 00 00 00 80 00 00 00 00 80
+                00 00 00 00 80 00 00 00 00 80 00 00 00 00 80 00 00 00 00 80 00 00 00 00 80 00 00 00 00 80 00 00 00 00 80
+                00 00 00 00 80 00 00 00 00 80 00 00 00 00 80 00 00 00 00 80 00 00 00 00 80 00 00 00 00 80 00 00 00 00 80
+                00 00 00 00 80 00 00 00 00 80 00 00 00 00 80 00 00 00 00 80 3c 0d 00 00 80 00 00 00 00 80 3c 0d 00 00 80
+                7b 02 00 00 80""");
     }
 
     private static void printfromString(String string) {
@@ -189,9 +197,11 @@ public class FrameUtil {
         System.out.println(ByteUtil.toString(data));
         val sb = new StringBuilder();
         sb.append(frame.type).append(": ");
+        sb.append("length=").append(frame.getLength() + 2).append("/").append(data.length).append(", ");
         if (frame.getLength() + 2 != data.length) {
+            System.out.println(sb);
+            sb.setLength(0);
             System.err.println("解析Length不正确");
-            sb.append("length=").append(frame.getLength() + 2).append("/").append(data.length).append(", ");
         }
         switch (frame) {
             case FrameU frameU -> {
@@ -213,7 +223,7 @@ public class FrameUtil {
                 sb.append("COT=").append(CauseOfTransmission.getByType(frameI.getCot()).name).append(", ");
                 sb.append("ORG=").append(frameI.getOrg()).append(", ");
                 sb.append("COA=").append(frameI.getCoa()).append(", ");
-                int contentLength = 3 + typeID.timeLayout.length;
+                int contentLength = frameI.getSq() ? 0 : ContentLayout.IOA.length + typeID.timeLayout.length;
                 for (ContentLayout layout : typeID.layout) {
                     contentLength += layout.length;
                 }
@@ -228,11 +238,11 @@ public class FrameUtil {
                         }
                     }
                 }
-                System.out.println(sb);
-                sb.setLength(0);
                 val bytes = toByteArray(contentsList, frameI.getSq(), typeID.timeLayout);
                 val equals = Arrays.equals(frameI.getContent(), bytes);
                 if (!equals) {
+                    System.out.println(sb);
+                    sb.setLength(0);
                     System.err.println("Content内容不一致");
                 }
             }
