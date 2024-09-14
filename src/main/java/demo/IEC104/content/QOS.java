@@ -35,6 +35,6 @@ public class QOS implements BaseContent {
     @Override
     public String toString() {
         return "选择/执行(S/E)=" + se +
-                ", 命令(QOS)=" + value;
+                ", 命令=" + value;
     }
 }

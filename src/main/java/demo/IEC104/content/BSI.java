@@ -30,6 +30,6 @@ public class BSI implements BaseContent {
 
     @Override
     public String toString() {
-        return "数据(BSI)=" + value;
+        return "数据=" + value;
     }
 }

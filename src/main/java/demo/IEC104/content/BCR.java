@@ -49,6 +49,6 @@ public class BCR implements BaseContent {
                 ", 是否确认(CA)=" + ca +
                 ", 是否同步(CY)=" + cy +
                 ", 传输序号(SQ)=" + sq +
-                ", 传输原因(BCR)=" + bcr;
+                ", 计数器读数=" + bcr;
     }
 }

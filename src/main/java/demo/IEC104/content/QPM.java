@@ -37,8 +37,8 @@ public class QPM implements BaseContent {
 
     @Override
     public String toString() {
-        return "是否运行(IR)=" + isRunning +
-                ", 是否改变(IC)=" + isChange +
-                ", 类型(Type)=" + type;
+        return "是否运行=" + isRunning +
+                ", 是否改变=" + isChange +
+                ", 类型=" + type;
     }
 }

@@ -28,6 +28,6 @@ public class SIQ extends BaseQds implements BaseContent {
     @Override
     public String toString() {
         return super.toString() +
-                ", 单点遥信(SPI)=" + value;
+                ", 单点遥信=" + value;
     }
 }

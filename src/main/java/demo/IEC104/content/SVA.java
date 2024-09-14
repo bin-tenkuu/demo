@@ -30,6 +30,6 @@ public class SVA implements BaseContent {
 
     @Override
     public String toString() {
-        return "标量值(SVA)=" + value;
+        return "标量值=" + value;
     }
 }

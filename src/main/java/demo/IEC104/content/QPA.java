@@ -29,6 +29,6 @@ public class QPA implements BaseContent {
 
     @Override
     public String toString() {
-        return "激活/停止(QPA)=" + value;
+        return "激活/停止=" + value;
     }
 }

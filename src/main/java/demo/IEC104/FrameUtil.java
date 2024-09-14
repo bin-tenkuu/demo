@@ -232,9 +232,9 @@ public class FrameUtil {
                 sb.append(ByteUtil.toString(data[6])).append(" <类型标志：").append(typeID.name).append("> ");
                 sb.append(ByteUtil.toString(data[7])).append(" <地址");
                 if (i.getSq()) {
-                    sb.append("连续");
+                    sb.append("连续,");
                 } else {
-                    sb.append("不连续");
+                    sb.append("不连续,");
                 }
                 sb.append(i.getNumber()).append("个对象>\n");
                 sb.append(ByteUtil.toString(data[8])).append(" <");
@@ -311,6 +311,8 @@ public class FrameUtil {
                 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 29 0a 00 00 00 85 01 00 00 00 ae 0b 00 00 00 79 09 00 00 00
                 3b 06 00 00 00 11 00 00 00 00 4d 06 00 00 00 cf 03 00 00 00 d7 10 00 00 00 8e 01 00 00 00 66 12 00 00 00
                 c0 08 00 00 00""");
+        printfromString("68-0E-20-00-5C-00-2D-01-08-00-01-00-03-60-00-01");
+        printfromString("68-0E-5C-00-22-00-2D-01-6D-00-01-00-03-60-00-01");
     }
 
     private static void printfromString(String string) {

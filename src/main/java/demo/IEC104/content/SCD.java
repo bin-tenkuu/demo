@@ -30,6 +30,6 @@ public class SCD implements BaseContent {
 
     @Override
     public String toString() {
-        return "数据(SCD)=" + value;
+        return "数据=" + value;
     }
 }

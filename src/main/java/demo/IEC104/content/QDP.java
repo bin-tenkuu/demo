@@ -31,6 +31,6 @@ public class QDP extends BaseQds implements BaseContent {
     public String toString() {
         return super.toString() +
                 ", 是否无效(EI)=" + ei +
-                ", 事件(QDP)=" + event;
+                ", 事件=" + event;
     }
 }

@@ -36,6 +36,6 @@ public class Unknown implements BaseContent {
 
     @Override
     public String toString() {
-        return name + "(Unknown)=" + ByteUtil.toString(content);
+        return name + "=" + ByteUtil.toString(content);
     }
 }

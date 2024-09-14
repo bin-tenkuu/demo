@@ -27,6 +27,6 @@ public class DIQ extends BaseQds implements BaseContent {
     @Override
     public String toString() {
         return super.toString() +
-                ", 双点遥信(DPI)=" + value;
+                ", 双点遥信=" + value;
     }
 }

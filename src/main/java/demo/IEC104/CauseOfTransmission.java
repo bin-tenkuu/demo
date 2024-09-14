@@ -58,7 +58,7 @@ public enum CauseOfTransmission {
 
     static {
         for (CauseOfTransmission value : values()) {
-            values[value.ordinal()] = value;
+            values[value.type] = value;
         }
     }
 

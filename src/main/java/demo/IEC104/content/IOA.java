@@ -30,6 +30,6 @@ public class IOA implements BaseContent {
 
     @Override
     public String toString() {
-        return "地址(IOA)=" + addr;
+        return "地址=" + addr;
     }
 }

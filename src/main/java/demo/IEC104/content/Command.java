@@ -35,7 +35,7 @@ public class Command implements BaseContent {
     @Override
     public String toString() {
         return "选择/执行(S/E)=" + se +
-                ", 命令序号(CO)=" + co +
-                ", 命令状态(CS)=" + cs;
+                ", 命令序号=" + co +
+                ", 命令状态=" + cs;
     }
 }

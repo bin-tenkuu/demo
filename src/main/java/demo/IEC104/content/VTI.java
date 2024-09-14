@@ -33,6 +33,6 @@ public class VTI implements BaseContent {
     @Override
     public String toString() {
         return "是否瞬变=" + t +
-                ", 数据(VTI)=" + value;
+                ", 数据=" + value;
     }
 }

@@ -30,6 +30,6 @@ public class NVA implements BaseContent {
 
     @Override
     public String toString() {
-        return "归一值(NVA)=" + value;
+        return "归一值=" + value;
     }
 }

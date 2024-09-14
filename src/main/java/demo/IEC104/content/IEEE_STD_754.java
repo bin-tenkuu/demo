@@ -30,6 +30,6 @@ public class IEEE_STD_754 implements BaseContent {
 
     @Override
     public String toString() {
-        return "数据(IEEE_STD_754)=" + value;
+        return "数据=" + value;
     }
 }
