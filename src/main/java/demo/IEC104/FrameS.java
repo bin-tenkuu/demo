@@ -6,12 +6,13 @@ package demo.IEC104;
  * @since 2024/09/10
  */
 public class FrameS extends Frame {
-    public FrameS(FrameType type, byte[] data) {
-        super(type, data);
+    public FrameS(byte[] data) {
+        super(FrameType.S, data);
     }
 
     public FrameS() {
         super(FrameType.S, new byte[6]);
+        data[2] = 1;
     }
 
     // region APCI

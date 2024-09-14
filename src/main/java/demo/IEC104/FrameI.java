@@ -17,14 +17,9 @@ import java.util.List;
 public class FrameI extends Frame {
     private byte[] content = new byte[0];
 
-    public FrameI(FrameType type, byte[] data) {
-        super(type, data);
-        if (data.length <= 12) {
-            return;
-        }
-        val bytes = new byte[data.length - 12];
-        System.arraycopy(data, 12, bytes, 0, bytes.length);
-        content = bytes;
+    public FrameI(byte[] data, byte[] content) {
+        super(FrameType.I, data);
+        this.content = content;
     }
 
     public FrameI() {
@@ -49,6 +44,10 @@ public class FrameI extends Frame {
     }
 
     // endregion
+
+    public byte[] initContent() {
+        return FrameUtil.initContent(this);
+    }
 
     /**
      * @return 对于sq == 1，会将IOA单独放入第一个list，时间戳放入最后一个list（如果有）

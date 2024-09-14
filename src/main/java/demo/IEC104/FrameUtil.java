@@ -14,6 +14,9 @@ import java.util.List;
  */
 public class FrameUtil {
 
+    /**
+     * 根据帧类型预分配空间
+     */
     public static Frame parse(FrameType type) {
         return switch (type) {
             case I -> new FrameI();
@@ -23,23 +26,56 @@ public class FrameUtil {
         };
     }
 
+    /**
+     * 根据数据预分配帧空间，并将已有数据拷贝到帧中
+     *
+     * @param data length==2时返回{@link Frame}，length>2时返回具体类型
+     */
     public static Frame parse(byte[] data) {
-        if (data.length < 6) {
+        val length = data.length;
+        if (length < 2) {
             throw new IllegalArgumentException("帧长度不足");
         }
         if (data[0] != 0x68) {
             throw new IllegalArgumentException("帧起始符不正确");
         }
+        val frameLength = (data[1] & 0xFF) + 2;
         val frameType = getFrameType(data);
         return switch (frameType) {
-            case I -> new FrameI(frameType, data);
-            case S -> new FrameS(frameType, data);
-            case U -> new FrameU(frameType, data);
-            default -> new Frame(frameType, data);
+            case I -> {
+                val bytes = new byte[12];
+                val content = new byte[frameLength - 12];
+                if (length < 12) {
+                    System.arraycopy(data, 0, bytes, 0, length);
+                } else {
+                    System.arraycopy(data, 0, bytes, 0, 12);
+                    System.arraycopy(data, 12, content, 0, length - 12);
+                }
+                yield new FrameI(bytes, content);
+            }
+            case S -> {
+                val bytes = new byte[6];
+                System.arraycopy(data, 0, bytes, 0, Math.min(6, length));
+                yield new FrameS(bytes);
+            }
+            case U -> {
+                val bytes = new byte[6];
+                System.arraycopy(data, 0, bytes, 0, Math.min(6, length));
+                yield new FrameU(bytes);
+            }
+            default -> {
+                val bytes = new byte[frameLength];
+                System.arraycopy(data, 0, bytes, 0, Math.min(frameLength, length));
+                yield new Frame(frameType, bytes);
+            }
         };
+
     }
 
     private static FrameType getFrameType(byte[] data) {
+        if (data.length < 3) {
+            return FrameType.UNKNOWN;
+        }
         if ((data[2] & 1) == 0) {
             return FrameType.I;
         }
@@ -50,6 +86,25 @@ public class FrameUtil {
             return FrameType.U;
         }
         return FrameType.UNKNOWN;
+    }
+
+    public static byte[] initContent(FrameI frameI) {
+        val typeID = TypeID.getByType(frameI.getTypeId());
+        val number = frameI.getNumber();
+        int size = 0;
+        for (ContentLayout layout : typeID.layout) {
+            size += layout.length;
+        }
+        if (frameI.getSq()) {
+            size *= number;
+            size += ContentLayout.IOA.length + typeID.timeLayout.length;
+        } else {
+            size += ContentLayout.IOA.length + typeID.timeLayout.length;
+            size *= number;
+        }
+        val bytes = new byte[size];
+        frameI.setContent(bytes);
+        return bytes;
     }
 
     /**
@@ -147,6 +202,76 @@ public class FrameUtil {
         return bytes;
     }
 
+    // region toString
+    public static String toString(Frame frame) {
+        val sb = new StringBuilder();
+        toString(sb, frame);
+        return sb.toString();
+    }
+
+    public static void toString(StringBuilder sb, Frame frame) {
+        val data = frame.data;
+        sb.append("类型：").append(frame.type.name()).append(" 帧\n");
+        sb.append(ByteUtil.toString(data[0])).append(" <起始符> ");
+        sb.append(ByteUtil.toString(data[1])).append(" <长度>\n");
+        ByteUtil.toString(sb, data, 2, 2);
+        switch (frame) {
+            case FrameU _ -> {
+                sb.append("<控制功能> ");
+                ByteUtil.toString(sb, data, 4, 2);
+            }
+            case FrameS _ -> {
+                ByteUtil.toString(sb, data, 4, 2);
+                sb.append("<接收序号>");
+            }
+            case FrameI i -> {
+                sb.append("<发送序号> ");
+                ByteUtil.toString(sb, data, 4, 2);
+                sb.append("<接收序号>\n");
+                val typeID = TypeID.getByType(i.getTypeId());
+                sb.append(ByteUtil.toString(data[6])).append(" <类型标志：").append(typeID.name).append("> ");
+                sb.append(ByteUtil.toString(data[7])).append(" <地址");
+                if (i.getSq()) {
+                    sb.append("连续");
+                } else {
+                    sb.append("不连续");
+                }
+                sb.append(i.getNumber()).append("个对象>\n");
+                sb.append(ByteUtil.toString(data[8])).append(" <");
+                if (i.getT()) {
+                    sb.append("测试,");
+                } else {
+                    sb.append("非测试，");
+                }
+                if (i.getPn()) {
+                    sb.append("消极，");
+                } else {
+                    sb.append("积极，");
+                }
+                val cot = CauseOfTransmission.getByType(i.getCot());
+                sb.append("传送原因：").append(cot.name).append("> ");
+                sb.append(ByteUtil.toString(data[9])).append(" <源发站地址>\n");
+                ByteUtil.toString(sb, data, 10, 2);
+                sb.append("<通用地址>\n");
+                val contentsList = i.getContentsList();
+                for (val contents : contentsList) {
+                    for (val content : contents) {
+                        if (content != null) {
+                            ByteUtil.toString(sb, content.toByteArray());
+                            sb.append("<").append(content.getClass().getSimpleName()).append(":")
+                                    .append(content).append("> ");
+                        }
+                    }
+                    sb.append("\n");
+                }
+
+            }
+            default -> ByteUtil.toString(sb, data, 4, data.length - 4);
+        }
+        sb.append("\n");
+    }
+    // endregion
+
     public static void main(String[] args) {
         // https://blog.redisant.cn/docs/iec104-tutorial/chapter8/
         System.out.println("\n总召唤流程详解");
@@ -189,7 +314,8 @@ public class FrameUtil {
     }
 
     private static void printfromString(String string) {
-        print(parse(ByteUtil.fromString(string)));
+        // print(parse(ByteUtil.fromString(string)));
+        System.out.println(toString(parse(ByteUtil.fromString(string))));
     }
 
     private static void print(Frame frame) {

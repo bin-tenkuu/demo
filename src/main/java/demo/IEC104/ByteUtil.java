@@ -81,12 +81,23 @@ public interface ByteUtil {
         return (b & 1 << index) != 0;
     }
 
-    static String toString(byte[] array) {
-        val builder = new StringBuilder(array.length * 3);
-        for (byte b : array) {
-            builder.append(toString(b)).append(' ');
+    static void toString(StringBuilder sb, byte[] array, int offset, int length) {
+        for (; length > 0; length--, offset++) {
+            byte b = array[offset];
+            sb.append(toString(b)).append(' ');
         }
-        return builder.toString();
+    }
+
+    static void toString(StringBuilder sb, byte[] array) {
+        for (byte b : array) {
+            sb.append(toString(b)).append(' ');
+        }
+    }
+
+    static String toString(byte[] array) {
+        val sb = new StringBuilder(array.length * 3);
+        toString(sb, array);
+        return sb.toString();
     }
 
     static String toString(byte b) {

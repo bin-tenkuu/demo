@@ -30,4 +30,9 @@ public class Frame {
     public byte[] toByteArray() {
         return data;
     }
+
+    @Override
+    public String toString() {
+        return super.toString();
+    }
 }

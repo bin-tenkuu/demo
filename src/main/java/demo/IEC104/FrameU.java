@@ -6,12 +6,13 @@ package demo.IEC104;
  * @since 2024/09/10
  */
 public class FrameU extends Frame {
-    public FrameU(FrameType type, byte[] data) {
-        super(type, data);
+    public FrameU(byte[] data) {
+        super(FrameType.U, data);
     }
 
     public FrameU() {
         super(FrameType.U, new byte[6]);
+        data[2] = 3;
     }
 
     // region APCI
@@ -39,7 +40,7 @@ public class FrameU extends Frame {
     }
 
     public void setStop(int stop) {
-        data[2] = (byte) (3 | (stop << 4));
+        data[2] = (byte) (3 | ((stop & 3) << 4));
     }
 
     /**
@@ -52,7 +53,7 @@ public class FrameU extends Frame {
     }
 
     public void setStart(int start) {
-        data[2] = (byte) (3 | (start << 2));
+        data[2] = (byte) (3 | ((start & 3) << 2));
     }
     // endregion
 }
