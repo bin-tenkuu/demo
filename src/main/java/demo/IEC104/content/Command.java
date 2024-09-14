@@ -18,7 +18,7 @@ public class Command implements BaseContent {
 
     public Command(byte b) {
         se = ByteUtil.getBit(b, 7);
-        co = b & 0xFF << 1 >>> 3;
+        co = (b & 0xFF) << 1 >>> 3;
         cs = b & 3;
     }
 

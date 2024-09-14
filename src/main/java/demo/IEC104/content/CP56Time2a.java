@@ -25,7 +25,7 @@ public class CP56Time2a extends CP32Time2a implements BaseContent {
         year = content[offset + 6] & 0b01111111;
         month = content[offset + 5] & 0b00001111;
         day = b4 & 0b00011111;
-        week = b4 & 0xFF >>> 5;
+        week = (b4 & 0xFF) >>> 5;
     }
 
     @Override

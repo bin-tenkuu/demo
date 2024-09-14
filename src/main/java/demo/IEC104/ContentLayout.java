@@ -2,7 +2,6 @@ package demo.IEC104;
 
 import demo.IEC104.content.*;
 import lombok.AllArgsConstructor;
-import lombok.val;
 
 import java.util.Map;
 

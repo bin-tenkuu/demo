@@ -4,6 +4,7 @@ import demo.IEC104.content.BaseContent;
 import lombok.val;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -51,7 +52,12 @@ public class FrameUtil {
         return FrameType.UNKNOWN;
     }
 
-    private static List<List<BaseContent>> parseContentsList(FrameI frameI) {
+    /**
+     * 解析内容
+     *
+     * @return 对于sq == 1，会将ioa单独放入第一个list，时间戳放入最后一个list（如果有）
+     */
+    public static List<List<BaseContent>> parseContentsList(FrameI frameI) {
         val typeID = TypeID.getByType(frameI.getTypeId());
         val content = frameI.getContent();
         val number = frameI.getNumber();
@@ -60,8 +66,10 @@ public class FrameUtil {
         List<BaseContent> contents;
         val contentLayouts = typeID.layout;
         if (frameI.getSq()) {
-            val first = contents = new ArrayList<>();
+            contents = new ArrayList<>();
             offset = parseContentsList(ContentLayout.IOA, content, offset, contents);
+            contentList.add(contents);
+            contents = new ArrayList<>();
             for (int i = 0; i < number; i++) {
                 for (ContentLayout layout : contentLayouts) {
                     offset = parseContentsList(layout, content, offset, contents);
@@ -69,7 +77,10 @@ public class FrameUtil {
                 contentList.add(contents);
                 contents = new ArrayList<>();
             }
-            offset = parseContentsList(typeID.timeLayout, content, offset, first);
+            if (typeID.timeLayout != ContentLayout.NULL) {
+                offset = parseContentsList(typeID.timeLayout, content, offset, contents);
+                contentList.add(contents);
+            }
         } else {
             while (offset < content.length) {
                 contents = new ArrayList<>();
@@ -95,10 +106,50 @@ public class FrameUtil {
         return offset + layout.length;
     }
 
+    public static byte[] toByteArray(List<List<BaseContent>> contentsList, boolean sq, ContentLayout timeLayout) {
+        if (contentsList.isEmpty()) {
+            return new byte[0];
+        }
+        val hasTime = timeLayout != ContentLayout.NULL;
+        int size = contentsList.size();
+        List<BaseContent> firstContents;
+        if (sq) {
+            size--;
+            if (hasTime) {
+                size--;
+            }
+            if (size == 0) {
+                firstContents = null;
+            } else {
+                firstContents = contentsList.get(1);
+            }
+        } else {
+            firstContents = contentsList.getFirst();
+        }
+        int index = 0;
+        if (firstContents != null) {
+            for (BaseContent content : firstContents) {
+                index += content.size();
+            }
+        }
+        int totalSize = index * size;
+        if (sq) {
+            totalSize += ContentLayout.IOA.length + timeLayout.length;
+        }
+        val bytes = new byte[totalSize];
+        index = 0;
+        for (List<BaseContent> contents : contentsList) {
+            for (BaseContent content : contents) {
+                content.writeTo(bytes, index);
+                index += content.size();
+            }
+        }
+        return bytes;
+    }
+
     public static void main(String[] args) {
-        System.out.println((byte) 0b11000000 << 1 >> 1);
         // https://blog.redisant.cn/docs/iec104-tutorial/chapter8/
-        System.out.println("\n\n总召唤流程详解");
+        System.out.println("\n总召唤流程详解");
         printfromString("68-04-07-00-00-00");
         printfromString("68-04-0B-00-00-00");
         printfromString("68-0E-00-00-00-00-64-01-06-00-01-00-00-00-00-14");
@@ -107,14 +158,14 @@ public class FrameUtil {
         printfromString("68-12-04-00-02-00-03-02-14-00-01-00-01-00-00-00-02-00-00-00");
         printfromString("68-0E-06-00-02-00-64-01-0A-00-01-00-00-00-00-14");
         // https://blog.redisant.cn/docs/iec104-tutorial/chapter9/
-        System.out.println("\n\n计数量召唤流程详解");
+        System.out.println("\n计数量召唤流程详解");
         printfromString("68-04-07-00-00-00");
         printfromString("68-04-0B-00-00-00");
         printfromString("68-0E-00-00-00-00-65-01-06-00-01-00-00-00-00-05");
         printfromString("68-0E-00-00-02-00-65-01-07-00-01-00-00-00-00-05");
         printfromString("68-1A-02-00-02-00-0F-02-25-00-01-00-01-00-00-00-00-00-00-00-02-00-00-00-00-00-00-00");
         printfromString("68-0E-04-00-02-00-65-01-0A-00-01-00-00-00-00-05");
-        System.out.println("\n\n其他");
+        System.out.println("\n其他");
         printfromString(
                 "68 1e 04 00 02 00 03 05 14 00 01 00 01 00 00 02 06 00 00 02 0a 00 00 01 0b 00 00 02 0c 00 00 01");
         printfromString(
@@ -134,12 +185,14 @@ public class FrameUtil {
     }
 
     private static void print(Frame frame) {
-        System.out.println();
         val data = frame.getData();
         System.out.println(ByteUtil.toString(data));
         val sb = new StringBuilder();
         sb.append(frame.type).append(": ");
-        sb.append("length=").append(frame.getLength() + 2).append("/").append(data.length).append(", ");
+        if (frame.getLength() + 2 != data.length) {
+            System.err.println("解析Length不正确");
+            sb.append("length=").append(frame.getLength() + 2).append("/").append(data.length).append(", ");
+        }
         switch (frame) {
             case FrameU frameU -> {
                 sb.append("test=").append(frameU.getTest()).append(", ");
@@ -165,7 +218,7 @@ public class FrameUtil {
                     contentLength += layout.length;
                 }
                 sb.append("contentLength=").append(contentLength).append(", ");
-                val contentsList = parseContentsList(frameI);
+                val contentsList = frameI.getContentsList();
                 for (int i = 0; i < contentsList.size(); i++) {
                     val contents = contentsList.get(i);
                     sb.append("\ncontent").append(i).append(":\t");
@@ -175,10 +228,23 @@ public class FrameUtil {
                         }
                     }
                 }
+                System.out.println(sb);
+                sb.setLength(0);
+                val bytes = toByteArray(contentsList, frameI.getSq(), typeID.timeLayout);
+                val equals = Arrays.equals(frameI.getContent(), bytes);
+                if (!equals) {
+                    System.err.println("Content内容不一致");
+                }
             }
             default -> {
             }
         }
+        val bytes = frame.toByteArray();
+        val equals = Arrays.equals(data, bytes);
+        if (!equals) {
+            System.err.println("Data内容不一致");
+        }
         System.out.println(sb);
+        System.out.println();
     }
 }

@@ -17,7 +17,7 @@ public class VTI implements BaseContent {
 
     public VTI(byte b) {
         t = ByteUtil.getBit(b, 7);
-        value = (b << 1 & 0xFF) >> 1;
+        value = (b & 0xfe) >> 1;
     }
 
     @Override

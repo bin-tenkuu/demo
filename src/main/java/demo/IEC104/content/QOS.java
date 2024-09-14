@@ -17,7 +17,7 @@ public class QOS implements BaseContent {
 
     public QOS(byte b) {
         se = ByteUtil.getBit(b, 7);
-        value = b & 0xFF << 1 >>> 1;
+        value = (b & 0xFF) << 1 >>> 1;
     }
 
     @Override

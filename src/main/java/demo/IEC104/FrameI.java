@@ -1,8 +1,11 @@
 package demo.IEC104;
 
+import demo.IEC104.content.BaseContent;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.val;
+
+import java.util.List;
 
 /**
  * @author bin
@@ -48,23 +51,14 @@ public class FrameI extends Frame {
     // endregion
 
     /**
-     * SQ==1 时根据{@link #getNumber 对象/元素的数量}拆分成多个信息对象
-     *
-     * @return 第一层为信息对象个数，第二层为信息对象内容
+     * @return 对于sq == 1，会将IOA单独放入第一个list，时间戳放入最后一个list（如果有）
      */
-    public byte[][] getContents() {
-        if (getSq()) {
-            return new byte[][]{content};
-        } else {
-            val number = getNumber();
-            val length = content.length / number;
-            val bytesArr = new byte[number][length];
-            for (int i = 0, offset = 0; i < number; i++, offset += length) {
-                val bytes = bytesArr[i] = new byte[length];
-                System.arraycopy(content, offset, bytes, 0, length);
-            }
-            return bytesArr;
-        }
+    public List<List<BaseContent>> getContentsList() {
+        return FrameUtil.parseContentsList(this);
+    }
+
+    public void setContentsList(List<List<BaseContent>> contentsList) {
+        content = FrameUtil.toByteArray(contentsList, getSq(), TypeID.getByType(getTypeId()).timeLayout);
     }
 
     @Override
