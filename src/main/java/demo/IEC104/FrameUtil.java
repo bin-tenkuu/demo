@@ -179,13 +179,13 @@ public class FrameUtil {
         printfromString("68 12 0E 00 10 00 0D 01 03 00 01 00 02 40 00 00 78 DB 3F 00");
         printfromString("68 1A 02 00 02 00 03 04 14 00 01 00 01 00 00 01 02 00 00 02 03 00 00 01 04 00 00 02");
         printfromString("""
-                68 d5 9c 07 f6 20 0f a8 25 00 01 00 01 64 00 00 00 00 00 80 00 00 00 00 80 00 00 00 00 80 00 00 00 00 80
-                00 00 00 00 80 00 00 00 00 80 00 00 00 00 80 00 00 00 00 80 00 00 00 00 80 00 00 00 00 80 00 00 00 00 80
-                00 00 00 00 80 00 00 00 00 80 00 00 00 00 80 00 00 00 00 80 00 00 00 00 80 00 00 00 00 80 00 00 00 00 80
-                00 00 00 00 80 00 00 00 00 80 00 00 00 00 80 00 00 00 00 80 00 00 00 00 80 00 00 00 00 80 00 00 00 00 80
-                00 00 00 00 80 00 00 00 00 80 00 00 00 00 80 00 00 00 00 80 00 00 00 00 80 00 00 00 00 80 00 00 00 00 80
-                00 00 00 00 80 00 00 00 00 80 00 00 00 00 80 00 00 00 00 80 3c 0d 00 00 80 00 00 00 00 80 3c 0d 00 00 80
-                7b 02 00 00 80""");
+                68 d5 cc 07 fc 20 0f a8 25 00 01 00 01 64 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+                a1 0d 00 00 00 be 01 00 00 00 5f 0f 00 00 00 8e 05 00 00 00 c0 03 00 00 00 05 00 00 00 00 c5 03 00 00 00
+                15 03 00 00 00 0b 00 00 00 00 94 01 00 00 00 9f 01 00 00 00 88 01 00 00 00 05 00 00 00 00 67 00 00 00 00
+                6d 00 00 00 00 4b 00 00 00 00 d9 02 00 00 00 1b 00 00 00 00 f4 02 00 00 00 dd 01 00 00 00 00 00 00 00 00
+                00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 29 0a 00 00 00 85 01 00 00 00 ae 0b 00 00 00 79 09 00 00 00
+                3b 06 00 00 00 11 00 00 00 00 4d 06 00 00 00 cf 03 00 00 00 d7 10 00 00 00 8e 01 00 00 00 66 12 00 00 00
+                c0 08 00 00 00""");
     }
 
     private static void printfromString(String string) {
@@ -214,13 +214,14 @@ public class FrameUtil {
                 sb.append("sendCounte=").append(frameI.getSendCounte()).append(", ");
                 sb.append("receiveCounte=").append(frameI.getReceiveCounte()).append(", ");
                 val typeID = TypeID.getByType(frameI.getTypeId());
-                sb.append("TypeId=").append(typeID.name).append(", ");
+                sb.append("TypeId=").append(typeID.name).append("(").append(typeID.type).append(')').append(", ");
                 sb.append("SQ=").append(frameI.getSq()).append(", ");
                 val number = frameI.getNumber();
                 sb.append("number=").append(number).append(", ");
                 sb.append("T=").append(frameI.getT()).append(", ");
                 sb.append("P/N=").append(frameI.getPn()).append(", ");
-                sb.append("COT=").append(CauseOfTransmission.getByType(frameI.getCot()).name).append(", ");
+                val cot = CauseOfTransmission.getByType(frameI.getCot());
+                sb.append("COT=").append(cot.name).append("(").append(cot.type).append(')').append(", ");
                 sb.append("ORG=").append(frameI.getOrg()).append(", ");
                 sb.append("COA=").append(frameI.getCoa()).append(", ");
                 int contentLength = frameI.getSq() ? 0 : ContentLayout.IOA.length + typeID.timeLayout.length;
