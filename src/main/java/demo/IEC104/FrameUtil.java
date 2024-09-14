@@ -66,24 +66,24 @@ public class FrameUtil {
         List<BaseContent> contents;
         val contentLayouts = typeID.layout;
         if (frameI.getSq()) {
-            contents = new ArrayList<>();
+            contents = new ArrayList<>(1);
             offset = parseContentsList(ContentLayout.IOA, content, offset, contents);
             contentList.add(contents);
-            contents = new ArrayList<>();
             for (int i = 0; i < number; i++) {
+                contents = new ArrayList<>(contentLayouts.length);
                 for (ContentLayout layout : contentLayouts) {
                     offset = parseContentsList(layout, content, offset, contents);
                 }
                 contentList.add(contents);
-                contents = new ArrayList<>();
             }
             if (typeID.timeLayout != ContentLayout.NULL) {
+                contents = new ArrayList<>(1);
                 offset = parseContentsList(typeID.timeLayout, content, offset, contents);
                 contentList.add(contents);
             }
         } else {
             while (offset < content.length) {
-                contents = new ArrayList<>();
+                contents = new ArrayList<>(contentLayouts.length + 1);
                 offset = parseContentsList(ContentLayout.IOA, content, offset, contents);
                 for (ContentLayout layout : contentLayouts) {
                     offset = parseContentsList(layout, content, offset, contents);
