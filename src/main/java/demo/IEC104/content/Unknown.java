@@ -35,7 +35,14 @@ public class Unknown implements BaseContent {
     }
 
     @Override
+    public void toString(StringBuilder builder) {
+        builder.append(name).append("=").append(ByteUtil.toString(content));
+    }
+
+    @Override
     public String toString() {
-        return name + "=" + ByteUtil.toString(content);
+        val sb = new StringBuilder();
+        toString(sb);
+        return sb.toString();
     }
 }

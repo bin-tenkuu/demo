@@ -50,8 +50,8 @@ public class CP24Time2a extends CP16Time2a implements BaseContent {
     }
 
     @Override
-    public String toString() {
-        return super.toString() +
-                ", 是否无效(IV)=" + iv;
+    public void toString(StringBuilder builder) {
+        super.toString(builder);
+        builder.append("，IV=").append(iv ? "无效" : "有效");
     }
 }

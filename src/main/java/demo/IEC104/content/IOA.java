@@ -3,6 +3,7 @@ package demo.IEC104.content;
 import demo.IEC104.ByteUtil;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.val;
 
 /**
  * @author bin
@@ -29,7 +30,14 @@ public class IOA implements BaseContent {
     }
 
     @Override
+    public void toString(StringBuilder builder) {
+        builder.append("地址=").append(addr);
+    }
+
+    @Override
     public String toString() {
-        return "地址=" + addr;
+        val sb = new StringBuilder();
+        toString(sb);
+        return sb.toString();
     }
 }

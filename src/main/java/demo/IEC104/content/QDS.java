@@ -26,8 +26,8 @@ public class QDS extends BaseQds implements BaseContent {
     }
 
     @Override
-    public String toString() {
-        return super.toString() +
-                ", 是否溢出(OV)=" + ov;
+    public void toString(StringBuilder builder) {
+        super.toString(builder);
+        builder.append("，OV=").append(ov ? "已溢出" : "未溢出");
     }
 }

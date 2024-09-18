@@ -55,9 +55,9 @@ public class CP56Time2a extends CP32Time2a implements BaseContent {
     }
 
     @Override
-    public String toString() {
-        return "时间=" + toLocalDateTime().toString() +
-                ", 星期=" + week +
-                ", 是否无效(IV)=" + iv;
+    public void toString(StringBuilder builder) {
+        builder.append("时间=").append(toLocalDateTime().toString())
+                .append("，星期=").append(week)
+                .append("，是否无效(IV)=").append(iv);
     }
 }

@@ -2,6 +2,7 @@ package demo.IEC104.content;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.val;
 
 /**
  * @author bin
@@ -28,7 +29,14 @@ public class QOI implements BaseContent {
     }
 
     @Override
+    public void toString(StringBuilder builder) {
+        builder.append("QOI=").append(value);
+    }
+
+    @Override
     public String toString() {
-        return "QOI=" + value;
+        val sb = new StringBuilder();
+        toString(sb);
+        return sb.toString();
     }
 }

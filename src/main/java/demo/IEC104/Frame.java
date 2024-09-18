@@ -23,6 +23,10 @@ public class Frame {
         return data[1] & 0xFF;
     }
 
+    public int getDataLength() {
+        return data.length;
+    }
+
     public void setLength(int length) {
         data[1] = (byte) length;
     }

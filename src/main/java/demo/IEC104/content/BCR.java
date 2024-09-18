@@ -3,6 +3,7 @@ package demo.IEC104.content;
 import demo.IEC104.ByteUtil;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.val;
 
 /**
  * @author bin
@@ -44,11 +45,18 @@ public class BCR implements BaseContent {
     }
 
     @Override
+    public void toString(StringBuilder builder) {
+        builder.append("IV=").append(iv ? "无效" : "有效")
+                .append("，CA=").append(ca ? "已确认" : "未确认")
+                .append("，CY=").append(cy ? "已同步" : "未同步")
+                .append("，传输序号(SQ)=").append(sq)
+                .append("，计数器读数=").append(bcr);
+    }
+
+    @Override
     public String toString() {
-        return "是否无效(IV)=" + iv +
-                ", 是否确认(CA)=" + ca +
-                ", 是否同步(CY)=" + cy +
-                ", 传输序号(SQ)=" + sq +
-                ", 计数器读数=" + bcr;
+        val sb = new StringBuilder();
+        toString(sb);
+        return sb.toString();
     }
 }

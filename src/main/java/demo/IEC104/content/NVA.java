@@ -3,6 +3,7 @@ package demo.IEC104.content;
 import demo.IEC104.ByteUtil;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.val;
 
 /**
  * @author bin
@@ -29,7 +30,14 @@ public class NVA implements BaseContent {
     }
 
     @Override
+    public void toString(StringBuilder builder) {
+        builder.append("归一值=").append(value);
+    }
+
+    @Override
     public String toString() {
-        return "归一值=" + value;
+        val sb = new StringBuilder();
+        toString(sb);
+        return sb.toString();
     }
 }

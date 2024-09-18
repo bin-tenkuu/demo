@@ -3,6 +3,7 @@ package demo.IEC104.content;
 import demo.IEC104.ByteUtil;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.val;
 
 /**
  * @author bin
@@ -31,8 +32,15 @@ public class VTI implements BaseContent {
     }
 
     @Override
+    public void toString(StringBuilder builder) {
+        builder.append("是否瞬变=").append(t ? "是" : "否")
+                .append("，数据=").append(value);
+    }
+
+    @Override
     public String toString() {
-        return "是否瞬变=" + t +
-                ", 数据=" + value;
+        val sb = new StringBuilder();
+        toString(sb);
+        return sb.toString();
     }
 }

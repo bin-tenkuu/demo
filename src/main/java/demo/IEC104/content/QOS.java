@@ -3,6 +3,7 @@ package demo.IEC104.content;
 import demo.IEC104.ByteUtil;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.val;
 
 /**
  * @author bin
@@ -33,8 +34,15 @@ public class QOS implements BaseContent {
     }
 
     @Override
+    public void toString(StringBuilder builder) {
+        builder.append("选择/执行(S/E)=").append(se ? "选择" : "执行")
+                .append("，命令=").append(value);
+    }
+
+    @Override
     public String toString() {
-        return "选择/执行(S/E)=" + se +
-                ", 命令=" + value;
+        val sb = new StringBuilder();
+        toString(sb);
+        return sb.toString();
     }
 }

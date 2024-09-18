@@ -18,4 +18,6 @@ public interface BaseContent {
     }
 
     void writeTo(byte[] data, int offset);
+
+    void toString(StringBuilder builder);
 }

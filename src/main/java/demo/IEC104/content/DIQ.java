@@ -25,8 +25,13 @@ public class DIQ extends BaseQds implements BaseContent {
     }
 
     @Override
-    public String toString() {
-        return super.toString() +
-                ", 双点遥信=" + value;
+    public void toString(StringBuilder builder) {
+        super.toString(builder);
+        String type = switch (value) {
+            case 1 -> "分";
+            case 2 -> "合";
+            default -> "不确定";
+        };
+        builder.append("，双点遥信=").append(type).append("(").append(value).append(")");
     }
 }

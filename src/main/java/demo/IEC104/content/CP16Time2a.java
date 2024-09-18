@@ -3,6 +3,7 @@ package demo.IEC104.content;
 import demo.IEC104.ByteUtil;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.val;
 
 import java.time.LocalDateTime;
 
@@ -43,7 +44,14 @@ public class CP16Time2a implements BaseContent {
     }
 
     @Override
+    public void toString(StringBuilder builder) {
+        builder.append("时间=").append(toLocalDateTime().toLocalTime());
+    }
+
+    @Override
     public String toString() {
-        return "时间=" + toLocalDateTime().toLocalTime().toString();
+        val sb = new StringBuilder();
+        toString(sb);
+        return sb.toString();
     }
 }

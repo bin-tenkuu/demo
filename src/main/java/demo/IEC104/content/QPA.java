@@ -2,6 +2,7 @@ package demo.IEC104.content;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.val;
 
 /**
  * @author bin
@@ -28,7 +29,14 @@ public class QPA implements BaseContent {
     }
 
     @Override
+    public void toString(StringBuilder builder) {
+        builder.append("参数=").append(value);
+    }
+
+    @Override
     public String toString() {
-        return "激活/停止=" + value;
+        val sb = new StringBuilder();
+        toString(sb);
+        return sb.toString();
     }
 }

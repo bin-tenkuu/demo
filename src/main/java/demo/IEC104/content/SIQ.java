@@ -26,8 +26,8 @@ public class SIQ extends BaseQds implements BaseContent {
     }
 
     @Override
-    public String toString() {
-        return super.toString() +
-                ", 单点遥信=" + value;
+    public void toString(StringBuilder builder) {
+        super.toString(builder);
+        builder.append("，单点遥信=").append(value ? "合" : "分");
     }
 }

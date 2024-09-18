@@ -27,6 +27,15 @@ public class FrameI extends Frame {
     }
 
     // region APCI
+    @Override
+    public int getLength() {
+        return super.getLength();
+    }
+
+    public int getDataLength() {
+        return data.length + content.length;
+    }
+
     public int getSendCounte() {
         return ByteUtil.getShort(data, 2) >> 1;
     }

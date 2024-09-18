@@ -3,6 +3,7 @@ package demo.IEC104.content;
 import demo.IEC104.ByteUtil;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.val;
 
 /**
  * @author bin
@@ -40,10 +41,17 @@ public class OCI implements BaseContent {
     }
 
     @Override
+    public void toString(StringBuilder builder) {
+        builder.append("C相保护启动(SL3)=").append(sl3)
+                .append("，B相保护启动(SL2)=").append(sl2)
+                .append("，A相保护启动(SL1)=").append(sl1)
+                .append("，总启动(GS)=").append(gs);
+    }
+
+    @Override
     public String toString() {
-        return "C相保护启动(SL3)=" + sl3 +
-                ", B相保护启动(SL2)=" + sl2 +
-                ", A相保护启动(SL1)=" + sl1 +
-                ", 总启动(GS)=" + gs;
+        val sb = new StringBuilder();
+        toString(sb);
+        return sb.toString();
     }
 }

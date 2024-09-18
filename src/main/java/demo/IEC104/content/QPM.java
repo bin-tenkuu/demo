@@ -3,6 +3,7 @@ package demo.IEC104.content;
 import demo.IEC104.ByteUtil;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.val;
 
 /**
  * @author bin
@@ -36,9 +37,16 @@ public class QPM implements BaseContent {
     }
 
     @Override
+    public void toString(StringBuilder builder) {
+        builder.append("是否运行=").append(isRunning ? "是" : "否")
+                .append("，是否改变=").append(isChange ? "是" : "否")
+                .append("，类型=").append(type);
+    }
+
+    @Override
     public String toString() {
-        return "是否运行=" + isRunning +
-                ", 是否改变=" + isChange +
-                ", 类型=" + type;
+        val sb = new StringBuilder();
+        toString(sb);
+        return sb.toString();
     }
 }

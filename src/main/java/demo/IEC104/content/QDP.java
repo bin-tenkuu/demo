@@ -28,9 +28,9 @@ public class QDP extends BaseQds implements BaseContent {
     }
 
     @Override
-    public String toString() {
-        return super.toString() +
-                ", 是否无效(EI)=" + ei +
-                ", 事件=" + event;
+    public void toString(StringBuilder builder) {
+        super.toString(builder);
+        builder.append("，EI=").append(ei ? "无效" : "有效")
+                .append("，事件=").append(event);
     }
 }

@@ -3,6 +3,7 @@ package demo.IEC104.content;
 import demo.IEC104.ByteUtil;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.val;
 
 /**
  * @author bin
@@ -46,12 +47,19 @@ public class SEP implements BaseContent {
     }
 
     @Override
+    public void toString(StringBuilder builder) {
+        builder.append("反向保护启动(SRD)=").append(srd ? "是" : "否")
+                .append("，接地电流保护启动(SIE)=").append(sie ? "是" : "否")
+                .append("，C相保护启动(SL3)=").append(sl3 ? "是" : "否")
+                .append("，B相保护启动(SL2)=").append(sl2 ? "是" : "否")
+                .append("，A相保护启动(SL1)=").append(sl1 ? "是" : "否")
+                .append("，总启动(GS)=").append(gs ? "是" : "否");
+    }
+
+    @Override
     public String toString() {
-        return "反向保护启动(SRD)=" + srd +
-                ", 接地电流保护启动(SIE)=" + sie +
-                ", C相保护启动(SL3)=" + sl3 +
-                ", B相保护启动(SL2)=" + sl2 +
-                ", A相保护启动(SL1)=" + sl1 +
-                ", 总启动(GS)=" + gs;
+        val sb = new StringBuilder();
+        toString(sb);
+        return sb.toString();
     }
 }

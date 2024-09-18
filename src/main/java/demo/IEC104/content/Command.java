@@ -3,6 +3,7 @@ package demo.IEC104.content;
 import demo.IEC104.ByteUtil;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.val;
 
 /**
  * @author bin
@@ -33,9 +34,16 @@ public class Command implements BaseContent {
     }
 
     @Override
+    public void toString(StringBuilder builder) {
+        builder.append("S/E=").append(se ? "选择" : "执行")
+                .append("，命令序号=").append(co)
+                .append("，命令状态=").append(cs);
+    }
+
+    @Override
     public String toString() {
-        return "选择/执行(S/E)=" + se +
-                ", 命令序号=" + co +
-                ", 命令状态=" + cs;
+        val sb = new StringBuilder();
+        toString(sb);
+        return sb.toString();
     }
 }

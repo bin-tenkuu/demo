@@ -3,6 +3,7 @@ package demo.IEC104.content;
 import demo.IEC104.ByteUtil;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.val;
 
 /**
  * @author bin
@@ -40,10 +41,17 @@ public abstract class BaseQds implements BaseContent {
     }
 
     @Override
+    public void toString(StringBuilder builder) {
+        builder.append("IV=").append(iv ? "无效" : "有效")
+                .append("，NT=").append(nt ? "非当前值" : "是当前值")
+                .append("，SB=").append(sb ? "已被取代" : "未被取代")
+                .append("，BL=").append(bl ? "已封锁" : "未封锁");
+    }
+
+    @Override
     public String toString() {
-        return "是否无效(IV)=" + iv +
-                ", 非当前值(NT)=" + nt +
-                ", 是否取代(SB)=" + sb +
-                ", 是否封锁(BL)=" + bl;
+        val sb = new StringBuilder();
+        toString(sb);
+        return sb.toString();
     }
 }
