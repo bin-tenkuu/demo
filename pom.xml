@@ -14,7 +14,7 @@
     <name>demo</name>
     <description>demo</description>
     <properties>
-        <java.version>22</java.version>
+        <java.version>23</java.version>
         <kotlin.version>1.9.22</kotlin.version>
         <jmh.version>1.37</jmh.version>
     </properties>
@@ -78,9 +78,9 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.11.0</version>
                 <configuration>
-                    <!-- <compilerVersion>21</compilerVersion> -->
-                    <!-- <source>21</source> -->
-                    <!-- <target>21</target> -->
+                    <compilerVersion>${java.version}</compilerVersion>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
                     <compilerArgs>
                         <arg>--enable-preview</arg>
                         <arg>-Xlint:preview</arg>

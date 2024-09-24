@@ -43,8 +43,7 @@ public class TomcatThreadPoolExecutorTest {
     private static void logStatus() {
         val size = taskqueue.size();
         val capacity = taskqueue.remainingCapacity();
-        System.out.printf("""
-                        核心线程数:%s	活动线程数:%2d/%s	当前排队线程数:%2d + %2d = %s%n""",
+        System.out.printf("核心线程数:%s	活动线程数:%2d/%s	当前排队线程数:%2d + %2d = %s%n",
                 executor.getCorePoolSize(), executor.getActiveCount(), executor.getMaximumPoolSize(),
                 size, capacity, size + capacity
         );
