@@ -1,6 +1,4 @@
-package demo;
-
-import demo.md5.Md5Calc;
+package demo.md5;
 
 import java.io.IOException;
 import java.nio.file.Files;

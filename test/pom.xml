@@ -63,9 +63,6 @@
                     <compilerArgs>
                         <arg>--enable-preview</arg>
                         <arg>-Xlint:preview</arg>
-                        <!-- <arg>&#45;&#45;add-modules=jdk.unsupported</arg> -->
-                        <!-- <arg>&#45;&#45;add-modules=jdk.incubator.vector</arg> -->
-                        <!-- <arg>&#45;&#45;add-exports=jdk.incubator.vector/jdk.incubator.vector=ALL-UNNAMED</arg> -->
                     </compilerArgs>
                 </configuration>
             </plugin>

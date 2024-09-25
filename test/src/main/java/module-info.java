@@ -2,7 +2,7 @@
  * @author bin
  * @since 2024/07/23
  */
-module demo {
+open module demo {
     requires static lombok;
     requires static org.jetbrains.annotations;
     requires jmh.core;
