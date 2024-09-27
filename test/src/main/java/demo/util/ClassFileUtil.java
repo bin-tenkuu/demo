@@ -8,6 +8,7 @@ import java.lang.classfile.Label;
 import java.lang.classfile.TypeKind;
 import java.lang.constant.ClassDesc;
 import java.lang.constant.MethodTypeDesc;
+import java.lang.invoke.TypeDescriptor;
 
 /**
  * @author bin
@@ -16,47 +17,69 @@ import java.lang.constant.MethodTypeDesc;
  */
 @SuppressWarnings({"preview", "UnusedReturnValue"})
 public interface ClassFileUtil {
-    static ClassDesc of(Class<?> descriptor) {
+    static ClassDesc ofClass(Class<?> descriptor) {
         return ClassDesc.ofDescriptor(descriptor.descriptorString());
     }
 
-    static MethodTypeDesc of(Class<?> returnDesc, Class<?>... paramClasses) {
+    static TypeKind ofKind(TypeDescriptor.OfField<?> descriptor) {
+        return TypeKind.from(descriptor);
+    }
+
+    static MethodTypeDesc ofMethod(Class<?> returnDesc, Class<?>... paramClasses) {
         val paramDescs = new ClassDesc[paramClasses.length];
         for (int i = 0; i < paramClasses.length; i++) {
-            paramDescs[i] = of(paramClasses[i]);
+            paramDescs[i] = ofClass(paramClasses[i]);
         }
-        return MethodTypeDesc.of(of(returnDesc), paramDescs);
+        return MethodTypeDesc.of(ofClass(returnDesc), paramDescs);
+    }
+
+    static MethodTypeDesc ofVoidMethod(ClassDesc... paramDescs) {
+        return MethodTypeDesc.of(ofClass(void.class), paramDescs);
+    }
+
+    static MethodTypeDesc ofVoidMethod(Class<?>... paramClasses) {
+        val paramDescs = new ClassDesc[paramClasses.length];
+        for (int i = 0; i < paramClasses.length; i++) {
+            paramDescs[i] = ofClass(paramClasses[i]);
+        }
+        return MethodTypeDesc.of(ofClass(void.class), paramDescs);
     }
 
     static CodeBuilder getstatic(CodeBuilder cb,
             Class<?> owner, String name, Class<?> type) {
-        return cb.getstatic(of(owner), name, of(type));
+        return cb.getstatic(ofClass(owner), name, ofClass(type));
     }
 
     static CodeBuilder invokevirtual(CodeBuilder cb,
             Class<?> owner, String name, MethodTypeDesc type) {
-        return cb.invokevirtual(of(owner), name, type);
+        return cb.invokevirtual(ofClass(owner), name, type);
     }
 
     static CodeBuilder invokevirtual(CodeBuilder cb,
             Class<?> owner, String name, Class<?> returnDesc, Class<?>... paramClasses) {
-        return cb.invokevirtual(of(owner), name, of(returnDesc, paramClasses));
+        return cb.invokevirtual(ofClass(owner), name, ofMethod(returnDesc, paramClasses));
     }
 
     static CodeBuilder invokespecial(CodeBuilder cb,
             Class<?> owner, String name, MethodTypeDesc type) {
-        return cb.invokespecial(of(owner), name, type);
+        return cb.invokespecial(ofClass(owner), name, type);
     }
 
     static CodeBuilder invokespecial(CodeBuilder cb,
             Class<?> owner, String name, Class<?> returnDesc, Class<?>... paramClasses) {
-        return cb.invokespecial(of(owner), name, of(returnDesc, paramClasses));
+        return cb.invokespecial(ofClass(owner), name, ofMethod(returnDesc, paramClasses));
     }
 
     static CodeBuilder print(CodeBuilder cb, String message) {
         getstatic(cb, System.class, "out", PrintStream.class);
         cb.ldc(message);
-        return invokevirtual(cb, PrintStream.class, "print", void.class, String.class);
+        return invokevirtual(cb, PrintStream.class, "print", ofVoidMethod(String.class));
+    }
+
+    static CodeBuilder printSlot(CodeBuilder cb, ClassDesc type, int slot) {
+        getstatic(cb, System.class, "out", PrintStream.class);
+        cb.loadLocal(ofKind(type), slot);
+        return invokevirtual(cb, PrintStream.class, "print", ofVoidMethod(type));
     }
 
     static CodeBuilder println(CodeBuilder cb, String message) {
@@ -82,7 +105,7 @@ public interface ClassFileUtil {
 
     static CodeBuilder paramVariable(CodeBuilder cb, Label startScope, Label endScope, Class<?> owner,
             MethodTypeDesc type) {
-        cb.localVariable(0, "this", of(owner), startScope, endScope);
+        cb.localVariable(0, "this", ofClass(owner), startScope, endScope);
         val count = type.parameterCount();
         if (count != 0) {
             for (int i = 0; i < count; i++) {
