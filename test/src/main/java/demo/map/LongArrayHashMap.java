@@ -3,18 +3,18 @@
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
- * under the terms ofClass the GNU General Public License version 2 only, as
+ * under the terms of the GNU General Public License version 2 only, as
  * published by the Free Software Foundation.  Oracle designates this
  * particular file as subject to the "Classpath" exception as provided
  * by Oracle in the LICENSE file that accompanied this code.
  *
  * This code is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty ofClass MERCHANTABILITY or
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * version 2 for more details (a copy is included in the LICENSE file that
  * accompanied this code).
  *
- * You should have received a copy ofClass the GNU General Public License version
+ * You should have received a copy of the GNU General Public License version
  * 2 along with this work; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  *
@@ -32,43 +32,43 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 /**
- * Hash table based implementation ofClass the {@code Map} interface.  This
- * implementation provides all ofClass the optional map operations, and permits
+ * Hash table based implementation of the {@code Map} interface.  This
+ * implementation provides all of the optional map operations, and permits
  * {@code null} values and the {@code null} key.  (The {@code HashMap}
  * class is roughly equivalent to {@code Hashtable}, except that it is
  * unsynchronized and permits nulls.)  This class makes no guarantees as to
- * the order ofClass the map; in particular, it does not guarantee that the order
+ * the order of the map; in particular, it does not guarantee that the order
  * will remain constant over time.
  *
  * <p>This implementation provides constant-time performance for the basic
  * operations ({@code get} and {@code put}), assuming the hash function
  * disperses the elements properly among the buckets.  Iteration over
- * collection views requires time proportional to the "capacity" ofClass the
- * {@code HashMap} instance (the number ofClass buckets) plus its size (the number
- * ofClass key-value mappings).  Thus, it's very important not to set the initial
+ * collection views requires time proportional to the "capacity" of the
+ * {@code HashMap} instance (the number of buckets) plus its size (the number
+ * of key-value mappings).  Thus, it's very important not to set the initial
  * capacity too high (or the load factor too low) if iteration performance is
  * important.
  *
- * <p>An instance ofClass {@code HashMap} has two parameters that affect its
+ * <p>An instance of {@code HashMap} has two parameters that affect its
  * performance: <i>initial capacity</i> and <i>load factor</i>.  The
- * <i>capacity</i> is the number ofClass buckets in the hash table, and the initial
+ * <i>capacity</i> is the number of buckets in the hash table, and the initial
  * capacity is simply the capacity at the time the hash table is created.  The
- * <i>load factor</i> is a measure ofClass how full the hash table is allowed to
- * get before its capacity is automatically increased.  When the number ofClass
- * entries in the hash table exceeds the product ofClass the load factor and the
+ * <i>load factor</i> is a measure of how full the hash table is allowed to
+ * get before its capacity is automatically increased.  When the number of
+ * entries in the hash table exceeds the product of the load factor and the
  * current capacity, the hash table is <i>rehashed</i> (that is, internal data
  * structures are rebuilt) so that the hash table has approximately twice the
- * number ofClass buckets.
+ * number of buckets.
  *
  * <p>As a general rule, the default load factor (.75) offers a good
  * tradeoff between time and space costs.  Higher values decrease the
- * space overhead but increase the lookup cost (reflected in most ofClass
- * the operations ofClass the {@code HashMap} class, including
- * {@code get} and {@code put}).  The expected number ofClass entries in
+ * space overhead but increase the lookup cost (reflected in most of
+ * the operations of the {@code HashMap} class, including
+ * {@code get} and {@code put}).  The expected number of entries in
  * the map and its load factor should be taken into account when
- * setting its initial capacity, so as to minimize the number ofClass
+ * setting its initial capacity, so as to minimize the number of
  * rehash operations.  If the initial capacity is greater than the
- * maximum number ofClass entries divided by the load factor, no rehash
+ * maximum number of entries divided by the load factor, no rehash
  * operations will ever occur.
  *
  * <p>If many mappings are to be stored in a {@code HashMap}
@@ -76,12 +76,12 @@ import java.util.function.Function;
  * the mappings to be stored more efficiently than letting it perform
  * automatic rehashing as needed to grow the table.  Note that using
  * many keys with the same {@code hashCode()} is a sure way to slow
- * down performance ofClass any hash table. To ameliorate impact, when keys
+ * down performance of any hash table. To ameliorate impact, when keys
  * are {@link Comparable}, this class may use comparison order among
  * keys to help break ties.
  *
  * <p><strong>Note that this implementation is not synchronized.</strong>
- * If multiple threads access a hash map concurrently, and at least one ofClass
+ * If multiple threads access a hash map concurrently, and at least one of
  * the threads modifies the map structurally, it <i>must</i> be
  * synchronized externally.  (A structural modification is any operation
  * that adds or deletes one or more mappings; merely changing the value
@@ -95,28 +95,28 @@ import java.util.function.Function;
  * unsynchronized access to the map:<pre>
  *   Map m = Collections.synchronizedMap(new HashMap(...));</pre>
  *
- * <p>The iterators returned by all ofClass this class's "collection view methods"
+ * <p>The iterators returned by all of this class's "collection view methods"
  * are <i>fail-fast</i>: if the map is structurally modified at any time after
  * the iterator is created, in any way except through the iterator's own
  * {@code remove} method, the iterator will throw a
- * {@link ConcurrentModificationException}.  Thus, in the face ofClass concurrent
+ * {@link ConcurrentModificationException}.  Thus, in the face of concurrent
  * modification, the iterator fails quickly and cleanly, rather than risking
  * arbitrary, non-deterministic behavior at an undetermined time in the
  * future.
  *
- * <p>Note that the fail-fast behavior ofClass an iterator cannot be guaranteed
+ * <p>Note that the fail-fast behavior of an iterator cannot be guaranteed
  * as it is, generally speaking, impossible to make any hard guarantees in the
- * presence ofClass unsynchronized concurrent modification.  Fail-fast iterators
+ * presence of unsynchronized concurrent modification.  Fail-fast iterators
  * throw {@code ConcurrentModificationException} on a best-effort basis.
  * Therefore, it would be wrong to write a program that depended on this
- * exception for its correctness: <i>the fail-fast behavior ofClass iterators
+ * exception for its correctness: <i>the fail-fast behavior of iterators
  * should be used only to detect bugs.</i>
  *
- * <p>This class is a member ofClass the
+ * <p>This class is a member of the
  * <a href="{@docRoot}/java.base/java/util/package-summary.html#CollectionsFramework">
  * Java Collections Framework</a>.
  *
- * @param <V> the type ofClass mapped values
+ * @param <V> the type of mapped values
  * @author Doug Lea
  * @author Josh Bloch
  * @author Arthur van Hoff
@@ -132,14 +132,14 @@ import java.util.function.Function;
 public final class LongArrayHashMap<V> {
 
     /**
-     * The default initial capacity - MUST be a power ofClass two.
+     * The default initial capacity - MUST be a power of two.
      */
     private static final int DEFAULT_INITIAL_CAPACITY = 1 << 4; // aka 16
 
     /**
      * The maximum capacity, used if a higher value is implicitly specified
-     * by either ofClass the constructors with arguments.
-     * MUST be a power ofClass two <= 1<<30.
+     * by either of the constructors with arguments.
+     * MUST be a power of two <= 1<<30.
      */
     private static final int MAXIMUM_CAPACITY = 1 << 30;
 
@@ -226,20 +226,20 @@ public final class LongArrayHashMap<V> {
     /* ---------------- Static utilities -------------- */
 
     /**
-     * Computes key.hashCode() and spreads (XORs) higher bits ofClass hash
-     * to lower.  Because the table uses power-ofClass-two masking, sets ofClass
+     * Computes key.hashCode() and spreads (XORs) higher bits of hash
+     * to lower.  Because the table uses power-of-two masking, sets of
      * hashes that vary only in bits above the current mask will
-     * always collide. (Among known examples are sets ofClass Float keys
+     * always collide. (Among known examples are sets of Float keys
      * holding consecutive whole numbers in small tables.)  So we
-     * apply a transform that spreads the impact ofClass higher bits
+     * apply a transform that spreads the impact of higher bits
      * downward. There is a tradeoff between speed, utility, and
-     * quality ofClass bit-spreading. Because many common sets ofClass hashes
+     * quality of bit-spreading. Because many common sets of hashes
      * are already reasonably distributed (so don't benefit from
-     * spreading), and because we use trees to handle large sets ofClass
+     * spreading), and because we use trees to handle large sets of
      * collisions in bins, we just XOR some shifted bits in the
      * cheapest possible way to reduce systematic lossage, as well as
-     * to incorporate impact ofClass the highest bits that would otherwise
-     * never be used in index calculations because ofClass table bounds.
+     * to incorporate impact of the highest bits that would otherwise
+     * never be used in index calculations because of table bounds.
      */
     private static int hash(long[] key) {
         if (key == null) {
@@ -269,7 +269,7 @@ public final class LongArrayHashMap<V> {
     }
 
     /**
-     * Returns a power ofClass two size for the given target capacity.
+     * Returns a power of two size for the given target capacity.
      */
     private static int tableSizeFor(int cap) {
         int n = -1 >>> Integer.numberOfLeadingZeros(cap - 1);
@@ -280,7 +280,7 @@ public final class LongArrayHashMap<V> {
 
     /**
      * The table, initialized on first use, and resized as
-     * necessary. When allocated, length is always a power ofClass two.
+     * necessary. When allocated, length is always a power of two.
      * (We also tolerate length zero in some operations to allow
      * bootstrapping mechanics that are currently not needed.)
      */
@@ -294,15 +294,15 @@ public final class LongArrayHashMap<V> {
     private transient Set<long[]> keySet;
     private transient Collection<V> values;
     /**
-     * The number ofClass key-value mappings contained in this map.
+     * The number of key-value mappings contained in this map.
      */
     private transient int size;
 
     /**
-     * The number ofClass times this HashMap has been structurally modified
-     * Structural modifications are those that change the number ofClass mappings in
+     * The number of times this HashMap has been structurally modified
+     * Structural modifications are those that change the number of mappings in
      * the HashMap or otherwise modify its internal structure (e.g.,
-     * rehash).  This field is used to make iterators on Collection-views ofClass
+     * rehash).  This field is used to make iterators on Collection-views of
      * the HashMap fail-fast.  (See ConcurrentModificationException).
      */
     private transient int modCount;
@@ -336,7 +336,7 @@ public final class LongArrayHashMap<V> {
      * @throws IllegalArgumentException if the initial capacity is negative
      * or the load factor is nonpositive
      * @apiNote To create a {@code HashMap} with an initial capacity that accommodates
-     * an expected number ofClass mappings, use {@link #newHashMap(int) newHashMap}.
+     * an expected number of mappings, use {@link #newHashMap(int) newHashMap}.
      */
     public LongArrayHashMap(int initialCapacity, float loadFactor) {
         if (initialCapacity < 0) {
@@ -359,7 +359,7 @@ public final class LongArrayHashMap<V> {
      * @param initialCapacity the initial capacity.
      * @throws IllegalArgumentException if the initial capacity is negative.
      * @apiNote To create a {@code HashMap} with an initial capacity that accommodates
-     * an expected number ofClass mappings, use {@link #newHashMap(int) newHashMap}.
+     * an expected number of mappings, use {@link #newHashMap(int) newHashMap}.
      */
     public LongArrayHashMap(int initialCapacity) {
         this(initialCapacity, DEFAULT_LOAD_FACTOR);
@@ -402,7 +402,7 @@ public final class LongArrayHashMap<V> {
                     threshold = tableSizeFor(t);
                 }
             } else {
-                // Because ofClass linked-list bucket constraints, we cannot
+                // Because of linked-list bucket constraints, we cannot
                 // expand all at once, but can reduce total resize
                 // effort by repeated doubling now vs later
                 while (s > threshold && table.length < MAXIMUM_CAPACITY) {
@@ -419,9 +419,9 @@ public final class LongArrayHashMap<V> {
     }
 
     /**
-     * Returns the number ofClass key-value mappings in this map.
+     * Returns the number of key-value mappings in this map.
      *
-     * @return the number ofClass key-value mappings in this map
+     * @return the number of key-value mappings in this map
      */
     public int size() {
         return size;
@@ -445,7 +445,7 @@ public final class LongArrayHashMap<V> {
      * key.equals(k))}, then this method returns {@code v}; otherwise
      * it returns {@code null}.  (There can be at most one such mapping.)
      *
-     * <p>A return value ofClass {@code null} does not <i>necessarily</i>
+     * <p>A return value of {@code null} does not <i>necessarily</i>
      * indicate that the map contains no mapping for the key; it's also
      * possible that the map explicitly maps the key to {@code null}.
      * The {@link #containsKey containsKey} operation may be used to
@@ -577,9 +577,9 @@ public final class LongArrayHashMap<V> {
     /**
      * Initializes or doubles table size.  If null, allocates in
      * accord with initial capacity target held in field threshold.
-     * Otherwise, because we are using power-ofClass-two expansion, the
+     * Otherwise, because we are using power-of-two expansion, the
      * elements from each bin must either stay at same index, or move
-     * with a power ofClass two offset in the new table.
+     * with a power of two offset in the new table.
      *
      * @return the table
      */
@@ -685,9 +685,9 @@ public final class LongArrayHashMap<V> {
     }
 
     /**
-     * Copies all ofClass the mappings from the specified map to this map.
+     * Copies all of the mappings from the specified map to this map.
      * These mappings will replace any mappings that this map had for
-     * any ofClass the keys currently in the specified map.
+     * any of the keys currently in the specified map.
      *
      * @param m mappings to be stored in this map
      * @throws NullPointerException if the specified map is null
@@ -763,7 +763,7 @@ public final class LongArrayHashMap<V> {
     }
 
     /**
-     * Removes all ofClass the mappings from this map.
+     * Removes all of the mappings from this map.
      * The map will be empty after this call returns.
      */
     public void clear() {
@@ -800,11 +800,11 @@ public final class LongArrayHashMap<V> {
     }
 
     /**
-     * Returns a {@link Set} view ofClass the keys contained in this map.
+     * Returns a {@link Set} view of the keys contained in this map.
      * The set is backed by the map, so changes to the map are
      * reflected in the set, and vice-versa.  If the map is modified
      * while an iteration over the set is in progress (except through
-     * the iterator's own {@code remove} operation), the results ofClass
+     * the iterator's own {@code remove} operation), the results of
      * the iteration are undefined.  The set supports element removal,
      * which removes the corresponding mapping from the map, via the
      * {@code Iterator.remove}, {@code Set.remove},
@@ -812,7 +812,7 @@ public final class LongArrayHashMap<V> {
      * operations.  It does not support the {@code add} or {@code addAll}
      * operations.
      *
-     * @return a set view ofClass the keys contained in this map
+     * @return a set view of the keys contained in this map
      */
     public Set<long[]> keySet() {
         Set<long[]> ks = keySet;
@@ -829,7 +829,7 @@ public final class LongArrayHashMap<V> {
      * If supplied array is bigger than this map size, a null is written at size index.
      *
      * @param a an original array passed to {@code toArray()} method
-     * @param <T> type ofClass array elements
+     * @param <T> type of array elements
      * @return an array ready to be filled and returned from {@code toArray()} method.
      */
     @SuppressWarnings("unchecked")
@@ -871,7 +871,7 @@ public final class LongArrayHashMap<V> {
      * {@link #prepareArray(Object[])} to ensure this.
      *
      * @param a an array to fill
-     * @param <T> type ofClass array elements
+     * @param <T> type of array elements
      * @return supplied array
      */
     private <T> T[] valuesToArray(T[] a) {
@@ -945,19 +945,19 @@ public final class LongArrayHashMap<V> {
     }
 
     /**
-     * Returns a {@link Collection} view ofClass the values contained in this map.
+     * Returns a {@link Collection} view of the values contained in this map.
      * The collection is backed by the map, so changes to the map are
      * reflected in the collection, and vice-versa.  If the map is
      * modified while an iteration over the collection is in progress
      * (except through the iterator's own {@code remove} operation),
-     * the results ofClass the iteration are undefined.  The collection
+     * the results of the iteration are undefined.  The collection
      * supports element removal, which removes the corresponding
      * mapping from the map, via the {@code Iterator.remove},
      * {@code Collection.remove}, {@code removeAll},
      * {@code retainAll} and {@code clear} operations.  It does not
      * support the {@code add} or {@code addAll} operations.
      *
-     * @return a view ofClass the values contained in this map
+     * @return a view of the values contained in this map
      */
     public Collection<V> values() {
         Collection<V> vs = values;
@@ -1017,20 +1017,20 @@ public final class LongArrayHashMap<V> {
     }
 
     /**
-     * Returns a {@link Set} view ofClass the mappings contained in this map.
+     * Returns a {@link Set} view of the mappings contained in this map.
      * The set is backed by the map, so changes to the map are
      * reflected in the set, and vice-versa.  If the map is modified
      * while an iteration over the set is in progress (except through
      * the iterator's own {@code remove} operation, or through the
      * {@code setValue} operation on a map entry returned by the
-     * iterator) the results ofClass the iteration are undefined.  The set
+     * iterator) the results of the iteration are undefined.  The set
      * supports element removal, which removes the corresponding
      * mapping from the map, via the {@code Iterator.remove},
      * {@code Set.remove}, {@code removeAll}, {@code retainAll} and
      * {@code clear} operations.  It does not support the
      * {@code add} or {@code addAll} operations.
      *
-     * @return a set view ofClass the mappings contained in this map
+     * @return a set view of the mappings contained in this map
      */
     public Set<Node<V>> entrySet() {
         Set<Node<V>> es;
@@ -1091,7 +1091,7 @@ public final class LongArrayHashMap<V> {
         }
     }
 
-    // Overrides ofClass JDK8 Map extension methods
+    // Overrides of JDK8 Map extension methods
 
     public V getOrDefault(long[] key, V defaultValue) {
         Node<V> e;
@@ -1796,7 +1796,7 @@ public final class LongArrayHashMap<V> {
         }
 
         /**
-         * Returns root ofClass tree containing this node.
+         * Returns root of tree containing this node.
          */
         TreeNode<V> root() {
             for (TreeNode<V> r = this, p; ; ) {
@@ -1808,7 +1808,7 @@ public final class LongArrayHashMap<V> {
         }
 
         /**
-         * Ensures that the given root is the first node ofClass its bin.
+         * Ensures that the given root is the first node of its bin.
          */
         static <V> void moveRootToFront(Node<V>[] tab, TreeNode<V> root) {
             int n;
@@ -1887,7 +1887,7 @@ public final class LongArrayHashMap<V> {
         }
 
         /**
-         * Forms tree ofClass the nodes linked from this node.
+         * Forms tree of the nodes linked from this node.
          */
         void treeify(Node<V>[] tab) {
             TreeNode<V> root = null;
@@ -1930,7 +1930,7 @@ public final class LongArrayHashMap<V> {
         }
 
         /**
-         * Returns a list ofClass non-TreeNodes replacing those linked from
+         * Returns a list of non-TreeNodes replacing those linked from
          * this node.
          */
         Node<V> untreeify() {
@@ -1948,7 +1948,7 @@ public final class LongArrayHashMap<V> {
         }
 
         /**
-         * Tree version ofClass putVal.
+         * Tree version of putVal.
          */
         TreeNode<V> putTreeVal(Node<V>[] tab,
                 int h, long[] k, V v) {
@@ -2000,7 +2000,7 @@ public final class LongArrayHashMap<V> {
         /**
          * Removes the given node, that must be present before this call.
          * This is messier than typical red-black deletion code because we
-         * cannot swap the contents ofClass an interior node with a leaf
+         * cannot swap the contents of an interior node with a leaf
          * successor that is pinned by "next" pointers that are accessible
          * independently during traversal. So instead we swap the tree
          * linkages. If the current tree appears to have too few nodes,
@@ -2122,8 +2122,8 @@ public final class LongArrayHashMap<V> {
          * see above discussion about split bits and indices.
          *
          * @param tab the table for recording bin heads
-         * @param index the index ofClass the table being split
-         * @param bit the bit ofClass hash to split on
+         * @param index the index of the table being split
+         * @param bit the bit of hash to split on
          */
         void split(Node<V>[] tab, int index, int bit) {
             TreeNode<V> b = this;
@@ -2395,7 +2395,7 @@ public final class LongArrayHashMap<V> {
     /**
      * Calculate initial capacity for HashMap based classes, from expected size and default load factor (0.75).
      *
-     * @param numMappings the expected number ofClass mappings
+     * @param numMappings the expected number of mappings
      * @return initial capacity for HashMap based classes.
      * @since 19
      */
@@ -2404,20 +2404,20 @@ public final class LongArrayHashMap<V> {
     }
 
     /**
-     * Creates a new, empty HashMap suitable for the expected number ofClass mappings.
-     * The returned map uses the default load factor ofClass 0.75, and its initial capacity is
-     * generally large enough so that the expected number ofClass mappings can be added
+     * Creates a new, empty HashMap suitable for the expected number of mappings.
+     * The returned map uses the default load factor of 0.75, and its initial capacity is
+     * generally large enough so that the expected number of mappings can be added
      * without resizing the map.
      *
-     * @param numMappings the expected number ofClass mappings
-     * @param <V> the type ofClass mapped values
+     * @param numMappings the expected number of mappings
+     * @param <V> the type of mapped values
      * @return the newly created map
      * @throws IllegalArgumentException if numMappings is negative
      * @since 19
      */
     public static <V> LongArrayHashMap<V> newHashMap(int numMappings) {
         if (numMappings < 0) {
-            throw new IllegalArgumentException("Negative number ofClass mappings: " + numMappings);
+            throw new IllegalArgumentException("Negative number of mappings: " + numMappings);
         }
         return new LongArrayHashMap<>(calculateHashMapCapacity(numMappings));
     }
