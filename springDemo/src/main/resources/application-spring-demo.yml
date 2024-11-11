@@ -5,15 +5,8 @@ server:
     context-path: /demo
 
 spring:
-  application:
-    name: spring-demo
-  profiles:
-    active:
-      - common
-      - ${spring.application.name}
   datasource:
     url: jdbc:sqlite:./data.sqlite
     driver-class-name: org.sqlite.JDBC
     username:
     password:
-
