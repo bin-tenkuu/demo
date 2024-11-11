@@ -1,2 +1,66 @@
 server:
   port: 9999
+
+spring:
+  application:
+    name: spring-demo
+  main:
+    banner-mode: off
+  output:
+    ansi:
+      enabled: always
+  web:
+    resources:
+      static-locations: file:./resources/
+  mvc:
+    static-path-pattern: /**
+  datasource:
+    url: jdbc:sqlite:./data.sqlite
+    driver-class-name: org.sqlite.JDBC
+    username:
+    password:
+
+logging:
+  file:
+    name: ./logs/${spring.application.name}.log
+  pattern:
+    console: '%d{yyyy-MM-dd HH:mm:ss} %highlight(%-5level) [%blue(%thread)] - %cyan(%logger{50}) : %msg%n'
+    file: '%d{yyyy-MM-dd HH:mm:ss} %-5level [%thread] - %logger{50} - %msg%n'
+  logback:
+    rollingpolicy:
+      max-history: 30
+      clean-history-on-start: true
+      max-file-size: 1GB
+  level:
+    root: info
+
+mybatis-plus:
+  global-config:
+    db-config:
+      id-type: AUTO
+    banner: false
+  configuration:
+    # 查看 SQL 执行日志
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+# 接口文档配置
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+  group-configs:
+    - group: default
+      paths-to-match: /**
+
+# 接口文档配置
+knife4j:
+  enable: true
+  setting:
+    enable-after-script: false
+    enable-dynamic-parameter: true
+    enable-footer: true
+    enable-footer-custom: true
+    footer-custom-content: 内部开发文档
+    enable-version: true
+    enable-response-code: false

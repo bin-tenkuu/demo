@@ -1,12 +1,10 @@
 target/
 !.mvn/wrapper/maven-wrapper.jar
 /.fastRequest
+*.sqlite
 
 ### IntelliJ IDEA ###
 .idea
 *.iws
 *.iml
 *.ipr
-
-### VS Code ###
-.vscode/

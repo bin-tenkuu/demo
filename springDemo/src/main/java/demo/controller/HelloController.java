@@ -1,8 +1,16 @@
 package demo.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import demo.entity.User;
+import demo.mapper.UserMapper;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 /**
  * @author bin
@@ -11,9 +19,38 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping
-public class HelloController {
+@RequiredArgsConstructor
+public class HelloController implements InitializingBean {
+    private final UserMapper userMapper;
+
+    @Override
+    public void afterPropertiesSet() {
+        userMapper.initTable();
+    }
+
     @GetMapping("/hello")
     public String hello() {
         return "Hello, Spring Boot!";
     }
+
+    @GetMapping("/list")
+    public List<User> list() {
+        return userMapper.selectList(new QueryWrapper<>());
+    }
+
+    @PostMapping("/save")
+    public void save(User user) {
+        userMapper.insert(user);
+    }
+
+    @PostMapping("/update")
+    public void update(User user) {
+        userMapper.updateById(user);
+    }
+
+    @GetMapping("/delete")
+    public void delete(Integer id) {
+        userMapper.deleteById(id);
+    }
+
 }
