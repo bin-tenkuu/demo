@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.3.2</version>
+        <version>3.3.5</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>my</groupId>
@@ -17,6 +17,7 @@
     <modules>
         <module>IEC104</module>
         <module>test</module>
+        <module>springDemo</module>
     </modules>
 
     <properties>
@@ -92,54 +93,6 @@
                                 <version>${mapstruct.version}</version>
                             </path>
                         </annotationProcessorPaths>
-                    </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-dependency-plugin</artifactId>
-                    <executions>
-                        <execution>
-                            <id>copy-dependencies</id>
-                            <phase>package</phase>
-                            <goals>
-                                <goal>copy-dependencies</goal>
-                            </goals>
-                            <configuration>
-                                <!-- lib依赖包输出目录，打包的时候不打进jar包里 -->
-                                <outputDirectory>${user.dir}/out/lib</outputDirectory>
-                                <excludeTransitive>false</excludeTransitive>
-                                <stripVersion>false</stripVersion>
-                                <includeScope>runtime</includeScope>
-                            </configuration>
-                        </execution>
-                    </executions>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-jar-plugin</artifactId>
-                    <version>3.3.0</version>
-                    <!-- <configuration>
-                        <archive>
-                            <manifest>
-                                <addClasspath>true</addClasspath>
-                                <classpathPrefix>lib/</classpathPrefix>
-                            </manifest>
-                        </archive>
-                    </configuration> -->
-                </plugin>
-                <plugin>
-                    <groupId>org.springframework.boot</groupId>
-                    <artifactId>spring-boot-maven-plugin</artifactId>
-                    <version>${spring-boot.version}</version>
-                    <configuration>
-                        <classifier>exec</classifier>
-                        <outputDirectory>${user.dir}/out</outputDirectory>
-                        <!-- <includes>
-                            <include>
-                                <groupId>non-exists</groupId>
-                                <artifactId>non-exists</artifactId>
-                            </include>
-                        </includes> -->
                     </configuration>
                 </plugin>
             </plugins>
