@@ -3,7 +3,9 @@ package demo;
 import demo.threadpool.TaskQueue;
 import lombok.val;
 
-import java.util.concurrent.*;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 public class TomcatThreadPoolExecutorTest {
     private static final ThreadGroup group = Thread.currentThread().getThreadGroup();
@@ -12,7 +14,7 @@ public class TomcatThreadPoolExecutorTest {
         thread.setDaemon(true);
         return thread;
     };
-    private static final TaskQueue taskqueue = new TaskQueue(40);
+    private static final TaskQueue taskqueue = new TaskQueue();
     private static final ThreadPoolExecutor executor = new ThreadPoolExecutor(
             1, 10,
             0, TimeUnit.SECONDS,
@@ -24,8 +26,10 @@ public class TomcatThreadPoolExecutorTest {
         for (int i = 0; i < 20; i++) {
             addRun();
         }
-        Thread.sleep(3000);
-        addRun();
+        for (int i = 0; i < 10; i++) {
+            Thread.sleep(3000);
+            addRun();
+        }
         Thread.sleep(1000);
     }
 
