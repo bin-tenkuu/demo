@@ -20,6 +20,9 @@ public interface ByteUtil {
     VarHandle FLOAT_ARRAY = MethodHandles
             .byteArrayViewVarHandle(float[].class, ByteOrder.LITTLE_ENDIAN)
             .withInvokeExactBehavior();
+    VarHandle DOUBLE_ARRAY = MethodHandles
+            .byteArrayViewVarHandle(double[].class, ByteOrder.LITTLE_ENDIAN)
+            .withInvokeExactBehavior();
 
     /**
      * 从字节数组中字节数组索引位置向后获取 int
@@ -61,6 +64,20 @@ public interface ByteUtil {
      */
     static void setFloat(byte[] bytes, int index, float value) {
         FLOAT_ARRAY.set(bytes, index, value);
+    }
+
+    /**
+     * 从字节数组中字节数组索引位置向后获取 double
+     */
+    static double getDouble(byte[] bytes, int index) {
+        return (double) DOUBLE_ARRAY.get(bytes, index);
+    }
+
+    /**
+     * 从字节数组中字节数组索引位置向后设置 double
+     */
+    static void setDouble(byte[] bytes, int index, double value) {
+        DOUBLE_ARRAY.set(bytes, index, value);
     }
 
     /**
@@ -123,4 +140,8 @@ public interface ByteUtil {
         return copy;
     }
 
+    static void main(String[] args) {
+        val bytes = fromString("00 00 00 00 00 e0 90 40");
+        System.out.println(getDouble(bytes, 0));
+    }
 }
