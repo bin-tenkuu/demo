@@ -1,5 +1,7 @@
-package demo.config;
+package demo.autoconfigure.swagger;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import demo.constant.DateConstant;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeIn;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
@@ -9,20 +11,19 @@ import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import io.swagger.v3.oas.annotations.security.SecuritySchemes;
 import io.swagger.v3.oas.models.media.Schema;
 import org.springdoc.core.utils.SpringDocUtils;
-import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 /**
- * @author 杨启东
+ * @author bin
  * @since 2023/03/10
  */
 @OpenAPIDefinition(
         info = @Info(
-                title = "综合能源边缘管理系统 接口",
-                description = "综合能源边缘管理系统 相关 API",
+                title = "接口",
+                description = "相关 API",
                 version = "v1.0"
         ),
         security = {
@@ -38,23 +39,23 @@ import java.time.LocalTime;
                 bearerFormat = "Bearer "
         )
 })
-@Component
-public class SwaggerConfig {
+public class SwaggerCommonConfigure {
     static {
         SpringDocUtils.getConfig()
+                .replaceParameterObjectWithClass(IPage.class, Pageable.class)
                 .replaceWithSchema(LocalDate.class, new Schema<>()
                         .type("string")
-                        .description("yyyy-MM-dd")
+                        .description(DateConstant.DATE_FORMAT)
                         .example("2020-01-01")
                 )
                 .replaceWithSchema(LocalTime.class, new Schema<>()
                         .type("string")
-                        .description("HH:mm:ss")
+                        .description(DateConstant.TIME_FORMAT)
                         .example("01:02:03")
                 )
                 .replaceWithSchema(LocalDateTime.class, new Schema<>()
                         .type("string")
-                        .description("yyyy-MM-dd HH:mm:ss")
+                        .description(DateConstant.DATE_TIME_FORMAT)
                         .example("2020-01-01 01:02:03")
                 )
         ;
