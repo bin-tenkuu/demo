@@ -40,7 +40,7 @@ public class Client implements CompletionHandler<Integer, ByteBuffer>, Closeable
             @Override
             public void completed(Void result, Void attachment) {
                 System.out.println("Client 已连接...");
-                registerRead();
+                registerRead(1024);
             }
 
             @Override
@@ -50,9 +50,9 @@ public class Client implements CompletionHandler<Integer, ByteBuffer>, Closeable
         });
     }
 
-    public void registerRead() {
+    public void registerRead(int size) {
         if (!reading) {
-            val buffer = ByteBuffer.allocate(1024);
+            val buffer = ByteBuffer.allocate(size);
             socketChannel.read(buffer, buffer, Client.this);
             reading = true;
         }

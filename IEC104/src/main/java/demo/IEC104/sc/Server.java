@@ -34,7 +34,7 @@ public class Server implements CompletionHandler<AsynchronousSocketChannel, Void
         System.out.println("有 Client 连接...");
         val client = new Client(socketChannel);
         client.setHandler(frame -> client.write(frame.toByteArray()));
-        client.registerRead();
+        client.registerRead(1024);
     }
 
     @Override
