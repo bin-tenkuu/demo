@@ -1,16 +1,19 @@
 package demo.IEC104.sc;
 
+import demo.IEC104.ByteUtil;
+import demo.IEC104.Frame;
+import demo.IEC104.FrameUtil;
+import lombok.Setter;
 import lombok.val;
 
 import java.io.Closeable;
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.net.ServerSocket;
 import java.nio.ByteBuffer;
-import java.nio.channels.SelectionKey;
-import java.nio.channels.Selector;
-import java.nio.channels.SocketChannel;
-import java.util.Iterator;
-import java.util.Set;
+import java.nio.channels.AsynchronousSocketChannel;
+import java.nio.channels.CompletionHandler;
+import java.util.function.Consumer;
 
 /**
  * @author bin
@@ -18,115 +21,147 @@ import java.util.Set;
  * @since 2024/11/12
  */
 @SuppressWarnings("CallToPrintStackTrace")
-public class Client implements Runnable, Closeable {
-    private final SocketChannel socket;
-    private final Selector selector;
-    private final Thread thread;
+public class Client implements CompletionHandler<Integer, ByteBuffer>, Closeable {
+    private final AsynchronousSocketChannel socketChannel;
+    private volatile boolean reading = false;
+    @Setter
+    private Consumer<Frame> handler;
 
-    public Client(InetSocketAddress address) throws IOException {
-        // 初始化客户端
-        socket = SocketChannel.open();
-        socket.configureBlocking(false);
-        selector = Selector.open();
-        // 注册连接事件
-        socket.register(selector, SelectionKey.OP_CONNECT);
-        // 发起连接
-        socket.connect(address);
-        System.out.println("客户端开启了...");
-        thread = new Thread(this);
-        thread.start();
+    public Client() throws IOException {
+        this(AsynchronousSocketChannel.open());
+    }
+
+    public Client(AsynchronousSocketChannel socketChannel) {
+        this.socketChannel = socketChannel;
+    }
+
+    public void start(InetSocketAddress address) throws IOException {
+        socketChannel.connect(address, null, new CompletionHandler<Void, Void>() {
+            @Override
+            public void completed(Void result, Void attachment) {
+                System.out.println("Client 已连接...");
+                registerRead();
+            }
+
+            @Override
+            public void failed(Throwable exc, Void attachment) {
+                exc.printStackTrace();
+            }
+        });
+    }
+
+    public void registerRead() {
+        if (!reading) {
+            val buffer = ByteBuffer.allocate(1024);
+            socketChannel.read(buffer, buffer, Client.this);
+            reading = true;
+        }
     }
 
     @Override
-    public void run() {
-        try {
-            while (socket.isOpen()) {
-                selector.select();
-                Set<SelectionKey> keys = selector.selectedKeys();
-                Iterator<SelectionKey> iterator = keys.iterator();
-                // 处理准备就绪的事件
-                while (iterator.hasNext()) {
-                    SelectionKey key = iterator.next();
-                    // 删除当前键，避免重复消费
-                    iterator.remove();
+    public void completed(Integer bytesRead, ByteBuffer buffer) {
+        if (bytesRead == -1) {
+            System.out.println("Client 已断开...");
+            reading = false;
+            close();
+        } else if (bytesRead > 0) {
+            // 解析数据
+            parseData(buffer);
+            // 继续读取
+            socketChannel.read(buffer, buffer, this);
+        }
+    }
 
-                    handleKey(key);
+    @Override
+    public void failed(Throwable exc, ByteBuffer buffer) {
+        exc.printStackTrace();
+    }
+
+    public void write(byte[] bf) {
+        write(ByteBuffer.wrap(bf));
+    }
+
+    public void write(ByteBuffer bf) {
+        socketChannel.write(bf, null, new CompletionHandler<>() {
+            @Override
+            public void completed(Integer bytesWritten, Object attachment) {
+                if (bytesWritten > 0) {
+                    System.out.println("Client 数据发送成功");
                 }
+            }
+
+            @Override
+            public void failed(Throwable exc, Object attachment) {
+                exc.printStackTrace();
+            }
+        });
+    }
+
+    private void parseData(ByteBuffer buffer) {
+        while (true) {
+            buffer.flip();
+            var remaining = buffer.remaining();
+            if (remaining > 2) {
+                var length = buffer.get(1) + 2;
+                if (remaining >= length) {
+                    var bs = new byte[length];
+                    val pos = buffer.position();
+                    buffer.get(pos, bs, 0, length);
+                    buffer.position(pos + length);
+                    buffer.compact();
+                    if (handler != null) {
+                        handler.accept(FrameUtil.parse(bs));
+                    }
+                    continue;
+                }
+            }
+            buffer.compact();
+            break;
+        }
+    }
+
+    @Override
+    public void close() {
+        try {
+            if (reading) {
+                // 关闭输入，交给read回调内关闭流
+                socketChannel.shutdownInput();
+            } else {
+                socketChannel.close();
             }
         } catch (IOException e) {
             e.printStackTrace();
-            System.out.println("客户端异常，请重启！");
         }
-    }
-
-    public void write(ByteBuffer bf) throws IOException {
-        socket.write(bf);
-        // // 用户已输入，注册写事件，将输入的消息发送给客户端
-        // socket.register(selector, SelectionKey.OP_WRITE, bf);
-        // // 唤醒之前因为监听OP_READ而阻塞的select()
-        // selector.wakeup();
-    }
-
-    private void handleKey(SelectionKey key) throws IOException {
-        if (key.isConnectable()) {
-            // 在非阻塞模式下connect也是非阻塞的，所以要确保连接已经建立完成
-            while (!socket.finishConnect()) {
-                System.out.println("连接中");
-            }
-            System.out.println("服务端已连接");
-            socket.register(selector, SelectionKey.OP_READ, ByteBuffer.allocate(1024));
-        }
-        // 控制台监听到有输入，注册OP_WRITE,然后将消息附在attachment中
-        if (key.isWritable()) {
-            // 发送消息给服务端
-            // socket.write((ByteBuffer) key.attachment());
-        }
-        // 处理输入事件
-        if (key.isReadable()) {
-            val bf = (ByteBuffer) key.attachment();
-            val bs = new byte[4];
-            int len;
-            while ((len = socket.read(bf)) > 0) {
-                if (bf.limit() < 4) {
-                    System.out.println("bf.limit() < 4");
-                    break;
-                }
-                bf.get(bs);
-                for (byte b : bs) {
-                    System.out.print(b);
-                    System.out.print(' ');
-                }
-                System.out.println();
-            }
-            if (len == -1) {
-                key.cancel();
-                socket.close();
-                System.out.println("客戶端已关闭...");
-            }
-        }
-    }
-
-    @Override
-    public void close() throws IOException {
-        thread.interrupt();
-        socket.close();
-        selector.close();
     }
 
     public static void main(String[] args) throws IOException, InterruptedException {
-        try (val client = new Client(new InetSocketAddress(9999))) {
-            byte[] bs = new byte[]{
-                    1, 2, 3, 0, 4, 5, 6, 0, 7, 8, 9, 0
-            };
-            Thread.sleep(500);
-            val bf = ByteBuffer.allocate(1);
-            for (int i = 0; i < 4; i++) {
-                for (byte b : bs) {
-                    bf.put(0, b);
-                    client.write(bf);
-                    Thread.sleep(500);
+        Thread.ofVirtual().start(() -> {
+            try {
+                try (val serverSocket = new ServerSocket(9999)) {
+                    try (val socket = serverSocket.accept()) {
+                        // redirect
+                        try (val in = socket.getInputStream();
+                             val out = socket.getOutputStream()) {
+                            int read;
+                            while (!socket.isClosed() && (read = in.read()) >= 0) {
+                                out.write(read);
+                            }
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
                 }
+            } catch (IOException e) {
+                e.printStackTrace();
             }
+        });
+        Thread.sleep(500);
+        try (val client = new Client()) {
+            client.setHandler(frame -> System.out.println(FrameUtil.toString(frame)));
+            client.start(new InetSocketAddress("127.0.0.1", 9999));
+            Thread.sleep(500);
+            client.write(ByteUtil.fromString("68-04-07-00-00-00 68-04-07-00-00-00"));
+            Thread.sleep(500);
         }
     }
 }
