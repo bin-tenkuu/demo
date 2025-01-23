@@ -10,6 +10,7 @@ import java.util.List;
 /**
  * @author bin
  * @version 1.0.0
+ * @see FrameType#I
  * @since 2024/09/10
  */
 @Getter

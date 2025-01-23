@@ -8,30 +8,30 @@ import lombok.val;
 /**
  * @author bin
  * @version 1.0.0
- * @since 2024/09/13
+ * @since 2025/01/23
  */
 @Getter
 @Setter
-public class SVA implements BaseContent {
-    protected short value;
+public class SRQ implements BaseContent {
+    private boolean bsi;
 
-    public SVA(byte[] data, int offset) {
-        value = ByteUtil.getShort(data, offset);
+    public SRQ(byte b) {
+        bsi = ByteUtil.getBit(b, 7);
     }
 
     @Override
     public int size() {
-        return 2;
+        return 1;
     }
 
     @Override
     public void writeTo(byte[] data, int offset) {
-        ByteUtil.setShort(data, offset, value);
+        data[offset] = (byte) (bsi ? 0x80 : 0);
     }
 
     @Override
     public void toString(StringBuilder builder) {
-        builder.append("标度值(SVA)=").append(value);
+        builder.append("节准备就绪去装载(BSI)=").append(bsi ? "否" : "是");
     }
 
     @Override

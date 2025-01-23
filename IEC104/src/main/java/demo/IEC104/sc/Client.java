@@ -77,6 +77,10 @@ public class Client implements CompletionHandler<Integer, ByteBuffer>, Closeable
         exc.printStackTrace();
     }
 
+    public void write(Frame frame) {
+        write(ByteBuffer.wrap(frame.toByteArray()));
+    }
+
     public void write(byte[] bf) {
         write(ByteBuffer.wrap(bf));
     }
@@ -99,24 +103,13 @@ public class Client implements CompletionHandler<Integer, ByteBuffer>, Closeable
 
     private void parseData(ByteBuffer buffer) {
         while (true) {
-            buffer.flip();
-            var remaining = buffer.remaining();
-            if (remaining > 2) {
-                var length = buffer.get(1) + 2;
-                if (remaining >= length) {
-                    var bs = new byte[length];
-                    val pos = buffer.position();
-                    buffer.get(pos, bs, 0, length);
-                    buffer.position(pos + length);
-                    buffer.compact();
-                    if (handler != null) {
-                        handler.accept(FrameUtil.parse(bs));
-                    }
-                    continue;
-                }
+            val frame = FrameUtil.parse(buffer);
+            if (frame == null) {
+                break;
             }
-            buffer.compact();
-            break;
+            if (handler != null) {
+                handler.accept(frame);
+            }
         }
     }
 
@@ -160,7 +153,15 @@ public class Client implements CompletionHandler<Integer, ByteBuffer>, Closeable
             client.setHandler(frame -> System.out.println(FrameUtil.toString(frame)));
             client.start(new InetSocketAddress("127.0.0.1", 9999));
             Thread.sleep(500);
-            client.write(ByteUtil.fromString("68-04-07-00-00-00 68-04-07-00-00-00"));
+            val bs = ByteUtil.fromString("""
+                    68 d5 cc 07 fc 20 0f a8 25 00 01 00 01 64 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+                    a1 0d 00 00 00 be 01 00 00 00 5f 0f 00 00 00 8e 05 00 00 00 c0 03 00 00 00 05 00 00 00 00 c5 03 00 00 00
+                    15 03 00 00 00 0b 00 00 00 00 94 01 00 00 00 9f 01 00 00 00 88 01 00 00 00 05 00 00 00 00 67 00 00 00 00
+                    6d 00 00 00 00 4b 00 00 00 00 d9 02 00 00 00 1b 00 00 00 00 f4 02 00 00 00 dd 01 00 00 00 00 00 00 00 00
+                    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 29 0a 00 00 00 85 01 00 00 00 ae 0b 00 00 00 79 09 00 00 00
+                    3b 06 00 00 00 11 00 00 00 00 4d 06 00 00 00 cf 03 00 00 00 d7 10 00 00 00 8e 01 00 00 00 66 12 00 00 00
+                    c0 08 00 00 00""");
+            client.write(bs);
             Thread.sleep(500);
         }
     }

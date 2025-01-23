@@ -28,9 +28,9 @@ public class QOS implements BaseContent {
 
     @Override
     public void writeTo(byte[] data, int offset) {
-        byte b = 0;
+        byte b = (byte) (value & 0b0111_1111);
         b = ByteUtil.setBit(b, 7, se);
-        data[offset] = (byte) (b | (value & 0x7f));
+        data[offset] = b;
     }
 
     @Override

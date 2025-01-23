@@ -31,7 +31,7 @@ public class IEEE_STD_754 implements BaseContent {
 
     @Override
     public void toString(StringBuilder builder) {
-        builder.append("数据=").append(value);
+        builder.append("短浮点数=").append(value);
     }
 
     @Override

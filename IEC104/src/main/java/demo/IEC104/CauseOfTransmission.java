@@ -9,7 +9,7 @@ public enum CauseOfTransmission {
     UNKOWN(0, "未定义"),
     CS101_COT_PERIODIC(1, "周期、循环"),
     CS101_COT_BACKGROUND_SCAN(2, "背景扫描"),
-    CS101_COT_SPONTANEOUS(3, "突发"),
+    CS101_COT_SPONTANEOUS(3, "突发(自发)"),
     CS101_COT_INITIALIZED(4, "初始化"),
     CS101_COT_REQUEST(5, "请求或被请求"),
     CS101_COT_ACTIVATION(6, "激活"),
@@ -41,15 +41,15 @@ public enum CauseOfTransmission {
     CS101_COT_INTERROGATED_BY_GROUP_14(34, "响应第14组召唤"),
     CS101_COT_INTERROGATED_BY_GROUP_15(35, "响应第15组召唤"),
     CS101_COT_INTERROGATED_BY_GROUP_16(36, "响应第16组召唤"),
-    CS101_COT_REQUESTED_BY_GENERAL_COUNTER(37, "响应积累站召唤"),
-    CS101_COT_REQUESTED_BY_GROUP_1_COUNTER(38, "响应第1组累积量召唤"),
-    CS101_COT_REQUESTED_BY_GROUP_2_COUNTER(39, "响应第2组累积量召唤"),
-    CS101_COT_REQUESTED_BY_GROUP_3_COUNTER(40, "响应第3组累积量召唤"),
-    CS101_COT_REQUESTED_BY_GROUP_4_COUNTER(41, "响应第4组累积量召唤"),
+    CS101_COT_REQUESTED_BY_GENERAL_COUNTER(37, "响应计数量站召唤"),
+    CS101_COT_REQUESTED_BY_GROUP_1_COUNTER(38, "响应第1组计数量召唤"),
+    CS101_COT_REQUESTED_BY_GROUP_2_COUNTER(39, "响应第2组计数量召唤"),
+    CS101_COT_REQUESTED_BY_GROUP_3_COUNTER(40, "响应第3组计数量召唤"),
+    CS101_COT_REQUESTED_BY_GROUP_4_COUNTER(41, "响应第4组计数量召唤"),
     /* 42-43 为配套标准兼容范围保留 */
     CS101_COT_UNKNOWN_TYPE_ID(44, "未知类型标识"),
     CS101_COT_UNKNOWN_COT(45, "未知的传送原因"),
-    CS101_COT_UNKNOWN_CA(46, "未知的应用服务数据单元公共地址"),
+    CS101_COT_UNKNOWN_CA(46, "未知的 ASDU 公共地址"),
     CS101_COT_UNKNOWN_IOA(47, "未知的信息对象地址")
     /* 48-63 用于特殊用途（私有范围）*/;
     public final byte type;

@@ -33,8 +33,8 @@ public class VTI implements BaseContent {
 
     @Override
     public void toString(StringBuilder builder) {
-        builder.append("是否瞬变=").append(t ? "是" : "否")
-                .append("，数据=").append(value);
+        builder.append("瞬变状态(Transient)=").append(t ? "是" : "否")
+                .append("，值(Value)=").append(value);
     }
 
     @Override

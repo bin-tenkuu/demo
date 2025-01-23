@@ -7,27 +7,27 @@ import lombok.Setter;
 /**
  * @author bin
  * @version 1.0.0
- * @since 2024/09/13
+ * @since 2025/01/23
  */
 @Getter
 @Setter
-public class QDP extends BaseQds implements BaseContent {
-    private boolean ei;
+public class SCO extends QOC implements BaseContent {
+    private boolean scs;
 
-    public QDP(byte b) {
+    public SCO(byte b) {
         super(b);
-        ei = ByteUtil.getBit(b, 3);
+        scs = ByteUtil.getBit(b, 0);
     }
 
     @Override
     public void writeTo(byte[] data, int offset) {
-        super.writeTo(data, offset);
-        data[offset] = ByteUtil.setBit((data[offset]), 3, ei);
+        data[offset] = ByteUtil.setBit(data[offset], 7, scs);
     }
 
     @Override
     public void toString(StringBuilder builder) {
         super.toString(builder);
-        builder.append("，EI=").append(ei ? "动作时间无效" : "动作时间有效");
+        builder.append(", 单命令状态=").append(scs ? "合" : "开");
     }
+
 }

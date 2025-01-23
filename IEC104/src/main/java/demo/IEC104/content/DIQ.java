@@ -11,27 +11,27 @@ import lombok.Setter;
 @Getter
 @Setter
 public class DIQ extends BaseQds implements BaseContent {
-    protected int value;
+    private int dpi;
 
     public DIQ(byte b) {
         super(b);
-        value = b & 3;
+        dpi = b & 3;
     }
 
     @Override
     public void writeTo(byte[] data, int offset) {
         super.writeTo(data, offset);
-        data[offset] |= (byte) (value & 3);
+        data[offset] |= (byte) (dpi & 3);
     }
 
     @Override
     public void toString(StringBuilder builder) {
         super.toString(builder);
-        String type = switch (value) {
-            case 1 -> "分";
+        String type = switch (dpi) {
+            case 1 -> "开";
             case 2 -> "合";
-            default -> "不确定";
+            default -> "不确定或中间状态";
         };
-        builder.append("，双点遥信=").append(type).append("(").append(value).append(")");
+        builder.append("，双点信息(dpi)=").append(type).append("(").append(dpi).append(")");
     }
 }

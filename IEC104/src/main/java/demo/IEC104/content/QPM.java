@@ -13,14 +13,14 @@ import lombok.val;
 @Getter
 @Setter
 public class QPM implements BaseContent {
-    private boolean isRunning;
-    private boolean isChange;
-    private int type;
+    private boolean pop;
+    private boolean lpc;
+    private int kpa;
 
     public QPM(byte b) {
-        isRunning = ByteUtil.getBit(b, 7);
-        isChange = ByteUtil.getBit(b, 6);
-        type = b & 0x3f;
+        pop = ByteUtil.getBit(b, 7);
+        lpc = ByteUtil.getBit(b, 6);
+        kpa = b & 0x3f;
     }
 
     @Override
@@ -30,17 +30,34 @@ public class QPM implements BaseContent {
 
     @Override
     public void writeTo(byte[] data, int offset) {
-        byte b = 0;
-        b = ByteUtil.setBit(b, 7, isRunning);
-        b = ByteUtil.setBit(b, 6, isChange);
-        data[offset] = (byte) (b | type & 0x3f);
+        byte b = (byte) (kpa & 0b0011_1111);
+        b = ByteUtil.setBit(b, 7, pop);
+        b = ByteUtil.setBit(b, 6, lpc);
+        data[offset] = b;
+    }
+
+    public static String byKPA(int kpa) {
+        if (kpa <= 4) {
+            return switch (kpa) {
+                case 0 -> "未用";
+                case 1 -> "门限值";
+                case 2 -> "平滑系数(滤波时间常数)";
+                case 3 -> "测量值传送的上限";
+                case 4 -> "测量值传送的下限";
+                default -> throw new IllegalStateException("Unexpected value: " + kpa);
+            };
+        } else if (kpa <= 31) {
+            return "为本配套标准的标准定义保留(兼容范围)";
+        } else {
+            return "为特定使用保留(专用范围)";
+        }
     }
 
     @Override
     public void toString(StringBuilder builder) {
-        builder.append("是否运行=").append(isRunning ? "是" : "否")
-                .append("，是否改变=").append(isChange ? "是" : "否")
-                .append("，类型=").append(type);
+        builder.append("参数在运行(POP)=").append(pop ? "是" : "否")
+                .append("，当地参数改变(LPC)=").append(lpc ? "是" : "否")
+                .append("，参数类别(KPA)=").append(byKPA(kpa));
     }
 
     @Override

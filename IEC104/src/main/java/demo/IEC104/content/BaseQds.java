@@ -44,7 +44,7 @@ public abstract class BaseQds implements BaseContent {
     public void toString(StringBuilder builder) {
         builder.append("IV=").append(iv ? "无效" : "有效")
                 .append("，NT=").append(nt ? "非当前值" : "是当前值")
-                .append("，SB=").append(sb ? "已被取代" : "未被取代")
+                .append("，SB=").append(sb ? "已取代" : "未取代")
                 .append("，BL=").append(bl ? "已封锁" : "未封锁");
     }
 

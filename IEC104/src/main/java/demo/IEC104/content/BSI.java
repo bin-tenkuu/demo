@@ -31,7 +31,7 @@ public class BSI implements BaseContent {
 
     @Override
     public void toString(StringBuilder builder) {
-        builder.append("数据=").append(value);
+        builder.append("二进制状态=").append(value);
     }
 
     @Override

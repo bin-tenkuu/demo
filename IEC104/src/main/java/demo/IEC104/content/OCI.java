@@ -42,10 +42,10 @@ public class OCI implements BaseContent {
 
     @Override
     public void toString(StringBuilder builder) {
-        builder.append("C相保护启动(SL3)=").append(sl3)
-                .append("，B相保护启动(SL2)=").append(sl2)
-                .append("，A相保护启动(SL1)=").append(sl1)
-                .append("，总启动(GS)=").append(gs);
+        builder.append("C相保护启动(SL3)=").append(sl3 ? "是" : "否")
+                .append("，B相保护启动(SL2)=").append(sl2 ? "是" : "否")
+                .append("，A相保护启动(SL1)=").append(sl1 ? "是" : "否")
+                .append("，总启动(GS)=").append(gs ? "是" : "否");
     }
 
     @Override

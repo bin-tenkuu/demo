@@ -1,22 +1,20 @@
 package demo.IEC104.content;
 
-import demo.IEC104.ByteUtil;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.val;
 
 /**
  * @author bin
  * @version 1.0.0
- * @since 2024/09/13
+ * @since 2025/01/23
  */
 @Getter
 @Setter
-public class SVA implements BaseContent {
-    protected short value;
+public class LOS implements BaseContent {
+    private int los;
 
-    public SVA(byte[] data, int offset) {
-        value = ByteUtil.getShort(data, offset);
+    public LOS(byte b) {
+        los = b & 0xFF;
     }
 
     @Override
@@ -26,17 +24,17 @@ public class SVA implements BaseContent {
 
     @Override
     public void writeTo(byte[] data, int offset) {
-        ByteUtil.setShort(data, offset, value);
+        data[offset] = (byte) (los);
     }
 
     @Override
     public void toString(StringBuilder builder) {
-        builder.append("标度值(SVA)=").append(value);
+        builder.append("LOS=").append(los);
     }
 
     @Override
     public String toString() {
-        val sb = new StringBuilder();
+        StringBuilder sb = new StringBuilder();
         toString(sb);
         return sb.toString();
     }

@@ -3,8 +3,6 @@ package demo.IEC104;
 import demo.IEC104.content.*;
 import lombok.AllArgsConstructor;
 
-import java.util.Map;
-
 /**
  * @author bin
  * @version 1.0.0
@@ -13,7 +11,12 @@ import java.util.Map;
  */
 @AllArgsConstructor
 public enum ContentLayout {
-    NULL(0),
+    NULL(0) {
+        @Override
+        public BaseContent parseContent(byte[] content, int offset) {
+            return new Unknown(content, offset, length, name());
+        }
+    },
     /**
      * 在控制方向上，该地址为目标地址，监控方向上，该地址为源地址。
      * <p>
@@ -130,10 +133,6 @@ public enum ContentLayout {
         }
     },
     /**
-     * 保护设备启动事件
-     */
-    SPE(1),
-    /**
      * 保护设备输出电路信息
      */
     OCI(1) {
@@ -159,7 +158,7 @@ public enum ContentLayout {
     SCO(1) {
         @Override
         public BaseContent parseContent(byte[] content, int offset) {
-            return new Command(content[offset]);
+            return new SCO(content[offset]);
         }
     },
     /**
@@ -168,7 +167,7 @@ public enum ContentLayout {
     DCO(1) {
         @Override
         public BaseContent parseContent(byte[] content, int offset) {
-            return new Command(content[offset]);
+            return new DCO(content[offset]);
         }
     },
     /**
@@ -177,7 +176,7 @@ public enum ContentLayout {
     RCO(1) {
         @Override
         public BaseContent parseContent(byte[] content, int offset) {
-            return new Command(content[offset]);
+            return new RCO(content[offset]);
         }
     },
     // endregion
@@ -232,7 +231,12 @@ public enum ContentLayout {
     /**
      * 反询问命令限定符
      */
-    QCC(1),
+    QCC(1) {
+        @Override
+        public BaseContent parseContent(byte[] content, int offset) {
+            return new QCC(content[offset]);
+        }
+    },
     /**
      * 测量值参数限定符
      */
@@ -254,14 +258,19 @@ public enum ContentLayout {
     /**
      * 重置过程命令的限定符
      */
-    QRP(1),
+    QRP(1) {
+        @Override
+        public BaseContent parseContent(byte[] content, int offset) {
+            return new QRP(content[offset]);
+        }
+    },
     /**
      * 命令的限定符
      */
     QOC(1) {
         @Override
         public BaseContent parseContent(byte[] content, int offset) {
-            return new Command(content[offset]);
+            return new QOC(content[offset]);
         }
     },
     /**
@@ -278,66 +287,134 @@ public enum ContentLayout {
     /**
      * 文件就绪限定符
      */
-    FRQ(1),
+    FRQ(1) {
+        @Override
+        public BaseContent parseContent(byte[] content, int offset) {
+            return new FRQ(content[offset]);
+        }
+    },
     /**
      * 节就绪限定符
      */
-    SRQ(1),
+    SRQ(1) {
+        @Override
+        public BaseContent parseContent(byte[] content, int offset) {
+            return new SRQ(content[offset]);
+        }
+    },
     /**
      * 选择并调用限定符
      */
-    SCQ(1),
+    SCQ(1) {
+        @Override
+        public BaseContent parseContent(byte[] content, int offset) {
+            return new SCQ(content[offset]);
+        }
+    },
     /**
      * 最后一节或段限定符
      */
-    LSQ(1),
+    LSQ(1) {
+        @Override
+        public BaseContent parseContent(byte[] content, int offset) {
+            return new LSQ(content[offset]);
+        }
+    },
     /**
      * 确认文件或节限定符
      */
-    AFQ(1),
+    AFQ(1) {
+        @Override
+        public BaseContent parseContent(byte[] content, int offset) {
+            return new AFQ(content[offset]);
+        }
+    },
     /**
      * 文件名
      */
-    NOF(2),
+    NOF(2) {
+        @Override
+        public BaseContent parseContent(byte[] content, int offset) {
+            return new NOF(content, offset);
+        }
+    },
     /**
      * 段命名
      */
-    NOS(2),
+    NOS(2) {
+        @Override
+        public BaseContent parseContent(byte[] content, int offset) {
+            return new NOS(content, offset);
+        }
+    },
     /**
      * 文件/段的长度
      */
-    LOF(3),
+    LOF(2) {
+        @Override
+        public BaseContent parseContent(byte[] content, int offset) {
+            return new LOF(content, offset);
+        }
+    },
     /**
      * 分段长度
      */
-    LOS(1),
+    LOS(1) {
+        @Override
+        public BaseContent parseContent(byte[] content, int offset) {
+            return new LOS(content[offset]);
+        }
+    },
     /**
      * Checksum
      */
-    CHS(1),
+    CHS(1) {
+        @Override
+        public BaseContent parseContent(byte[] content, int offset) {
+            return new CHS(content[offset]);
+        }
+    },
     /**
      * 文件状态
      */
-    SOF(1),
+    SOF(1) {
+        @Override
+        public BaseContent parseContent(byte[] content, int offset) {
+            return new SOF(content[offset]);
+        }
+    },
     // endregion
     // region 7杂项
     /**
      * 初始化原因
      */
-    COI(1),
+    COI(1) {
+        @Override
+        public BaseContent parseContent(byte[] content, int offset) {
+            return new COI(content[offset]);
+        }
+    },
     /**
      * 固定测试位模式，两个八位字节
      */
-    FBP(1),
+    FBP(2) {
+        @Override
+        public BaseContent parseContent(byte[] content, int offset) {
+            return new FBP(content, offset);
+        }
+    },
+    /**
+     * 测试顺序计数器,16 比特
+     */
+    TSC(2) {
+        @Override
+        public BaseContent parseContent(byte[] content, int offset) {
+            return new TSC(content, offset);
+        }
+    }
     // endregion
     ;
     public final int length;
 
-    public BaseContent parseContent(byte[] content, int offset) {
-        return new Unknown(content, offset, length, name());
-    }
-
-    public void parseContent(byte[] content, int offset, Map<String, Object> map) {
-        map.put(name(), parseContent(content, offset));
-    }
+    abstract BaseContent parseContent(byte[] content, int offset);
 }

@@ -8,19 +8,15 @@ import lombok.val;
 /**
  * @author bin
  * @version 1.0.0
- * @since 2024/09/13
+ * @since 2025/01/23
  */
 @Getter
 @Setter
-public class Command implements BaseContent {
-    private boolean se;
-    private int co;
-    private int cs;
+public class FRQ implements BaseContent {
+    private boolean bsi;
 
-    public Command(byte b) {
-        se = ByteUtil.getBit(b, 7);
-        co = (b & 0xFF) << 1 >>> 3;
-        cs = b & 3;
+    public FRQ(byte b) {
+        bsi = ByteUtil.getBit(b, 7);
     }
 
     @Override
@@ -30,14 +26,12 @@ public class Command implements BaseContent {
 
     @Override
     public void writeTo(byte[] data, int offset) {
-        data[offset] = ByteUtil.setBit((byte) ((co & 0x1f) << 2 | (cs & 3)), 7, se);
+        data[offset] = (byte) (bsi ? 0x80 : 0);
     }
 
     @Override
     public void toString(StringBuilder builder) {
-        builder.append("S/E=").append(se ? "选择" : "执行")
-                .append("，命令序号=").append(co)
-                .append("，命令状态=").append(cs);
+        builder.append("选择、请求、停止激活或删除的确认(BSI)=").append(bsi ? "否定" : "肯定");
     }
 
     @Override

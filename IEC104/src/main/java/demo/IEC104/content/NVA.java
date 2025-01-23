@@ -31,7 +31,7 @@ public class NVA implements BaseContent {
 
     @Override
     public void toString(StringBuilder builder) {
-        builder.append("归一值=").append(value);
+        builder.append("规一值(NVA)=").append(value);
     }
 
     @Override

@@ -12,22 +12,22 @@ import lombok.Setter;
 @Getter
 @Setter
 public class SIQ extends BaseQds implements BaseContent {
-    protected boolean value;
+    protected boolean spi;
 
     public SIQ(byte b) {
         super(b);
-        value = ByteUtil.getBit(b, 0);
+        spi = ByteUtil.getBit(b, 0);
     }
 
     @Override
     public void writeTo(byte[] data, int offset) {
         super.writeTo(data, offset);
-        data[offset] = ByteUtil.setBit(data[offset], 0, value);
+        data[offset] = ByteUtil.setBit(data[offset], 0, spi);
     }
 
     @Override
     public void toString(StringBuilder builder) {
         super.toString(builder);
-        builder.append("，单点遥信=").append(value ? "合" : "分");
+        builder.append("，单点信息(spi)=").append(spi ? "合" : "开");
     }
 }

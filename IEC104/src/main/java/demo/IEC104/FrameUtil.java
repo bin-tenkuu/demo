@@ -4,6 +4,7 @@ import demo.IEC104.content.BaseContent;
 import lombok.val;
 import org.jetbrains.annotations.NotNull;
 
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,7 +18,7 @@ public class FrameUtil {
     /**
      * 根据帧类型预分配空间
      */
-    public static Frame parse(FrameType type) {
+    public static Frame build(FrameType type) {
         return switch (type) {
             case I -> new FrameI();
             case S -> new FrameS();
@@ -29,60 +30,110 @@ public class FrameUtil {
     /**
      * 根据数据预分配帧空间，并将已有数据拷贝到帧中
      *
-     * @param data length==2时返回{@link Frame}，length>2时返回具体类型
+     * @param buffer 长度足够时返回{@link Frame}，不足时返回null
      */
-    public static Frame parse(byte[] data) {
-        val length = data.length;
-        if (length < 2) {
-            throw new IllegalArgumentException("帧长度不足");
+    public static Frame parse(ByteBuffer buffer) {
+        buffer.flip();
+        val length = buffer.remaining();
+        if (length < 6) {
+            System.out.printf("帧长度不足: %d\n", length);
+            buffer.compact();
+            return null;
         }
-        if (data[0] != 0x68) {
-            throw new IllegalArgumentException("帧起始符不正确");
+        if (buffer.get(0) != 0x68) {
+            System.out.printf("帧起始符不正确: %s\n", ByteUtil.toString(buffer.get(0)));
+            buffer.compact();
+            return null;
         }
-        val frameLength = (data[1] & 0xFF) + 2;
-        val frameType = getFrameType(data);
-        return switch (frameType) {
+        val frameLength = (buffer.get(1) & 0xFF) + 2;
+        if (length < frameLength) {
+            System.out.printf("帧长度不足: %d < %d\n", length, frameLength);
+            buffer.compact();
+            return null;
+        }
+        val frameType = getFrameType(buffer.get(2));
+        val position = buffer.position();
+        val frame = switch (frameType) {
             case I -> {
                 val bytes = new byte[12];
                 val content = new byte[frameLength - 12];
-                if (length < 12) {
-                    System.arraycopy(data, 0, bytes, 0, length);
-                } else {
-                    System.arraycopy(data, 0, bytes, 0, 12);
-                    System.arraycopy(data, 12, content, 0, length - 12);
-                }
+                buffer.get(position, bytes, 0, 12);
+                buffer.get(position + 12, content, 0, content.length);
                 yield new FrameI(bytes, content);
             }
             case S -> {
                 val bytes = new byte[6];
-                System.arraycopy(data, 0, bytes, 0, Math.min(6, length));
+                buffer.get(position, bytes, 0, 6);
                 yield new FrameS(bytes);
             }
             case U -> {
                 val bytes = new byte[6];
-                System.arraycopy(data, 0, bytes, 0, Math.min(6, length));
+                buffer.get(position, bytes, 0, 6);
                 yield new FrameU(bytes);
             }
             default -> {
                 val bytes = new byte[frameLength];
-                System.arraycopy(data, 0, bytes, 0, Math.min(frameLength, length));
+                buffer.get(position, bytes, 0, frameLength);
                 yield new Frame(frameType, bytes);
             }
         };
-
+        buffer.position(position + frameLength);
+        buffer.compact();
+        return frame;
     }
 
-    private static FrameType getFrameType(byte[] data) {
-        if (data.length < 3) {
-            return FrameType.UNKNOWN;
+    /**
+     * 根据数据预分配帧空间，并将已有数据拷贝到帧中
+     *
+     * @param data length==2时返回{@link Frame}，length>2时返回具体类型
+     */
+    public static Frame parse(byte[] data) {
+        val length = data.length;
+        if (length < 6) {
+            throw new IllegalArgumentException("帧长度不足: " + length);
         }
-        if ((data[2] & 1) == 0) {
+        if (data[0] != 0x68) {
+            throw new IllegalArgumentException("帧起始符不正确: " + ByteUtil.toString(data[0]));
+        }
+        val frameLength = (data[1] & 0xFF) + 2;
+        if (length < frameLength) {
+            throw new IllegalArgumentException("帧长度不足: " + length + " < " + frameLength);
+        }
+        val frameType = getFrameType(data[2]);
+        return switch (frameType) {
+            case I -> {
+                val bytes = new byte[12];
+                val content = new byte[frameLength - 12];
+                System.arraycopy(data, 0, bytes, 0, 12);
+                System.arraycopy(data, 12, content, 0, content.length);
+                yield new FrameI(bytes, content);
+            }
+            case S -> {
+                val bytes = new byte[6];
+                System.arraycopy(data, 0, bytes, 0, 6);
+                yield new FrameS(bytes);
+            }
+            case U -> {
+                val bytes = new byte[6];
+                System.arraycopy(data, 0, bytes, 0, 6);
+                yield new FrameU(bytes);
+            }
+            default -> {
+                val bytes = new byte[frameLength];
+                System.arraycopy(data, 0, bytes, 0, frameLength);
+                yield new Frame(frameType, bytes);
+            }
+        };
+    }
+
+    private static FrameType getFrameType(byte data) {
+        if ((data & 1) == 0) {
             return FrameType.I;
         }
-        if (data[2] == 1) {
+        if (data == 1) {
             return FrameType.S;
         }
-        if ((data[2] & 3) == 3) {
+        if ((data & 3) == 3) {
             return FrameType.U;
         }
         return FrameType.UNKNOWN;

@@ -7,5 +7,16 @@ package demo.IEC104;
  */
 public enum FrameType {
     UNKNOWN,
-    I, S, U
+    /**
+     * 编号的信息传输
+     */
+    I,
+    /**
+     * 编号的监视功能
+     */
+    S,
+    /**
+     * 未编号的控制功能
+     */
+    U
 }

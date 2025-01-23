@@ -47,10 +47,10 @@ public class BCR implements BaseContent {
     @Override
     public void toString(StringBuilder builder) {
         builder.append("IV=").append(iv ? "无效" : "有效")
-                .append("，CA=").append(ca ? "已确认" : "未确认")
-                .append("，CY=").append(cy ? "已同步" : "未同步")
-                .append("，传输序号(SQ)=").append(sq)
-                .append("，计数器读数=").append(bcr);
+                .append("，计数量被调整(CA)=").append(ca ? "已调整" : "未调整")
+                .append("，进位(CY)=").append(cy ? "已溢出" : "未溢出")
+                .append("，顺序号(SQ)=").append(sq)
+                .append("，计数量读数)=").append(bcr);
     }
 
     @Override

@@ -8,15 +8,15 @@ import lombok.val;
 /**
  * @author bin
  * @version 1.0.0
- * @since 2024/09/13
+ * @since 2025/01/23
  */
 @Getter
 @Setter
-public class SVA implements BaseContent {
-    protected short value;
+public class FBP implements BaseContent {
+    private short value;
 
-    public SVA(byte[] data, int offset) {
-        value = ByteUtil.getShort(data, offset);
+    public FBP(byte[] content, int offset) {
+        value = ByteUtil.getShort(content, offset);
     }
 
     @Override
@@ -31,7 +31,7 @@ public class SVA implements BaseContent {
 
     @Override
     public void toString(StringBuilder builder) {
-        builder.append("标度值(SVA)=").append(value);
+        builder.append("固定测试图像(FBP)=").append(value);
     }
 
     @Override
