@@ -13,30 +13,25 @@ import lombok.val;
 @Getter
 @Setter
 public class Unknown implements BaseContent {
+    private byte b;
 
-    private byte[] content;
-    private String name;
-
-    public Unknown(byte[] content, int offset, int length, String name) {
-        val bs = new byte[length];
-        System.arraycopy(content, offset, bs, 0, length);
-        this.content = bs;
-        this.name = name;
+    public Unknown(byte b) {
+        this.b = b;
     }
 
     @Override
     public int size() {
-        return content.length;
+        return 1;
     }
 
     @Override
     public void writeTo(byte[] data, int offset) {
-        System.arraycopy(content, 0, data, offset, content.length);
+        data[offset] = b;
     }
 
     @Override
     public void toString(StringBuilder builder) {
-        builder.append(name).append("=").append(ByteUtil.toString(content));
+        builder.append(ByteUtil.toString(b));
     }
 
     @Override

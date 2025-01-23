@@ -14,7 +14,7 @@ public enum ContentLayout {
     NULL(0) {
         @Override
         public BaseContent parseContent(byte[] content, int offset) {
-            return new Unknown(content, offset, length, name());
+            return new Unknown(content[offset]);
         }
     },
     /**
