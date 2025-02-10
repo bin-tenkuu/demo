@@ -34,6 +34,16 @@ import static demo.constant.DateConstant.*;
  */
 @SuppressWarnings("unused")
 public class JsonUtil {
+    @FunctionalInterface
+    public interface Call<R> {
+        R call(ObjectMapper om) throws Exception;
+    }
+
+    @FunctionalInterface
+    public interface Call2<T, R> {
+        R call(ObjectMapper om, T t) throws Exception;
+    }
+
     public static final ObjectMapper objectMapper = new ObjectMapper();
     private static final TypeReference<Map<String, Object>> MAP_TYPE = new TypeReference<>() {
     };
@@ -59,6 +69,25 @@ public class JsonUtil {
     @Bean()
     public ObjectMapper objectMapper() {
         return objectMapper;
+    }
+
+    public static <R> R tryParse(Call<R> callable) {
+        try {
+            return callable.call(objectMapper);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static <T, R> R tryParse(T t, Call2<T, R> callable) {
+        if (t == null) {
+            return null;
+        }
+        try {
+            return callable.call(objectMapper, t);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Autowired
