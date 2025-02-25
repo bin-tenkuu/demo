@@ -53,7 +53,7 @@ public class Client implements CompletionHandler<Integer, ByteBuffer>, Closeable
     public void registerRead(int size) {
         if (!reading) {
             val buffer = ByteBuffer.allocate(size);
-            socketChannel.read(buffer, buffer, Client.this);
+            socketChannel.read(buffer, buffer, this);
             reading = true;
         }
     }
