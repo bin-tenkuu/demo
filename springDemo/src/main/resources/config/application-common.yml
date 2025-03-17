@@ -69,7 +69,7 @@ mybatis-plus:
     cache-enabled: true
     local-cache-scope: session
     # 查看 SQL 执行日志
-    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    log-impl: org.apache.ibatis.logging.nologging.NoLoggingImpl
 
 # 接口文档配置
 springdoc:

@@ -1,9 +1,3 @@
-server:
-  port: 9999
-  servlet:
-    # 应用访问名称，小写
-    context-path: /demo
-
 spring:
   application:
     name: spring-demo
@@ -11,9 +5,3 @@ spring:
     active:
       - common
       - ${spring.application.name}
-  datasource:
-    url: jdbc:sqlite:./data.sqlite
-    driver-class-name: org.sqlite.JDBC
-    username:
-    password:
-
