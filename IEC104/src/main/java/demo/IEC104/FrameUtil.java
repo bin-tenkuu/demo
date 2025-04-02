@@ -287,7 +287,7 @@ public class FrameUtil {
                 sb.append("> ");
                 ByteUtil.toString(sb, data, 4, 2);
             }
-            case FrameS _ -> {
+            case FrameS s -> {
                 ByteUtil.toString(sb, data, 4, 2);
                 sb.append("<接收序号>");
             }
