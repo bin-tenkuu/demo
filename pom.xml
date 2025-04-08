@@ -17,6 +17,7 @@
         <module>IEC104</module>
         <module>test</module>
         <module>springDemo</module>
+        <module>FSM</module>
     </modules>
 
     <properties>

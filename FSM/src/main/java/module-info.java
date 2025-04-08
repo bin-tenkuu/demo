@@ -1,13 +1,11 @@
 /**
  * @author bin
- * @since 2024/07/23
+ * @since 2025/04/07
  */
-module demo {
+module FSM {
     requires static lombok;
     requires static org.jetbrains.annotations;
     requires org.slf4j;
 
-    exports demo.IEC104;
-    exports demo.IEC104.content;
-    exports demo.IEC104.sc;
+    exports demo.fsm;
 }

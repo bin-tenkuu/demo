@@ -9,14 +9,19 @@
         <version>0.1</version>
     </parent>
 
-    <artifactId>IEC104</artifactId>
+    <artifactId>FSM</artifactId>
     <packaging>jar</packaging>
-    <description>IEC104的纯字节解析实现</description>
+    <description>状态机的几种实现</description>
 
     <dependencies>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
