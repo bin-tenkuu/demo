@@ -53,7 +53,7 @@ public class PorxyClassUtil extends ClassLoader {
                         val returnKind = TypeKind.fromDescriptor(returnType.descriptorString());
                         ClassFileUtil.println(codeBuilder, className + "#" + methodName + " start");
                         ClassFileUtil.callSuper(codeBuilder, clazz, methodName, methodTypeDesc);
-                        if (returnKind == TypeKind.VoidType) {
+                        if (returnKind == TypeKind.VOID) {
                             ClassFileUtil.println(codeBuilder, className + "#" + methodName + " end");
                         } else {
                             val count = methodTypeDesc.parameterCount() + 1;

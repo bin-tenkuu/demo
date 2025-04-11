@@ -7,12 +7,15 @@ public class TomcatThreadPoolExecutorTest {
     public static void main() throws InterruptedException {
         for (int i = 0; i < 100; i++) {
             addRun();
+            logStatus();
         }
         for (int i = 0; i < 10; i++) {
             Thread.sleep(3000);
             addRun();
+            logStatus();
         }
         Thread.sleep(1000);
+        logStatus();
     }
 
     private static void addRun() {
