@@ -40,7 +40,9 @@ public class Threads {
     );
 
     public static void debug() {
-        log.info("当前排队任务数submit：{}", taskqueue.size());
+        System.out.printf("核心/最大线程数:%s/%s	活动线程数:%d	当前排队线程数:%d%n",
+                executor.getCorePoolSize(), executor.getMaximumPoolSize(), executor.getActiveCount(), taskqueue.size()
+        );
     }
 
     public static Future<?> submit(Runnable task) {
