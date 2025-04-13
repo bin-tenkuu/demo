@@ -1,23 +1,42 @@
 #!/bin/bash
-
-cmd="java"
+cd "$(dirname "$0")"
+cmd="sleep 10000"
+stdout="nohup.out"
+pidFile="pid"
 
 use_nohup=0
 while [ $# != 0 ]; do
   case $1 in
-  nohup)
+  fg)
+    use_nohup=0
+    ;;
+  nohup|bg)
     use_nohup=1
-    cmd="nohup $cmd"
+    ;;
+  tail)
+    exec tail -f "$stdout"
+    ;;
+  kill)
+    kill "$(cat "$pidFile")"
+    ;;
+  pid)
+    exec cat "$pidFile"
+    ;;
+  ps)
+    exec ps -ef "$(cat "$pidFile")"
     ;;
   *)
     cmd="$cmd \"$1\""
+    ;;
   esac
   shift
 done
 
-if [ "$use_nohup" == 1 ]; then
-  cmd="nohup $cmd > /dev/null 2>&1 &"
-fi
-
 set -exo pipefail
-eval "$cmd"
+if [ "$use_nohup" == 1 ]; then
+  eval "$cmd" > stdout.log 2>&1 &
+  disown "$(jobs -p)"
+  tail -f stdout.log
+else
+  eval "$cmd"
+fi
