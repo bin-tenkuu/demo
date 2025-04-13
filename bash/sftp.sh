@@ -1,4 +1,5 @@
 #!/bin/bash
+set -exo pipefail
 
 HOST="127.0.0.1"
 USERNAME="bin-"
