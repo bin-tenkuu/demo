@@ -99,12 +99,27 @@ public enum TimeType {
      */
     public abstract LocalDateTime truncatedTo(LocalDateTime time);
 
-    public LocalDateTime plus(LocalDateTime time, long amountToAdd) {
+    public LocalDateTime addTo(LocalDateTime time, long amountToAdd) {
         return time.plus(amountToAdd, unit);
     }
 
-    public LocalDateTime plus(LocalDateTime time) {
+    public LocalDateTime addTo(LocalDateTime time) {
         return time.plus(1, unit);
+    }
+
+    public LocalDateTime with(LocalDateTime time, long newValue) {
+        return time.with(field, newValue);
+    }
+
+    /**
+     * 获取时间间隔
+     *
+     * @param start 开始时间
+     * @param end 结束时间
+     * @return (end - start) / unit
+     */
+    public long between(LocalDateTime start, LocalDateTime end) {
+        return unit.between(start, end);
     }
 
     public TimeType getParent() {

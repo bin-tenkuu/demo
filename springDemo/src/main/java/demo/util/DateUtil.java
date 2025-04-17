@@ -10,7 +10,10 @@ import org.jetbrains.annotations.Nullable;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.time.temporal.*;
+import java.time.temporal.ChronoField;
+import java.time.temporal.TemporalQueries;
+import java.time.temporal.TemporalQuery;
+import java.time.temporal.TemporalUnit;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -205,11 +208,9 @@ public class DateUtil {
         return list;
     }
 
-    public static final Month[] MONTHS = Month.values();
-
     public static List<LocalDate> toMonthList(int year) {
-        val list = new ArrayList<LocalDate>(MONTHS.length);
-        for (Month value : MONTHS) {
+        val list = new ArrayList<LocalDate>(12);
+        for (var value = 1; value < 12; value++) {
             list.add(LocalDate.of(year, value, 1));
         }
         return list;
@@ -219,37 +220,24 @@ public class DateUtil {
      * 获取同层级时间列表
      */
     public static List<LocalDateTime> toList(TimeType type, LocalDateTime time) {
-        val list = new ArrayList<LocalDateTime>(MONTHS.length);
-        switch (type) {
-            case month -> {
-                val year = time.getYear();
-                for (Month value : MONTHS) {
-                    list.add(LocalDate.of(year, value, 1).atStartOfDay());
-                }
-            }
-            case day -> {
-                val date = time.toLocalDate().with(TemporalAdjusters.lastDayOfMonth());
-                for (int i = 1; i < date.getDayOfMonth(); i++) {
-                    list.add(date.withDayOfMonth(i).atStartOfDay());
-                }
-            }
-            case hour -> {
-                val date = time.toLocalDate().atStartOfDay();
-                for (int i = 0; i < 24; i++) {
-                    list.add(date.withHour(i));
-                }
-            }
+        val base = type.truncatedTo(time);
+        val range = time.range(type.field);
+        long i = range.getMinimum(), end = range.getMaximum();
+        val list = new ArrayList<LocalDateTime>((int) (end - i));
+        for (; i < end; i++) {
+            list.add(type.with(base, i));
         }
         return list;
     }
 
     public static List<LocalDateTime> toList(TimeType type, LocalDateTime start, LocalDateTime end) {
-        val list = new ArrayList<LocalDateTime>(MONTHS.length);
+        val length = type.between(start, end);
+        val list = new ArrayList<LocalDateTime>((int) length);
         LocalDateTime time = type.truncatedTo(start);
         if (!time.isAfter(end)) {
             do {
                 list.add(time);
-                time = type.plus(time);
+                time = type.addTo(time);
             } while (!time.isAfter(end));
         } else {
             list.add(start);
