@@ -14,7 +14,6 @@ import java.time.temporal.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.function.Function;
 
 /**
  * 时间工具类
@@ -216,28 +215,6 @@ public class DateUtil {
         return list;
     }
 
-    public static LocalDateTime format(TimeType type, LocalDateTime time) {
-        switch (type) {
-            case year -> {
-                return LocalDate.of(time.getYear(), 1, 1).atStartOfDay();
-            }
-            case month -> {
-                return time.toLocalDate().withDayOfMonth(1).atStartOfDay();
-            }
-            case day -> {
-                return time.toLocalDate().atStartOfDay();
-            }
-            case hour -> {
-                return time.truncatedTo(ChronoUnit.HOURS);
-            }
-            case min15 -> {
-                val dateTime = time.truncatedTo(ChronoUnit.MINUTES);
-                return dateTime.withMinute(dateTime.getMinute() / 15 * 15);
-            }
-            default -> throw new IllegalStateException("never");
-        }
-    }
-
     /**
      * 获取同层级时间列表
      */
@@ -268,21 +245,14 @@ public class DateUtil {
 
     public static List<LocalDateTime> toList(TimeType type, LocalDateTime start, LocalDateTime end) {
         val list = new ArrayList<LocalDateTime>(MONTHS.length);
-        Function<LocalDateTime, LocalDateTime> nextTime = switch (type) {
-            case year -> time -> time.plusYears(1);
-            case month -> time -> time.plusMonths(1);
-            case day -> time -> time.plusDays(1);
-            case hour -> time -> time.plusHours(1);
-            case min15 -> time -> time.plusMinutes(15);
-        };
-        LocalDateTime time = format(type, start);
-        // if (!time.isBefore(start)) {
-        //     list.add(time);
-        //     time = nextTime.apply(time);
-        // }
-        while (!time.isAfter(end)) {
-            list.add(time);
-            time = nextTime.apply(time);
+        LocalDateTime time = type.truncatedTo(start);
+        if (!time.isAfter(end)) {
+            do {
+                list.add(time);
+                time = type.plus(time);
+            } while (!time.isAfter(end));
+        } else {
+            list.add(start);
         }
         return list;
     }

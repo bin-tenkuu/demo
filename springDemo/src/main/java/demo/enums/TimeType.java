@@ -99,6 +99,14 @@ public enum TimeType {
      */
     public abstract LocalDateTime truncatedTo(LocalDateTime time);
 
+    public LocalDateTime plus(LocalDateTime time, long amountToAdd) {
+        return time.plus(amountToAdd, unit);
+    }
+
+    public LocalDateTime plus(LocalDateTime time) {
+        return time.plus(1, unit);
+    }
+
     public TimeType getParent() {
         return switch (this) {
             case day -> month;
@@ -121,8 +129,8 @@ public enum TimeType {
         if (timeList.isEmpty()) {
             return list;
         }
-        val startDate = timeList.get(0);
-        val endDate = timeList.get(timeList.size() - 1);
+        val startDate = timeList.getFirst();
+        val endDate = timeList.getLast();
         TimeType from = getTimeTypeFrom(startDate, endDate);
         val pattern = getFormatter(from, this);
         for (LocalDateTime x : timeList) {
