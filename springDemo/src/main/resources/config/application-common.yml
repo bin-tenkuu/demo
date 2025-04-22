@@ -79,7 +79,8 @@ springdoc:
     enabled: true
   group-configs:
     - group: default
-      paths-to-match: /**
+      packages-to-scan:
+        - demo.controller
 
 # 接口文档配置
 knife4j:

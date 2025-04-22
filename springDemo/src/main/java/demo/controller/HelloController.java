@@ -3,6 +3,7 @@ package demo.controller;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import demo.entity.User;
 import demo.mapper.UserMapper;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,6 +18,7 @@ import java.util.List;
  * @version 1.0.0
  * @since 2024/11/11
  */
+@Tag(name = "hello")
 @RestController
 @RequestMapping
 @RequiredArgsConstructor

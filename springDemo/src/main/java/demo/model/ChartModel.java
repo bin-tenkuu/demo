@@ -8,7 +8,9 @@ import lombok.val;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author bin
@@ -35,8 +37,14 @@ public class ChartModel {
         labels.add(chartData);
     }
 
-    public void add(String name, List<? extends Number> data) {
+    public void add(String name, Collection<?> data) {
         labels.add(new ChartData(name, new ArrayList<>(data)));
+    }
+
+    public void add(Map<String, ? extends Collection<?>> map) {
+        for (var entry : map.entrySet()) {
+            add(entry.getKey(), entry.getValue());
+        }
     }
 
     public void add(String name, double scale) {
@@ -53,6 +61,6 @@ public class ChartModel {
         @Schema(description = "标签")
         private final String name;
         @Schema(description = "数据")
-        private final List<Number> data;
+        private final List<?> data;
     }
 }
