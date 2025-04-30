@@ -4,7 +4,7 @@ cmd="sleep 10000"
 stdout="nohup.out"
 pidFile="pid"
 
-use_nohup=0
+use_nohup=1
 while [ $# != 0 ]; do
   case $1 in
   fg)
@@ -13,10 +13,10 @@ while [ $# != 0 ]; do
   nohup|bg)
     use_nohup=1
     ;;
-  tail)
-    exec tail -f "$stdout"
+  tail|log)
+    exec tail -f -n1000 "$stdout"
     ;;
-  kill)
+  kill|stop)
     kill "$(cat "$pidFile")"
     ;;
   pid)
