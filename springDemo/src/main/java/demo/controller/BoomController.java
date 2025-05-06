@@ -34,7 +34,7 @@ public class BoomController {
             val encoding = headers.nextElement();
             System.out.println(encoding);
         }
-        ServletOutputStream out = null;
+        ServletOutputStream out;
         try {
             out = res.getOutputStream();
             res.setHeader(HttpHeaders.CONTENT_ENCODING, "gzip");

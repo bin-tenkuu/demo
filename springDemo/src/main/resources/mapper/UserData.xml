@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="demo.mapper.UserDataMapper">
+
+    <insert id="initTable">
+        create table if not exists user_data
+        (
+            time  text           not null,
+            id    text           not null,
+            score real default 0 not null,
+            primary key (time, id)
+        )
+    </insert>
+</mapper>
