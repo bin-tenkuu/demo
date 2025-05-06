@@ -58,17 +58,14 @@
     <build>
         <finalName>springTest</finalName>
         <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-            </plugin>
             <!--拷贝依赖 copy-dependencies-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
+                <version>3.8.1</version>
                 <executions>
                     <execution>
-                        <id>copy-dependencies</id>
+                        <id>copy-dependencies-runtime</id>
                         <phase>package</phase>
                         <goals>
                             <goal>copy-dependencies</goal>
@@ -81,31 +78,18 @@
                             <includeScope>runtime</includeScope>
                         </configuration>
                     </execution>
-                </executions>
-            </plugin>
-            <!--拷贝资源文件 copy-resources-->
-            <plugin>
-                <artifactId>maven-resources-plugin</artifactId>
-                <executions>
                     <execution>
-                        <id>copy-resources</id>
+                        <id>copy-dependencies-system</id>
                         <phase>package</phase>
                         <goals>
-                            <goal>copy-resources</goal>
+                            <goal>copy-dependencies</goal>
                         </goals>
                         <configuration>
-                            <resources>
-                                <resource>
-                                    <directory>src/main/resources</directory>
-                                    <!-- 指定参与构建的resoures-->
-                                    <includes>
-                                        <include>*</include>
-                                        <include>mapper/*</include>
-                                        <include>resources/*</include>
-                                    </includes>
-                                </resource>
-                            </resources>
-                            <outputDirectory>${outDir}</outputDirectory>
+                            <!-- lib依赖包输出目录，打包的时候不打进jar包里 -->
+                            <outputDirectory>${outDir}/lib</outputDirectory>
+                            <excludeTransitive>false</excludeTransitive>
+                            <stripVersion>false</stripVersion>
+                            <includeScope>system</includeScope>
                         </configuration>
                     </execution>
                 </executions>
@@ -116,36 +100,31 @@
                 <version>3.3.0</version>
                 <configuration>
                     <outputDirectory>${outDir}</outputDirectory>
-                    <!--不打包指定资源文件-->
-                    <excludes>
-                        <exclude>*.*</exclude>
-                        <exclude>mapper</exclude>
-                        <exclude>resources</exclude>
-                    </excludes>
                     <archive>
                         <manifest>
-                            <mainClass>demo.ApplicationStarter</mainClass>
+                            <!-- <mainClass>demo.ApplicationStarter</mainClass> -->
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>lib/</classpathPrefix>
                         </manifest>
                     </archive>
                 </configuration>
             </plugin>
-            <plugin>
+            <!-- <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <version>${spring-boot.version}</version>
                 <configuration>
                     <classifier>exec</classifier>
                     <outputDirectory>${outDir}</outputDirectory>
-                    <!-- <includes>
+                    <includeSystemScope>true</includeSystemScope>
+                    <includes>
                         <include>
                             <groupId>non-exists</groupId>
                             <artifactId>non-exists</artifactId>
                         </include>
-                    </includes> -->
+                    </includes>
                 </configuration>
-            </plugin>
+            </plugin> -->
         </plugins>
     </build>
 </project>
