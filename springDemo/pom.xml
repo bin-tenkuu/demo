@@ -102,10 +102,14 @@
                     <outputDirectory>${outDir}</outputDirectory>
                     <archive>
                         <manifest>
-                            <!-- <mainClass>demo.ApplicationStarter</mainClass> -->
                             <addClasspath>true</addClasspath>
+                            <addBuildEnvironmentEntries>true</addBuildEnvironmentEntries>
                             <classpathPrefix>lib/</classpathPrefix>
+                            <mainClass>demo.ApplicationStarter</mainClass>
                         </manifest>
+                        <manifestEntries>
+                            <Class-Path>.</Class-Path>
+                        </manifestEntries>
                     </archive>
                 </configuration>
             </plugin>
