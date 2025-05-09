@@ -11,6 +11,6 @@ set -exo pipefail
 
 for i in "${DIRS[@]}" ; do
   cd "$i" || exit 1
-  ./run.sh
+  nohup bash ./run.sh > /dev/null 2>&1 &
   cd ..
 done
