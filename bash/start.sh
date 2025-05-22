@@ -32,11 +32,18 @@ while [ $# != 0 ]; do
   shift
 done
 
+pid=$(cat "$pidFile")
+if [ -n "$pid" ]; then
+  if ps -p "$pid" > /dev/null; then
+    exec tail -f "$stdout"
+  fi
+fi
+
 set -exo pipefail
 if [ "$use_nohup" == 1 ]; then
-  eval "$cmd" > stdout.log 2>&1 &
+  eval "$cmd > $stdout 2>&1 &"
   disown "$(jobs -p)"
-  tail -f stdout.log
+  tail -f "$stdout"
 else
-  eval "$cmd"
+  exec "$cmd"
 fi
