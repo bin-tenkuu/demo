@@ -46,12 +46,6 @@
             <artifactId>Java-WebSocket</artifactId>
             <version>1.5.7</version>
         </dependency>
-        <!-- 工具类 -->
-        <!-- <dependency>
-            <groupId>cn.hutool</groupId>
-            <artifactId>hutool-crypto</artifactId>
-            <version>5.8.26</version>
-        </dependency> -->
     </dependencies>
 
     <build>
