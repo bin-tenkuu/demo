@@ -12,4 +12,5 @@ open module demo {
     requires org.apache.lucene.core;
     requires jol.core;
     requires org.java_websocket;
+    requires jdk.httpserver;
 }
