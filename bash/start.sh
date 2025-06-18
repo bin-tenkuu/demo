@@ -17,16 +17,17 @@ while [ $# != 0 ]; do
     exec tail -f -n1000 "$stdout"
     ;;
   kill|stop)
-    kill "$(cat "$pidFile")"
+    exec kill "$(cat "$pidFile")"
     ;;
   pid)
     exec cat "$pidFile"
     ;;
   ps)
-    exec ps -ef "$(cat "$pidFile")"
+    exec ps "$(cat "$pidFile")"
     ;;
   *)
-    cmd="$cmd \"$1\""
+    echo "Unknown command: $1"
+    exit 1
     ;;
   esac
   shift
@@ -41,9 +42,11 @@ fi
 
 set -exo pipefail
 if [ "$use_nohup" == 1 ]; then
-  eval "$cmd > $stdout 2>&1 &"
-  disown "$(jobs -p)"
-  tail -f "$stdout"
+  # shellcheck disable=SC2086
+  nohup $cmd > $stdout 2>&1 &
+  pid=$!
+  echo $pid > $pidFile
+  tail -f $stdout
 else
-  exec "$cmd"
+  exec $cmd
 fi
