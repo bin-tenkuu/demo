@@ -36,7 +36,12 @@ done
 pid=$(cat "$pidFile")
 if [ -n "$pid" ]; then
   if ps -p "$pid" > /dev/null; then
-    exec tail -f "$stdout"
+    if [ $use_nohup == "1" ]; then
+      exec echo "Process is already running with PID: $pid"
+    else
+      echo "Process is already running with PID: $pid, tailing logs..."
+      exec tail -f "$stdout"
+    fi
   fi
 fi
 
