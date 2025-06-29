@@ -18,7 +18,6 @@
         <module>test</module>
         <module>springDemo</module>
         <module>FSM</module>
-        <module>testNoModule</module>
     </modules>
 
     <properties>

@@ -13,4 +13,6 @@ open module demo {
     requires jol.core;
     requires org.java_websocket;
     requires jdk.httpserver;
+    requires party.iroiro.luajava;
+    requires party.iroiro.luajava.luajit;
 }

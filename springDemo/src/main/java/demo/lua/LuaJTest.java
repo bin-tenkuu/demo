@@ -6,10 +6,12 @@ import party.iroiro.luajava.JFunction;
 import party.iroiro.luajava.Lua;
 import party.iroiro.luajava.luajit.LuaJit;
 
-import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
+ * {@link Lua#push} 之后需要使用 {@link Lua#setGlobal} 设置到全局变量中.
+ * 如果如果 javaArray 需要让lua能修改最好使用 {@link Lua#pushJavaArray}.
  * @author bin
  * @since 2025/06/09
  */
@@ -17,92 +19,48 @@ import java.util.Map;
 public class LuaJTest {
     public static void main(String[] args) {
         val start = System.currentTimeMillis();
-
-        val value = new String[]{"aaa", "bbb"};
+        val params = Map.of(
+                "arg", List.of("hash1", "hash2"),
+                "ret", "hash3"
+        );
         try (val L = new LuaJit()) {
             L.set("print", (JFunction) (l) -> {
                 System.out.println(l.get().toString());
                 return 0;
             });
-            L.set("log", log);
-            L.set("arg", value);
+            L.pushNil();
+            L.setGlobal("java");
+            set(L, "getData", (l) -> {
+                val s = l.get().toString();
+                val i = s.charAt(s.length() - 1) - '0';
+                l.push(i);
+                return 1;
+            });
+            set(L, "setData", (l) -> {
+                val value = l.get().toNumber();
+                val key = l.get().toString();
+                log.info("{} => {}", key, value);
+                return 0;
+            });
+            L.push(params);
+            L.setGlobal("params");
+
             // language=lua
             L.run("""
-                    log:info("{}, {}", arg[1], arg[2])
-                    arg[1] = "hello"
-                    log:info("{}, {}", arg[1], arg[2])
+                    local arg = params.arg
+                    local ret = params.ret
+                    local n = getData(arg[1]) + getData(arg[2])
+                    setData(ret, n)
                     """);
-            System.out.println(L.get("_VERSION"));
         }
-        System.out.println("===");
-        System.out.println(value[0]);
 
         System.out.println("Execution time: " + (System.currentTimeMillis() - start) + " ms");
     }
 
-    public static Map<String, JFunction> logTable() {
-        val map = new HashMap<String, JFunction>();
-        map.put("info", L -> {
-            val objects = new Object[L.getTop() - 1];
-            val str = L.get();
-            for (var i = 0; i < objects.length; i++) {
-                objects[i] = L.get();
-            }
-            log.info(str.toString(), objects);
-            return 0;
-        });
-        map.put("debug", L -> {
-            val objects = new Object[L.getTop() - 1];
-            val str = L.get();
-            for (var i = 0; i < objects.length; i++) {
-                objects[i] = L.get();
-            }
-            log.debug(str.toString(), objects);
-            return 0;
-        });
-        map.put("warn", L -> {
-            val objects = new Object[L.getTop() - 1];
-            val str = L.get();
-            for (var i = 0; i < objects.length; i++) {
-                objects[i] = L.get();
-            }
-            log.warn(str.toString(), objects);
-            return 0;
-        });
-        map.put("error", L -> {
-            val objects = new Object[L.getTop() - 1];
-            val str = L.get();
-            for (var i = 0; i < objects.length; i++) {
-                objects[i] = L.get();
-            }
-            log.error(str.toString(), objects);
-            return 0;
-        });
-        map.put("trace", L -> {
-            val objects = new Object[L.getTop() - 1];
-            val str = L.get();
-            for (var i = 0; i < objects.length; i++) {
-                objects[i] = L.get();
-            }
-            log.trace(str.toString(), objects);
-            return 0;
-        });
-        map.put("print", L -> {
-            for (int i = 1; i <= L.getTop(); i++) {
-                System.out.print(L.get().toString());
-            }
-            return 0;
-        });
-        return map;
+    private static void set(Lua l, String name, JFunction getter) {
+        l.checkStack(1);
+        l.push(getter);
+        l.setGlobal(name);
     }
 
-    private interface Arg0JFunction extends JFunction {
-        @Override
-        default int __call(party.iroiro.luajava.Lua L) {
-            invoke(L);
-            return 0;
-        }
-
-        void invoke(Lua L);
-    }
 }

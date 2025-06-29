@@ -14,6 +14,7 @@ import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalTimeSerializer;
 import lombok.val;
+import org.intellij.lang.annotations.Language;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
@@ -123,7 +124,7 @@ public class JsonUtil {
         }
     }
 
-    public static Map<String, Object> toMap(String json) {
+    public static Map<String, Object> toMap(@Language("json") String json) {
         if (json == null || json.isBlank()) {
             return null;
         }
