@@ -23,6 +23,13 @@ public class LuaJTest {
                 "arg", List.of("hash1", "hash2"),
                 "ret", "hash3"
         );
+        // language=lua
+        val script = """
+                local arg = params.arg
+                local ret = params.ret
+                local n = getData(arg[1]) + getData(arg[2])
+                setData(ret, n)
+                """;
         try (val L = new LuaJit()) {
             L.set("print", (JFunction) (l) -> {
                 System.out.println(l.get().toString());
@@ -45,13 +52,7 @@ public class LuaJTest {
             L.push(params);
             L.setGlobal("params");
 
-            // language=lua
-            L.run("""
-                    local arg = params.arg
-                    local ret = params.ret
-                    local n = getData(arg[1]) + getData(arg[2])
-                    setData(ret, n)
-                    """);
+            L.run(script);
         }
 
         System.out.println("Execution time: " + (System.currentTimeMillis() - start) + " ms");
