@@ -3,6 +3,7 @@ package demo.lua;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import party.iroiro.luajava.JFunction;
+import party.iroiro.luajava.JuaAPI;
 import party.iroiro.luajava.Lua;
 import party.iroiro.luajava.luajit.LuaJit;
 import party.iroiro.luajava.value.ImmutableLuaValue;
@@ -17,6 +18,7 @@ import java.util.function.BiConsumer;
 /**
  * {@link Lua#push} 之后需要使用 {@link Lua#setGlobal} 设置到全局变量中.
  * 如果如果 javaArray 需要让lua能修改最好使用 {@link Lua#pushJavaArray}.
+ * 大部分互操作使用 {@link JuaAPI}
  * @author bin
  * @since 2025/06/09
  */
@@ -27,6 +29,14 @@ public class LuaJTest {
         val arg1 = new String[]{"aaa", "bbb"};
         val arg2 = new String[]{"aaa", "bbb"};
         try (val L = new LuaJit()) {
+            L.openLibrary("package");
+            L.openLibrary("table");
+            L.openLibrary("debug");
+            L.openLibrary("io");
+            L.openLibrary("math");
+            L.openLibrary("os");
+            L.openLibrary("string");
+
             L.set("print", (JFunction) (l) -> {
                 System.out.println(l.get().toString());
                 return 0;
