@@ -11,8 +11,7 @@ import party.iroiro.luajava.value.LuaTableValue;
 import party.iroiro.luajava.value.LuaValue;
 import party.iroiro.luajava.value.RefLuaValue;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.function.BiConsumer;
 
 /**
@@ -29,12 +28,12 @@ public class LuaJTest {
         val arg1 = new String[]{"aaa", "bbb"};
         val arg2 = new String[]{"aaa", "bbb"};
         try (val L = new LuaJit()) {
-            L.openLibrary("package");
+            // L.openLibrary("package");
             L.openLibrary("table");
-            L.openLibrary("debug");
-            L.openLibrary("io");
+            // L.openLibrary("debug");
+            // L.openLibrary("io");
             L.openLibrary("math");
-            L.openLibrary("os");
+            // L.openLibrary("os");
             L.openLibrary("string");
 
             L.set("print", (JFunction) (l) -> {
@@ -62,38 +61,35 @@ public class LuaJTest {
             System.out.println(arg2[0]);
             System.out.println("===");
             log.info("print global table");
-            print("", L.get("_G"));
+            print("", L.get("_G"), new HashSet<>(Collections.singleton("_G")));
         }
 
         System.out.println("Execution time: " + (System.currentTimeMillis() - start) + " ms");
     }
 
-    private static void print(String tab, LuaValue v) {
+    private static void print(String tab, LuaValue v, Set<Object> set) {
         switch (v) {
-            case ImmutableLuaValue<?> immutable -> {
-                System.out.print(immutable);
-            }
+            case ImmutableLuaValue<?> immutable -> System.out.print(immutable);
             case RefLuaValue ref -> {
                 val type = ref.type();
                 System.out.print("<");
                 System.out.print(type);
                 System.out.print("> ");
-                if (type != Lua.LuaType.FUNCTION) {
-                    System.out.print(ref);
-                }
             }
             case LuaTableValue table -> {
                 System.out.print("<map> ");
                 for (var entry : table.entrySet()) {
                     System.out.println();
                     val key = entry.getKey();
+                    val s = key.toString();
                     System.out.print(tab);
-                    print(tab + "\t", key);
-                    System.out.print("\t=>\t");
-                    if (key.toString().equals("_G")) {
-                        System.out.print("<_G>");
+                    print(tab + "\t", key, set);
+                    if (set.add(s)) {
+                        System.out.print("\t=>\t");
+                        print(tab + "\t", entry.getValue(), set);
+                        set.remove(s);
                     } else {
-                        print(tab + "\t", entry.getValue());
+                        System.out.print("\t=>\t<loop>");
                     }
                 }
             }
