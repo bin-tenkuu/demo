@@ -8,6 +8,7 @@ import jcuda.runtime.cudaMemcpyKind;
 import lombok.val;
 
 /**
+ * {@code nvcc -ptx nextrand3.cu -o nextrand3.ptx}
  * @author bin
  * @since 2025/07/02
  */
