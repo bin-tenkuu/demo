@@ -64,6 +64,17 @@
             <classifier>natives-desktop</classifier>
             <scope>runtime</scope>
         </dependency>
+        <dependency>
+            <groupId>org.jcuda</groupId>
+            <artifactId>jcuda</artifactId>
+            <version>12.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jcuda</groupId>
+            <artifactId>jcuda-natives</artifactId>
+            <version>12.0.0</version>
+            <classifier>linux-x86_64</classifier>
+        </dependency>
     </dependencies>
 
     <build>

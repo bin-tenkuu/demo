@@ -62,6 +62,7 @@ public class LuaJTest {
             System.out.println("===");
             log.info("print global table");
             print("", L.get("_G"), new HashSet<>(Collections.singleton("_G")));
+            System.out.println();
         }
 
         System.out.println("Execution time: " + (System.currentTimeMillis() - start) + " ms");

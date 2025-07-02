@@ -15,4 +15,6 @@ open module demo {
     requires jdk.httpserver;
     requires party.iroiro.luajava;
     requires party.iroiro.luajava.luajit;
+    requires java.sql;
+    requires jcuda;
 }
