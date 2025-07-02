@@ -13,14 +13,10 @@ import lombok.val;
  * @since 2025/07/02
  */
 public class H5MotaRandomTest {
-    private static final int processors = Runtime.getRuntime().availableProcessors();
     private static final int MAX_INT = 2147483647;
-    private static final int INT_RAND = 7_1582_7882;
+    private static final int INT_RAND = MAX_INT / 3; // 7_1582_7882
     private static final int INT_DIV = MAX_INT / 5; // 20%
     private static final int INT_RATIO = INT_RAND / 100; // 20%
-
-    private static int seed = 0;
-    private static int counts = 1;
 
     public static void main(String[] args) {
         val start = System.currentTimeMillis();
@@ -30,23 +26,6 @@ public class H5MotaRandomTest {
         }
         testRandCuda(seeds);
         System.out.printf("Execution time: %d ms%n", System.currentTimeMillis() - start);
-        // Thread.ofPlatform().start(() -> {
-        //     try {
-        //         while (seed < 1000) {
-        //             while (counts < processors) {
-        //                 val tmp = seed++;
-        //                 Threads.execute(() -> {
-        //                     testRand(tmp);
-        //                     counts--;
-        //                 });
-        //                 counts++;
-        //             }
-        //             Thread.sleep(1000);
-        //         }
-        //     } catch (InterruptedException e) {
-        //         e.printStackTrace();
-        //     }
-        // });
     }
 
     private static void testRand(int seed) {
@@ -81,7 +60,7 @@ public class H5MotaRandomTest {
         JCudaDriver.cuModuleGetFunction(nextRand3Kernel, module, "nextRand3Kernel");
 
         val size = seeds.length;
-        val times = 1 << 20;// INT_RAND; // 1M次随机数生成
+        val times = INT_RAND; // 1M次随机数生成
         val counts = new int[size];
         val cudaSize = (long) size * Sizeof.INT;
         val dSeeds = new Pointer();
@@ -155,36 +134,6 @@ public class H5MotaRandomTest {
         return rand;
     }
 }
-/*
-core.utils.__init_seed = () => {core.setFlag("__seed__", 2);core.setFlag("__rand__", 2)}
-109840875		26
-277100029		27
-309579415		26
-387405622		27
-400927123		26
-447787816		28
-523865062		26
-528702283		27
-552432428		27
-566133725		26
-618893298		27
-659009491		27
-891186408		27
-945007274		28
-1003599212		27
-1155392546		26
-1160011415		26
-1187124424		27
-1290987824		26
-1399347658		26
-1475640707		26
-1476357065		26
-1619005078		26
-1759422742		26
-1877113538		26
-2095684553		27
-2103354897		26
- */
         /*
         core.utils.__init_seed = () => {
             utils.prototype.__init_seed.call(core.utils);
