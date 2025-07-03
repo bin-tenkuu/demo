@@ -134,14 +134,14 @@ public class H5MotaRandomTest {
         return rand;
     }
 }
-        /*
-        core.utils.__init_seed = () => {
-            utils.prototype.__init_seed.call(core.utils);
-            console.log(`__init_seed ${core.getFlag("__seed__")}`);
-        }
-        core.utils.__next_rand = _rand => {
-            let n = utils.prototype.__next_rand.call(core.utils, _rand);
-            console.log(`__next_rand ${_rand} => ${n}`);
-            return n;
-        }
-        */
+/*
+core.utils.__init_seed = () => {
+    utils.prototype.__init_seed.call(core.utils);
+    console.log(`__init_seed ${core.getFlag("__seed__")}`);
+}
+core.utils.__next_rand = _rand => {
+    let n = utils.prototype.__next_rand.call(core.utils, _rand);
+    console.log(`__next_rand ${_rand} => ${n}`);
+    return n;
+}
+*/
