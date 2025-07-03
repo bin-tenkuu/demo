@@ -41,14 +41,10 @@ public class H5MotaRandomTest {
         }
     }
 
-    static {
-        // 初始化JCuda
-        JCudaDriver.setExceptionsEnabled(true);
-        JCudaDriver.cuInit(0);
-    }
-
     private static void testRandCuda(int[] seeds) {
+        var start = System.currentTimeMillis();
         // 创建CUDA上下文
+        JCuda.setExceptionsEnabled(true);
         JCuda.cudaSetDevice(0);
         // 编译核函数
         val module = new CUmodule();
@@ -58,15 +54,14 @@ public class H5MotaRandomTest {
         JCudaDriver.cuModuleGetFunction(nextRand3Kernel, module, "nextRand3Kernel");
 
         val size = seeds.length;
-        val times = 200000;// INT_RAND; // 1M次随机数生成
+        val times = 1 << 20;// INT_RAND; // 1M次随机数生成
         val counts = new int[size];
         val cudaSize = (long) size * Sizeof.INT;
         val ptrSeeds = new CUdeviceptr();
         val ptrCounts = new CUdeviceptr();
         // 创建CUDA流
         val cUstream = new cudaStream_t();
-        val start = System.currentTimeMillis();
-        JCuda.cudaStreamCreate(new cudaStream_t());
+        JCuda.cudaStreamCreate(cUstream);
         JCuda.cudaMalloc(ptrSeeds, cudaSize);
         JCuda.cudaMalloc(ptrCounts, cudaSize);
         JCuda.cudaMemcpyAsync(ptrSeeds, Pointer.to(seeds), cudaSize,
@@ -92,9 +87,9 @@ public class H5MotaRandomTest {
         // 将结果复制回主机
         JCuda.cudaMemcpyAsync(Pointer.to(counts), ptrCounts, cudaSize,
                 cudaMemcpyKind.cudaMemcpyDeviceToHost, cUstream);
-        JCuda.cudaLaunchHostFunc(cUstream, _ -> {
-            System.out.println("Kernel execution completed in " + (System.currentTimeMillis() - start) + " ms");
-        }, null);
+        JCuda.cudaLaunchHostFunc(cUstream, time -> {
+            System.out.println("Kernel execution completed in " + (System.currentTimeMillis() - (long) time) + " ms");
+        }, start);
         JCuda.cudaStreamSynchronize(cUstream);// 等待内核完成
         JCuda.cudaStreamDestroy(cUstream);
 
