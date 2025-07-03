@@ -3,8 +3,6 @@ package demo.jcuda;
 import jcuda.Pointer;
 import jcuda.Sizeof;
 import jcuda.driver.*;
-import jcuda.runtime.JCuda;
-import jcuda.runtime.cudaMemcpyKind;
 import lombok.val;
 
 /**
@@ -60,18 +58,18 @@ public class H5MotaRandomTest {
         JCudaDriver.cuModuleGetFunction(nextRand3Kernel, module, "nextRand3Kernel");
 
         val size = seeds.length;
-        val times = INT_RAND; // 1M次随机数生成
+        val times = 2000;// INT_RAND; // 1M次随机数生成
         val counts = new int[size];
         val cudaSize = (long) size * Sizeof.INT;
-        val dSeeds = new Pointer();
-        val dCounts = new Pointer();
-        JCuda.cudaMalloc(dSeeds, cudaSize);
-        JCuda.cudaMalloc(dCounts, cudaSize);
-        JCuda.cudaMemcpy(dSeeds, Pointer.to(seeds), cudaSize, cudaMemcpyKind.cudaMemcpyHostToDevice);
+        val ptrSeeds = new CUdeviceptr();
+        val ptrCounts = new CUdeviceptr();
+        JCudaDriver.cuMemAlloc(ptrSeeds, cudaSize);
+        JCudaDriver.cuMemAlloc(ptrCounts, cudaSize);
+        JCudaDriver.cuMemcpyHtoD(ptrSeeds,Pointer.to(seeds),cudaSize);
         // 设置内核参数
-        Pointer kernelParameters = Pointer.to(
-                Pointer.to(dSeeds),
-                Pointer.to(dCounts),
+        val kernelParameters = Pointer.to(
+                Pointer.to(ptrSeeds),
+                Pointer.to(ptrCounts),
                 Pointer.to(new int[]{times}),
                 Pointer.to(new int[]{INT_DIV}),
                 Pointer.to(new int[]{size})
@@ -89,10 +87,11 @@ public class H5MotaRandomTest {
         JCudaDriver.cuCtxSynchronize(); // 等待内核完成
 
         // 将结果复制回主机
-        JCuda.cudaMemcpy(Pointer.to(counts), dCounts, cudaSize, cudaMemcpyKind.cudaMemcpyDeviceToHost);
+        JCudaDriver.cuMemcpyDtoH(Pointer.to(counts), ptrCounts, cudaSize);
 
         // 释放设备内存
-        JCuda.cudaFree(dCounts);
+        JCudaDriver.cuMemFree(ptrSeeds);
+        JCudaDriver.cuMemFree(ptrCounts);
         JCudaDriver.cuModuleUnload(module);
         JCudaDriver.cuCtxDestroy(context);
 
