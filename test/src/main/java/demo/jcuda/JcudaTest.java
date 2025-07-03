@@ -10,7 +10,6 @@ import jcuda.runtime.cudaDeviceProp;
  */
 public class JcudaTest {
     public static void main(String[] args) {
-        JCuda.initialize();
         // 启用异常捕获（重要！）
         JCuda.setExceptionsEnabled(true);
 
@@ -23,11 +22,16 @@ public class JcudaTest {
             JCuda.cudaGetDeviceProperties(props, 0);
 
             // 打印设备信息
-            String deviceName = new String(props.name).trim();
             System.out.println("[SUCCESS] 检测到CUDA设备:");
-            System.out.println("设备名称: " + deviceName);
-            System.out.println("计算能力: " + props.major + "." + props.minor);
-            System.out.println("显存大小: " + (props.totalGlobalMem >> 20) + " MB");
+            System.out.printf("设备名称: %s\n", new String(props.name).trim());
+            System.out.printf("计算能力: %d.%d\n", props.major, props.minor);
+            System.out.printf("显存大小: %.2f GB\n", (props.totalGlobalMem >> 20) / 1024.0);
+            System.out.printf("多处理器数量: %d\n", props.multiProcessorCount);
+            System.out.printf("最大线程数: %d\n", props.maxThreadsPerBlock);
+            System.out.printf("最大线程维度: (%d, %d, %d)\n",
+                    props.maxThreadsDim[0], props.maxThreadsDim[1], props.maxThreadsDim[2]);
+            System.out.printf("最大块维度: (%d, %d, %d)\n",
+                    props.maxGridSize[0], props.maxGridSize[1], props.maxGridSize[2]);
 
             // 步骤3：执行简单内存操作（核心功能测试）
             Pointer devicePointer = new Pointer();

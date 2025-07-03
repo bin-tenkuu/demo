@@ -3,6 +3,9 @@ package demo.jcuda;
 import jcuda.Pointer;
 import jcuda.Sizeof;
 import jcuda.driver.*;
+import jcuda.runtime.JCuda;
+import jcuda.runtime.cudaMemcpyKind;
+import jcuda.runtime.cudaStream_t;
 import lombok.val;
 
 /**
@@ -20,7 +23,7 @@ public class H5MotaRandomTest {
         val start = System.currentTimeMillis();
         val seeds = new int[1 << 20]; // 1M seeds
         for (var i = 0; i < seeds.length; i++) {
-            seeds[i] = i;
+            seeds[i] = i + 1;
         }
         testRandCuda(seeds);
         System.out.printf("Execution time: %d ms%n", System.currentTimeMillis() - start);
@@ -46,10 +49,7 @@ public class H5MotaRandomTest {
 
     private static void testRandCuda(int[] seeds) {
         // 创建CUDA上下文
-        val device = new CUdevice();
-        JCudaDriver.cuDeviceGet(device, 0);
-        val context = new CUcontext();
-        JCudaDriver.cuCtxCreate(context, 0, device);
+        JCuda.cudaSetDevice(0);
         // 编译核函数
         val module = new CUmodule();
         JCudaDriver.cuModuleLoad(module, "test/src/main/java/demo/jcuda/nextrand3.ptx");
@@ -58,14 +58,19 @@ public class H5MotaRandomTest {
         JCudaDriver.cuModuleGetFunction(nextRand3Kernel, module, "nextRand3Kernel");
 
         val size = seeds.length;
-        val times = 2000;// INT_RAND; // 1M次随机数生成
+        val times = 200000;// INT_RAND; // 1M次随机数生成
         val counts = new int[size];
         val cudaSize = (long) size * Sizeof.INT;
         val ptrSeeds = new CUdeviceptr();
         val ptrCounts = new CUdeviceptr();
-        JCudaDriver.cuMemAlloc(ptrSeeds, cudaSize);
-        JCudaDriver.cuMemAlloc(ptrCounts, cudaSize);
-        JCudaDriver.cuMemcpyHtoD(ptrSeeds,Pointer.to(seeds),cudaSize);
+        // 创建CUDA流
+        val cUstream = new cudaStream_t();
+        val start = System.currentTimeMillis();
+        JCuda.cudaStreamCreate(new cudaStream_t());
+        JCuda.cudaMalloc(ptrSeeds, cudaSize);
+        JCuda.cudaMalloc(ptrCounts, cudaSize);
+        JCuda.cudaMemcpyAsync(ptrSeeds, Pointer.to(seeds), cudaSize,
+                cudaMemcpyKind.cudaMemcpyHostToDevice, cUstream);
         // 设置内核参数
         val kernelParameters = Pointer.to(
                 Pointer.to(ptrSeeds),
@@ -81,27 +86,39 @@ public class H5MotaRandomTest {
         JCudaDriver.cuLaunchKernel(nextRand3Kernel,
                 gridSize, 1, 1,     // 网格维度
                 blockSize, 1, 1,    // 块维度
-                0, null,            // 共享内存和流
+                0, new CUstream(cUstream),            // 共享内存和流
                 kernelParameters, null // 内核参数
         );
-        JCudaDriver.cuCtxSynchronize(); // 等待内核完成
-
         // 将结果复制回主机
-        JCudaDriver.cuMemcpyDtoH(Pointer.to(counts), ptrCounts, cudaSize);
+        JCuda.cudaMemcpyAsync(Pointer.to(counts), ptrCounts, cudaSize,
+                cudaMemcpyKind.cudaMemcpyDeviceToHost, cUstream);
+        JCuda.cudaLaunchHostFunc(cUstream, _ -> {
+            System.out.println("Kernel execution completed in " + (System.currentTimeMillis() - start) + " ms");
+        }, null);
+        JCuda.cudaStreamSynchronize(cUstream);// 等待内核完成
+        JCuda.cudaStreamDestroy(cUstream);
 
         // 释放设备内存
-        JCudaDriver.cuMemFree(ptrSeeds);
-        JCudaDriver.cuMemFree(ptrCounts);
+        JCuda.cudaFree(ptrSeeds);
+        JCuda.cudaFree(ptrCounts);
         JCudaDriver.cuModuleUnload(module);
-        JCudaDriver.cuCtxDestroy(context);
 
+        int minIdx = 0, maxIdx = 0;
+        int minCount = counts[minIdx], maxCount = counts[maxIdx];
         for (var i = 0; i < seeds.length; i++) {
             val count = counts[i];
-            val ratio = count / (times / 100.0);
-            if (ratio >= 20) {
-                System.out.printf("seed: %10d, ratio: %9d,%3.2s%n", seeds[i], count, ratio);
+            if (count < minCount) {
+                minIdx = i;
+                minCount = count;
+            } else if (count > maxCount) {
+                maxIdx = i;
+                maxCount = count;
             }
         }
+        System.out.printf("Min: seed: %10d, ratio: %9d,%3s%n", seeds[minIdx], counts[minIdx],
+                counts[minIdx] / (times / 100.0));
+        System.out.printf("Max: seed: %10d, ratio: %9d,%3s%n", seeds[maxIdx], counts[maxIdx],
+                counts[maxIdx] / (times / 100.0));
     }
 
     private static final int DIVISOR = 127773;
