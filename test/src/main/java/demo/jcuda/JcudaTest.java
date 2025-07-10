@@ -37,7 +37,7 @@ public class JcudaTest {
             Pointer devicePointer = new Pointer();
             JCuda.cudaMalloc(devicePointer, 4);  // 分配4字节内存
             JCuda.cudaFree(devicePointer);        // 释放内存
-            System.out.printf("mvcc -g -arch=compute_%d%d -O3 -std=c++20 -ptx -c <infile>\n",
+            System.out.printf("nvcc -g -arch=compute_%d%d -O3 -std=c++20 -ptx -c <infile>\n",
                     props.major, props.minor);
             System.out.println("CUDA内存操作测试通过！");
 

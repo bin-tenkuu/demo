@@ -1,127 +1,45 @@
+
 package demo.md5;
+
+import lombok.val;
 
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.VarHandle;
 import java.nio.ByteOrder;
-import java.util.ArrayDeque;
-import java.util.Deque;
+import java.util.HexFormat;
 
-/**
- * @author bin
- * @since 2024/05/15
- */
-public final class Md5Calc extends Thread implements Comparable<Md5Calc> {
-    public static final Deque<String> msgs = new ArrayDeque<>();
-    private static final long[] init = {
-            0, 2708257604158L
-    };
-    private static final VarHandle Long_ARRAY = MethodHandles.byteArrayViewVarHandle(long[].class,
-            ByteOrder.BIG_ENDIAN).withInvokeExactBehavior();
+public final class MD5 {
+    private static final VarHandle INT_ARRAY
+            = MethodHandles.byteArrayViewVarHandle(int[].class,
+            ByteOrder.LITTLE_ENDIAN).withInvokeExactBehavior();
 
-    public static boolean flag = false;
-
-    private final int n;
-    private final int part;
-    private final byte[] before = new byte[16];
-    private final byte[] after = new byte[16];
-
-    public Md5Calc(int n, int part) {
-        this.n = n;
-        this.part = part;
-        Long_ARRAY.set(before, 0, init[0]);
-        Long_ARRAY.set(before, 8, init[1]);
+    public static void main(String[] args) {
+        byte[] in = new byte[16];
+        INT_ARRAY.set(in, 0x0, (int) 1394335622);
+        INT_ARRAY.set(in, 0x4, (int) -1069040622);
+        INT_ARRAY.set(in, 0x8, (int) -1229901029);
+        INT_ARRAY.set(in, 0xc, (int) -2117594248);
+        val format = HexFormat.of();
+        System.out.println(format.formatHex(in));
+        val out = digest(in);
+        System.out.println(format.formatHex(out));
     }
 
-    @Override
-    public void run() {
-        add(n);
-        md5();
-        compare();
-        while (!flag) {
-            add(part);
-            md5();
-            compare();
-        }
-    }
-
-    private void add(int n) {
-        var r = (long) Long_ARRAY.getAndAdd(before, 8, (long) n);
-        if (r < 0 && r + n > 0) {
-            /* var _ = (long) */
-            // Long_ARRAY.getAndAdd(before, 0, 1L);
-            System.out.println("overflow");
-            System.exit(0);
-        }
-    }
-
-    private void compare() {
-        // 4 bytes = 1 int
-        // if ((int) INT_ARRAY.get(before, 0) != (int) INT_ARRAY.get(after, 0)) {
-        if (0 != (int) INT_ARRAY.get(after, 0)) {
-            return;
-        }
-        if (after[4] != 0) {
-            return;
-        }
-        // flag = true;
-        var builder = new StringBuilder(150);
-        builder.append(this).append(' ');
-        toString(builder, before, 8);
-        builder.append('\t');
-        toString(builder, after, 0);
-        builder.append('\n');
-        var msg = builder.toString();
-        msgs.add(msg);
-        System.out.print(msg);
-    }
-
-    @Override
-    public int compareTo(Md5Calc o) {
-        var compare = Long.compare((long) Long_ARRAY.get(before, 8), (long) Long_ARRAY.get(o.before, 8));
-        // if (compare == 0) {
-        //     return Long.compare((long) Long_ARRAY.get(before, 0), (long) Long_ARRAY.get(o.before, 0));
-        // }
-        return compare;
-    }
-
-    @Override
-    public String toString() {
-        return Long.toString((long) Long_ARRAY.get(before, 8));
-        // return Arrays.toString(new long[]{
-        //         // (long) Long_ARRAY.get(before, 0),
-        //         (long) 0,
-        //         (long) Long_ARRAY.get(before, 8),
-        // });
-    }
-
-    private static void toString(StringBuilder b, byte[] a, int start) {
-        b.append('[');
-        for (int i = start; i < 15; i++) {
-            b.append(a[i]);
-            b.append(", ");
-        }
-        b.append(a[15]);
-        b.append(']');
-    }
-
-    public static void main() {
-        final var calc = new Md5Calc(0, 1);
-        final var in = new byte[]{
-                0, 0, 0, 7, 78, 28, -9, -112
+    public static byte[] digest(byte[] bs) {
+        val state = new int[]{
+                (int) INT_ARRAY.get(bs, 0),
+                (int) INT_ARRAY.get(bs, 4),
+                (int) INT_ARRAY.get(bs, 8),
+                (int) INT_ARRAY.get(bs, 12),
         };
-        System.arraycopy(in, 0, calc.before, 8, 8);
-        printf(calc.before);
-        calc.md5();
-        printf(calc.after);
-        calc.compare();
-    }
 
-    private static void printf(byte[] bs) {
-        for (var b : bs) {
-            // hex
-            System.out.printf("%02x", b);
-        }
-        System.out.println();
+        implCompress(state);
+        byte[] out = new byte[16];
+        INT_ARRAY.set(out, 0, state[0]);
+        INT_ARRAY.set(out, 4, state[1]);
+        INT_ARRAY.set(out, 8, state[2]);
+        INT_ARRAY.set(out, 12, state[3]);
+        return out;
     }
 
     public static int rotateLeft(int i, int distance) {
@@ -148,18 +66,16 @@ public final class Md5Calc extends Thread implements Comparable<Md5Calc> {
         return rotateLeft(a, s) + b;
     }
 
-    public static final VarHandle INT_ARRAY = MethodHandles.byteArrayViewVarHandle(int[].class,
-            ByteOrder.LITTLE_ENDIAN).withInvokeExactBehavior();
+    private static void implCompress(int[] state) {
+        int a = 0x67452301;
+        int b = 0xefcdab89;
+        int c = 0x98badcfe;
+        int d = 0x10325476;
 
-    private void md5() {
-        final var x0 = (int) INT_ARRAY.get(before, 0);
-        final var x1 = (int) INT_ARRAY.get(before, 4);
-        final var x2 = (int) INT_ARRAY.get(before, 8);
-        final var x3 = (int) INT_ARRAY.get(before, 12);
-        var a = 0x67452301;
-        var b = 0xefcdab89;
-        var c = 0x98badcfe;
-        var d = 0x10325476;
+        int x0 = state[0];
+        int x1 = state[1];
+        int x2 = state[2];
+        int x3 = state[3];
 
         /* Round 1 */
         a = FF(a, b, c, d, x0, 7, 0xd76aa478); /* 1 */
@@ -233,10 +149,10 @@ public final class Md5Calc extends Thread implements Comparable<Md5Calc> {
         c = II(c, d, a, b, x2, 15, 0x2ad7d2bb); /* 63 */
         b = II(b, c, d, a, 0, 21, 0xeb86d391); /* 64 */
 
-        INT_ARRAY.set(after, 0, 0x67452301 + a);
-        INT_ARRAY.set(after, 4, 0xefcdab89 + b);
-        INT_ARRAY.set(after, 8, 0x98badcfe + c);
-        INT_ARRAY.set(after, 12, 0x10325476 + d);
+        state[0] = 0x67452301 + a;
+        state[1] = 0xefcdab89 + b;
+        state[2] = 0x98badcfe + c;
+        state[3] = 0x10325476 + d;
     }
 
 }
