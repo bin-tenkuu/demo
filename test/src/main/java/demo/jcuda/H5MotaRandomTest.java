@@ -147,6 +147,10 @@ public class H5MotaRandomTest {
 }
 /*
 core.utils.__init_seed = () => {
+    core.setFlag("__seed__", 0);
+    core.setFlag("__rand__", 0)
+}
+core.utils.__init_seed = () => {
     utils.prototype.__init_seed.call(core.utils);
     console.log(`__init_seed ${core.getFlag("__seed__")}`);
 }

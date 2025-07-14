@@ -16,7 +16,7 @@ import java.util.Map;
  * @since 2025/06/09
  */
 @Slf4j
-public class LuaJTest {
+public class LuaJTest2 {
     public static void main(String[] args) {
         val start = System.currentTimeMillis();
         val params = Map.of(

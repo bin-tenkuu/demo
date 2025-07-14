@@ -46,7 +46,7 @@
             <artifactId>Java-WebSocket</artifactId>
             <version>1.5.7</version>
         </dependency>
-        <!-- Lua Engine -->
+        <!-- region Lua Engine -->
         <dependency>
             <groupId>party.iroiro.luajava</groupId>
             <artifactId>luajava</artifactId>
@@ -64,6 +64,7 @@
             <classifier>natives-desktop</classifier>
             <scope>runtime</scope>
         </dependency>
+        <!-- endregion -->
         <dependency>
             <groupId>org.jcuda</groupId>
             <artifactId>jcuda</artifactId>
