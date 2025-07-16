@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="demo.mapper.SysUserMapper">
+
+    <insert id="initTable">
+        create table if not exists sys_user
+        (
+            id           integer not null
+                primary key autoincrement,
+            nickname     text    not null,
+            email        text,
+            phone_number text,
+            expire_time   text,
+            status       int default 1
+        ) strict;
+    </insert>
+
+</mapper>

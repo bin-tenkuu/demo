@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="demo.mapper.SysUserAuthMapper">
+
+    <insert id="initTable">
+        create table if not exists sys_user_auth
+        (
+            username text    not null
+                primary key,
+            type     text    not null,
+            user_id       integer not null,
+            password text    not null,
+            unique (type, user_id)
+        ) strict;
+    </insert>
+
+    <select id="findByUsername" resultType="demo.entity.SysUserAuth">
+        select *
+        from sys_user_auth
+        where username = #{username}
+    </select>
+</mapper>

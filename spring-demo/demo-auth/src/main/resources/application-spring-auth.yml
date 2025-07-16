@@ -1,0 +1,16 @@
+server:
+  port: 9999
+#  servlet:
+# 应用访问名称，小写
+#    context-path: /demo
+
+spring:
+  datasource:
+    url: jdbc:sqlite:./data.sqlite
+    driver-class-name: org.sqlite.JDBC
+    username:
+    password:
+  web:
+    resources:
+      static-locations:
+#debug: true

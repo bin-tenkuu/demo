@@ -72,10 +72,6 @@
                     <configuration>
                         <source>${java.version}</source>
                         <target>${java.version}</target>
-                        <compilerArgs>
-                            <arg>--enable-preview</arg>
-                            <arg>-Xlint:preview</arg>
-                        </compilerArgs>
                     </configuration>
                 </plugin>
                 <!--拷贝依赖 copy-dependencies-->
