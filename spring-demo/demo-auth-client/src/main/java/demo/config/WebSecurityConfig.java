@@ -7,16 +7,11 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.DelegatingPasswordEncoder;
-import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.cors.CorsConfiguration;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * @author bin
@@ -85,12 +80,13 @@ public class WebSecurityConfig {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        String encodingId = "bcrypt";
-        Map<String, PasswordEncoder> encoders = new HashMap<>();
-        encoders.put(encodingId, new BCryptPasswordEncoder());
-        // noinspection deprecation
-        encoders.put("noop", NoOpPasswordEncoder.getInstance());
-        return new DelegatingPasswordEncoder(encodingId, encoders);
+        // String encodingId = "bcrypt";
+        // Map<String, PasswordEncoder> encoders = new HashMap<>();
+        // encoders.put(encodingId, new BCryptPasswordEncoder());
+        // // noinspection deprecation
+        // encoders.put("noop", NoOpPasswordEncoder.getInstance());
+        // return new DelegatingPasswordEncoder(encodingId, encoders);
+        return new BCryptPasswordEncoder();
     }
 }
 
