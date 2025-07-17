@@ -18,9 +18,9 @@ function hookAfter(raw, after) {
 
 let cheat = window.cheat = {
     start() {
-        this.itemGem = 2
-        this.autoBattle?.()
-        delete this.start
+        cheat.itemGem = 2
+        cheat.autoBattle?.()
+        delete cheat.start
     },
     set itemGem(count) {
         for (let item of Object.values(core.items.items)) {
@@ -92,12 +92,12 @@ let cheat = window.cheat = {
         }
     },
     get all() {
-        this.gems;
-        this.potions;
+        cheat.gems;
+        cheat.potions;
     },
     set all(count) {
-        this.gems = count;
-        this.potions = count;
+        cheat.gems = count;
+        cheat.potions = count;
     },
     get enemys() {
         return core.material.enemys;
@@ -138,7 +138,7 @@ let cheat = window.cheat = {
         return core.status.hero;
     },
     getItem() {
-        delete this.getItem;
+        delete cheat.getItem;
         core.events.getItem = function (a, g, j, i, c, k) {
             if (g > 0) {
                 let cls = core.material.items[a].cls;
@@ -147,6 +147,29 @@ let cheat = window.cheat = {
                 }
             }
             events.prototype.getItem.call(this, a, g, j, i, c, k);
+        }
+    },
+    hotkey() {
+        delete cheat.hotkey;
+        document.addEventListener('keyup', event => {
+            let func = cheat.hotkeyMap[event.code] ?? (() => {
+                console.log(event)
+            });
+            func(event)
+        })
+    },
+    hotkeyMap: {
+        Numpad1: event => {
+            cheat.__auto__ = 1;
+            console.log("自动清怪开启");
+        },
+        Numpad2: event => {
+            cheat.__auto__ = 2;
+            console.log("自动拾取开启");
+        },
+        Numpad3: event => {
+            cheat.__auto__ = 3;
+            console.log("自动清怪和拾取开启");
         }
     },
     __auto__: 3,
