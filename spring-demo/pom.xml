@@ -17,6 +17,7 @@
         <module>demo-core</module>
         <module>demo-starter</module>
         <module>demo-auth</module>
+        <module>demo-auth-client</module>
     </modules>
 
     <properties>

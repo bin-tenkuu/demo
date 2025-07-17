@@ -6,6 +6,7 @@ server:
 
 spring:
   datasource:
+    type: org.sqlite.SQLiteDataSource
     url: jdbc:sqlite:./data.sqlite
     driver-class-name: org.sqlite.JDBC
     username:

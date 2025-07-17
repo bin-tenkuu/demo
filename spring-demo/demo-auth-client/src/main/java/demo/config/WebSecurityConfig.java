@@ -69,6 +69,7 @@ public class WebSecurityConfig {
                     "/**.html",
                     "/**.js",
                     "/**.css",
+                    "/swagger**",
                     "/webjars/**",
                     "/v3/api-docs/**",
                     "/login",

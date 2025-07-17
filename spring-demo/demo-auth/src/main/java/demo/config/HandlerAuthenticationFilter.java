@@ -1,7 +1,8 @@
-package demo.service;
+package demo.config;
 
 import demo.model.LoginUser;
 import demo.model.ResultModel;
+import demo.service.TokenService;
 import demo.util.JsonUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -27,7 +28,7 @@ import java.io.IOException;
  */
 @Component
 @RequiredArgsConstructor
-public class AuthenticationService extends OncePerRequestFilter
+public class HandlerAuthenticationFilter extends OncePerRequestFilter
         implements AuthenticationEntryPoint, AccessDeniedHandler {
     private final TokenService tokenService;
 
@@ -57,7 +58,7 @@ public class AuthenticationService extends OncePerRequestFilter
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response,
             AuthenticationException authException) throws IOException {
-        String msg = String.format("请求访问：%s，认证失败，无法访问系统资源", request.getRequestURI());
+        String msg = String.format("请求访问：%s，认证失败", request.getRequestURI());
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.setContentType("application/json;charset=utf-8");
         response.getWriter().write(JsonUtil.toJson(ResultModel.fail(msg)));
@@ -69,9 +70,22 @@ public class AuthenticationService extends OncePerRequestFilter
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response,
             AccessDeniedException accessDeniedException) throws IOException {
+        String msg = String.format("请求访问：%s，没有对应的权限", request.getRequestURI());
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.setContentType("application/json;charset=utf-8");
-        response.getWriter().write(JsonUtil.toJson(ResultModel.fail("没有对应的权限")));
+        response.getWriter().write(JsonUtil.toJson(ResultModel.fail(msg)));
     }
 
+    private static String url(HttpServletRequest request) {
+        StringBuilder buffer = new StringBuilder();
+        buffer.append(request.isSecure() ? "https://" : "http://");
+        buffer.append(request.getServerName()).append(":");
+        buffer.append(request.getServerPort());
+        String requestURI = request.getRequestURI();
+        if (request.getRequestURI().startsWith("//")) {
+            requestURI = requestURI.substring(1);
+        }
+        buffer.append(requestURI);
+        return buffer.toString();
+    }
 }
