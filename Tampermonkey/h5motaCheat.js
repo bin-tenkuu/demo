@@ -4,7 +4,7 @@
 // @match       https://h5mota.com/games/*
 // @grant       none
 // @version     1.0
-// @author      -
+// @author      bin
 // @description 2024/5/4 10:37:52
 // ==/UserScript==
 
@@ -198,8 +198,6 @@ let cheat = window.cheat = {
         const AUTO_BATTLE = 1;
         const AUTO_ITEM = 2;
 
-        const transitionList = [];
-
         control.prototype.moveOneStep = hookAfter(control.prototype.moveOneStep, update);
 
         control.prototype.moveDirectly = hookAfter(control.prototype.moveDirectly, update);
@@ -207,13 +205,6 @@ let cheat = window.cheat = {
         function update() {
             core.auto();
             cheat.afterAuto();
-            if (main.replayChecking) return;
-            for (let i = 0; i < transitionList.length; i++) {
-                const t = transitionList[i];
-                let {x, y} = core.status.hero.loc;
-                t.value.x = x * 32 - core.bigmap.offsetX;
-                t.value.y = y * 32 - core.bigmap.offsetY;
-            }
         }
 
         /**
