@@ -48,7 +48,7 @@ public class WebSecurityConfig {
         http.logout(AbstractHttpConfigurer::disable);
         http.rememberMe(AbstractHttpConfigurer::disable);
         http.httpBasic(AbstractHttpConfigurer::disable);
-        http.addFilterAt(authenticationFilter, UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter.class);
         http.exceptionHandling(config -> {
             // config.disable();
             config.authenticationEntryPoint(authenticationFilter);

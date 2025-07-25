@@ -18,14 +18,18 @@
 
     <dependencies>
         <dependency>
-            <groupId>my</groupId>
-            <artifactId>demo-core</artifactId>
-            <version>0.1</version>
+            <groupId>org.apache.tomcat.embed</groupId>
+            <artifactId>tomcat-embed-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-json</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
+
     </dependencies>
 
     <build>
@@ -33,11 +37,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.1</version>
-                <configuration>
-                    <target>11</target>
-                    <source>11</source>
-                </configuration>
             </plugin>
         </plugins>
     </build>
