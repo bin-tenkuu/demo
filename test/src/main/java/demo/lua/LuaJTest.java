@@ -49,19 +49,34 @@ public class LuaJTest {
             L.pushJavaArray(arg2);
             L.setGlobal("arg2");
             // language=lua
-            L.run("""
+            var luaScript = """
                     log.info("arg1: {}, {}", arg1[1], arg1[2])
                     arg1[1] = "hello"
                     log.info("arg1: {}, {}", arg1[1], arg1[2])
                     log.info("arg2: {}, {}", arg2[1], arg2[2])
                     arg2[1] = "hello"
                     log.info("arg2: {}, {}", arg2[1], arg2[2])
-                    """);
+                    return "return value"
+                    """;
+            L.load(luaScript);
+            var complited = L.dump();
+            L.load(complited, "test.lua");
+            var eval = L.get().call();
+
             System.out.println(arg1[0]);
             System.out.println(arg2[0]);
-            System.out.println("===");
+
+            System.out.println(eval[0]);
+            System.out.println("\n\n===\n\n");
             log.info("print global table");
             print("", L.get("_G"), new HashSet<>(Collections.singleton("_G")));
+            System.out.println("\n\n===\n\n");
+            L.getGlobal("log");
+            L.push("2");
+            L.setField(-2, "setField");
+            L.load("function a(n) log.test2 = n end");
+            L.get().call("arg2");
+            print("", L.get("log"), new HashSet<>());
             System.out.println();
         }
 
@@ -108,7 +123,7 @@ public class LuaJTest {
             val size = L.getTop();
             val objects = new Object[size - 1];
             for (var i = size - 2; i >= 0; i--) {
-                objects[i] = L.get().toString();
+                objects[i] = L.get().toJavaObject();
             }
             val str = L.get().toString();
             logger.accept(str, objects);
