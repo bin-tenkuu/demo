@@ -80,7 +80,7 @@ public class UserController implements InitializingBean {
     @GetMapping("/data/count")
     public int dataCount() {
         val count = new AtomicInteger();
-        userDataMapper.selectList(new QueryWrapper<>(), _ -> count.incrementAndGet());
+        userDataMapper.selectList(new QueryWrapper<>(), h -> count.incrementAndGet());
         return count.get();
     }
 }

@@ -55,7 +55,7 @@ public class TrustAllOkHttp implements SourceOkHttpClientRegistrar {
             sc.init(null, new TrustManager[]{new TrustAllCerts()}, new SecureRandom());
 
             ssfFactory = sc.getSocketFactory();
-        } catch (Exception _) {
+        } catch (Exception e) {
         }
         return ssfFactory;
     }
