@@ -4,6 +4,7 @@ import demo.model.ResultModel;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.core.io.FileSystemResource;
@@ -26,16 +27,24 @@ import java.util.Objects;
  */
 @SuppressWarnings("ResultOfMethodCallIgnored")
 @Tag(name = "file")
+@Slf4j
 @RestController
 @RequestMapping("/file")
 @RequiredArgsConstructor
 public class FileController {
 
-    private final File uploadDir = new File("./logs/upload");
+    private final File uploadDir = new File("/home/bin-/code/cms-huabei/target");
 
     @PostMapping("/upload")
-    public ResultModel<String> upload(@RequestParam String name, @RequestPart MultipartFile file) throws IOException {
+    public ResultModel<String> upload(@RequestParam(required = false) String name, @RequestPart MultipartFile file)
+            throws IOException {
         uploadDir.mkdirs();
+        if (name == null) {
+            name = file.getOriginalFilename();
+            if (name == null) {
+                throw new IllegalArgumentException("文件名不能为空");
+            }
+        }
         val filePath = new File(uploadDir, name);
         file.transferTo(filePath.toPath());
         return ResultModel.success("/download/path/" + name);
