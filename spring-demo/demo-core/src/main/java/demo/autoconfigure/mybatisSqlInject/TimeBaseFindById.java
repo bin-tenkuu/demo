@@ -10,8 +10,6 @@ import org.apache.ibatis.mapping.MappedStatement;
  * @since 2025/05/06
  */
 public class TimeBaseFindById extends AbstractMethod {
-    public static final String TIME = "TIME";
-    public static final String ID = "ID";
 
     protected TimeBaseFindById() {
         super("findById");
@@ -24,8 +22,8 @@ public class TimeBaseFindById extends AbstractMethod {
             TableInfo tableInfo
     ) {
         val sql = "SELECT * FROM " + tableInfo.getTableName() + " WHERE " +
-                  TIME + " = #{" + TIME + "} AND " +
-                  ID + " = #{" + ID + "}";
+                  TimeBase.TIME + " = #{" + TimeBase.TIME + "} AND " +
+                  TimeBase.ID + " = #{" + TimeBase.ID + "}";
         val sqlSource = createSqlSource(
                 configuration,
                 "<script>" + sql + "</script>",

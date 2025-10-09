@@ -1,14 +1,43 @@
 package demo.autoconfigure.mybatisSqlInject;
 
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.mapper.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * @author bin
  * @since 2025/05/06
  */
-public interface TimeBaseMapper<T extends TimeBase> extends BaseMapper<T> {
-    T findById(@Param(TimeBaseFindById.TIME) LocalDateTime time, @Param(TimeBaseFindById.ID) String id);
+public interface TimeBaseMapper<T extends TimeBase> extends Mapper<T> {
+    /**
+     * 插入一条记录
+     *
+     * @param entity 实体对象
+     */
+    int insert(T entity);
+
+    T findById(@Param(TimeBase.TIME) LocalDateTime time, @Param(TimeBase.ID) String id);
+
+    int merge(@Param("e") T entity);
+
+    List<T> listByTimeAndSns(
+            @Param("time") LocalDateTime time,
+            @Param("ids") List<String> ids,
+            @Param("fields") List<String> fields
+    );
+
+    T getByTimeAndSn(
+            @Param("time") LocalDateTime time,
+            @Param("id") String id,
+            @Param("fields") List<String> fields
+    );
+
+    List<T> listBySnAndTimeRange(
+            @Param("id") String id,
+            @Param("start") LocalDateTime start,
+            @Param("end") LocalDateTime end,
+            @Param("fields") List<String> fields
+    );
 }
