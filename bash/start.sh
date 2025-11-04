@@ -45,6 +45,7 @@ if [ -n "$pid" ]; then
   fi
 fi
 
+printf "%s\t%s\n" "$(date +"%Y-%m-%d %H:%M:%S")" "run: $cmd"
 set -exo pipefail
 if [ "$use_nohup" == 1 ]; then
   # shellcheck disable=SC2086
