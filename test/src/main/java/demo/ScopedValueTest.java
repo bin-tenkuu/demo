@@ -1,6 +1,5 @@
 package demo;
 
-@SuppressWarnings("preview")
 public class ScopedValueTest {
     private static final ScopedValue<String> X = ScopedValue.newInstance();
 

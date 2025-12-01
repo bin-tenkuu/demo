@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @author bin
@@ -58,8 +57,8 @@ public class UserController implements InitializingBean {
     }
 
     @GetMapping("/data/list")
-    public List<UserData> dataList() {
-        return userDataMapper.selectList(new QueryWrapper<>());
+    public List<UserData> dataList(String id, LocalDateTime start, LocalDateTime end) {
+        return userDataMapper.listBySnAndTimeRange(id, start, end, List.of("*"));
     }
 
     @PostMapping("/data/save")
@@ -69,7 +68,7 @@ public class UserController implements InitializingBean {
 
     @PostMapping("/data/update")
     public void dataUpdate(@RequestBody UserData user) {
-        userDataMapper.updateById(user);
+        userDataMapper.merge(user);
     }
 
     @GetMapping("/data/find")
@@ -77,10 +76,4 @@ public class UserController implements InitializingBean {
         return userDataMapper.findById(time, id);
     }
 
-    @GetMapping("/data/count")
-    public int dataCount() {
-        val count = new AtomicInteger();
-        userDataMapper.selectList(new QueryWrapper<>(), h -> count.incrementAndGet());
-        return count.get();
-    }
 }

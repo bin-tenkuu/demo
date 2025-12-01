@@ -18,10 +18,11 @@
         <module>test</module>
         <module>FSM</module>
         <module>spring-demo</module>
+        <module>easyDb</module>
     </modules>
 
     <properties>
-        <java.version>24</java.version>
+        <java.version>25</java.version>
         <spring-boot.version>3.4.0</spring-boot.version>
         <mapstruct.version>1.5.5.Final</mapstruct.version>
     </properties>
