@@ -17,4 +17,5 @@ open module demo {
     requires party.iroiro.luajava.luajit;
     requires java.sql;
     requires jcuda;
+    requires org.graalvm.polyglot;
 }

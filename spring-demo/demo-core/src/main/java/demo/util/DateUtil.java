@@ -51,8 +51,7 @@ public class DateUtil {
         return Date.from(instant);
     }
 
-    @NotNull
-    public static Long toMilli(@NotNull LocalDateTime date) {
+    public static long toMilli(@NotNull LocalDateTime date) {
         final ZoneId zoneId = ZoneId.systemDefault();
         final Instant instant = date.atZone(zoneId).toInstant();
         return instant.toEpochMilli();
