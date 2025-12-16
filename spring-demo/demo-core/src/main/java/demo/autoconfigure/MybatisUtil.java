@@ -3,34 +3,40 @@ package demo.autoconfigure;
 import com.baomidou.mybatisplus.autoconfigure.MybatisPlusProperties;
 import com.baomidou.mybatisplus.autoconfigure.SpringBootVFS;
 import com.baomidou.mybatisplus.core.MybatisConfiguration;
+import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
+import com.baomidou.mybatisplus.core.injector.AbstractSqlInjector;
 import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.InnerInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
 import com.baomidou.mybatisplus.extension.spring.MybatisSqlSessionFactoryBean;
+import demo.autoconfigure.mybatis.GeneralSqlInjector;
+import demo.autoconfigure.mybatis.MetaObjectHandlers;
 import lombok.RequiredArgsConstructor;
-import lombok.val;
 import org.apache.ibatis.session.ExecutorType;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 
 import javax.sql.DataSource;
+import java.util.List;
 
-/**
- * @author bin
- * @version 1.0.0
- * @since 2024/12/10
- */
+/// @author bin
+/// @version 1.0.0
+/// @since 2024/12/10
 @RequiredArgsConstructor
 @EnableConfigurationProperties({MybatisPlusProperties.class})
 public class MybatisUtil {
     private final MybatisPlusProperties properties;
+    private final List<AbstractSqlInjector> sqlInjectors;
+    private final List<MetaObjectHandler> metaObjectHandlers;
 
-    // region 1初始化
     public void modify(MybatisSqlSessionFactoryBean factory, String[] mapperLocations) {
-        factory.setGlobalConfig(properties.getGlobalConfig());
-        val configuration = new MybatisConfiguration();
-        val coreConfiguration = properties.getConfiguration();
+        var globalConfig = properties.getGlobalConfig();
+        factory.setGlobalConfig(globalConfig);
+        globalConfig.setSqlInjector(new GeneralSqlInjector(sqlInjectors));
+        globalConfig.setMetaObjectHandler(new MetaObjectHandlers(metaObjectHandlers));
+        var configuration = new MybatisConfiguration();
+        var coreConfiguration = properties.getConfiguration();
         properties.setMapperLocations(mapperLocations);
         factory.setMapperLocations(properties.resolveMapperLocations());
         if (coreConfiguration != null) {
@@ -40,7 +46,7 @@ public class MybatisUtil {
     }
 
     public MybatisPlusInterceptor interceptor(InnerInterceptor... interceptors) {
-        val interceptor = new MybatisPlusInterceptor();
+        var interceptor = new MybatisPlusInterceptor();
         for (InnerInterceptor innerInterceptor : interceptors) {
             interceptor.addInnerInterceptor(innerInterceptor);
         }
@@ -48,13 +54,11 @@ public class MybatisUtil {
 
         return interceptor;
     }
-    // endregion
 
     public MybatisSqlSessionFactoryBean sqlSessionFactoryBean(DataSource dataSource) {
-        val factory = new MybatisSqlSessionFactoryBean();
+        var factory = new MybatisSqlSessionFactoryBean();
         factory.setDataSource(dataSource);
         factory.setVfs(SpringBootVFS.class);
-        modify(factory, new String[]{"classpath*:mapper/*.xml"});
         return factory;
     }
 

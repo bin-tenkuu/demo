@@ -8,7 +8,6 @@ import demo.mapper.UserDataMapper;
 import demo.mapper.UserMapper;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import lombok.val;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.bind.annotation.*;
 
@@ -46,8 +45,8 @@ public class UserController implements InitializingBean {
     @PostMapping("/update")
     public void update(@RequestBody User user) {
         userMapper.updateById(user);
-        val wrapper = new LambdaQueryChainWrapper<>(userMapper).ge(User::getId, user.getId());
-        val list = wrapper.list();
+        var wrapper = new LambdaQueryChainWrapper<>(userMapper).ge(User::getId, user.getId());
+        var list = wrapper.list();
 
     }
 

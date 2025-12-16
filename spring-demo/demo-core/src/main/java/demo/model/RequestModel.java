@@ -7,10 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-/**
- * @author bin
- * @since 2023/01/15
- */
+/// @author bin
+/// @since 2023/01/15
 @SuppressWarnings("unused")
 @Getter
 @Setter

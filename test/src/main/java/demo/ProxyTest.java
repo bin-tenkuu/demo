@@ -1,7 +1,5 @@
 package demo;
 
-import lombok.val;
-
 import java.lang.reflect.Proxy;
 
 /**
@@ -11,7 +9,7 @@ import java.lang.reflect.Proxy;
  */
 public class ProxyTest {
     public static void main() {
-        val instance = (I) Proxy.newProxyInstance(ProxyTest.class.getClassLoader(), new Class[]{I.class},
+        var instance = (I) Proxy.newProxyInstance(ProxyTest.class.getClassLoader(), new Class[]{I.class},
                 (proxy, method, args) -> {
                     System.out.println(method.getName());
                     switch (method.getName()) {

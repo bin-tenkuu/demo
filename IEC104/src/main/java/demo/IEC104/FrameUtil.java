@@ -34,7 +34,7 @@ public class FrameUtil {
      */
     public static Frame parse(ByteBuffer buffer) {
         buffer.flip();
-        val length = buffer.remaining();
+        var length = buffer.remaining();
         if (length < 6) {
             System.out.printf("帧长度不足: %d\n", length);
             buffer.compact();
@@ -45,34 +45,34 @@ public class FrameUtil {
             buffer.compact();
             return null;
         }
-        val frameLength = (buffer.get(1) & 0xFF) + 2;
+        var frameLength = (buffer.get(1) & 0xFF) + 2;
         if (length < frameLength) {
             System.out.printf("帧长度不足: %d < %d\n", length, frameLength);
             buffer.compact();
             return null;
         }
-        val frameType = getFrameType(buffer.get(2));
-        val position = buffer.position();
-        val frame = switch (frameType) {
+        var frameType = getFrameType(buffer.get(2));
+        var position = buffer.position();
+        var frame = switch (frameType) {
             case I -> {
-                val bytes = new byte[12];
-                val content = new byte[frameLength - 12];
+                var bytes = new byte[12];
+                var content = new byte[frameLength - 12];
                 buffer.get(position, bytes, 0, 12);
                 buffer.get(position + 12, content, 0, content.length);
                 yield new FrameI(bytes, content);
             }
             case S -> {
-                val bytes = new byte[6];
+                var bytes = new byte[6];
                 buffer.get(position, bytes, 0, 6);
                 yield new FrameS(bytes);
             }
             case U -> {
-                val bytes = new byte[6];
+                var bytes = new byte[6];
                 buffer.get(position, bytes, 0, 6);
                 yield new FrameU(bytes);
             }
             default -> {
-                val bytes = new byte[frameLength];
+                var bytes = new byte[frameLength];
                 buffer.get(position, bytes, 0, frameLength);
                 yield new Frame(frameType, bytes);
             }
@@ -88,33 +88,33 @@ public class FrameUtil {
      * @param data length==2时返回{@link Frame}，length>2时返回具体类型
      */
     public static Frame parse(byte[] data) {
-        val length = data.length;
+        var length = data.length;
         if (length < 6) {
             throw new IllegalArgumentException("帧长度不足: " + length);
         }
         if (data[0] != 0x68) {
             throw new IllegalArgumentException("帧起始符不正确: " + ByteUtil.toString(data[0]));
         }
-        val frameLength = (data[1] & 0xFF) + 2;
+        var frameLength = (data[1] & 0xFF) + 2;
         if (length < frameLength) {
             throw new IllegalArgumentException("帧长度不足: " + length + " < " + frameLength);
         }
-        val frameType = getFrameType(data[2]);
+        var frameType = getFrameType(data[2]);
         return switch (frameType) {
             case I -> {
-                val bytes = new byte[12];
-                val content = new byte[frameLength - 12];
+                var bytes = new byte[12];
+                var content = new byte[frameLength - 12];
                 System.arraycopy(data, 0, bytes, 0, 12);
                 System.arraycopy(data, 12, content, 0, content.length);
                 yield new FrameI(bytes, content);
             }
             case S -> {
-                val bytes = new byte[6];
+                var bytes = new byte[6];
                 System.arraycopy(data, 0, bytes, 0, 6);
                 yield new FrameS(bytes);
             }
             case U -> {
-                val bytes = new byte[6];
+                var bytes = new byte[6];
                 System.arraycopy(data, 0, bytes, 0, 6);
                 yield new FrameU(bytes);
             }

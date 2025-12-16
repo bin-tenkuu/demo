@@ -1,8 +1,7 @@
 demo.autoconfigure.converter.String2LocalDate
 demo.autoconfigure.converter.String2LocalDateTime
 demo.autoconfigure.converter.String2LocalTime
-demo.autoconfigure.mybatisSqlInject.TimeBaseSqlInjector
+demo.autoconfigure.mybatis.TimeBaseSqlInjector
 demo.autoconfigure.swagger.SwaggerCommonConfigure
-demo.autoconfigure.page.MybatisPageWebMvcConfigurer
 demo.autoconfigure.MybatisUtil
 demo.util.JsonUtil

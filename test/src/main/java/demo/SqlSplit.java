@@ -1,7 +1,6 @@
 package demo;
 
 import lombok.RequiredArgsConstructor;
-import lombok.val;
 import org.intellij.lang.annotations.Language;
 
 import java.util.Locale;
@@ -32,10 +31,10 @@ public class SqlSplit {
 
     public static void main() throws Exception {
         String tmp;
-        // val list = new ArrayList<TableField>();
+        // var list = new ArrayList<TableField>();
         for (String fieldStr : STR.split(",\n")) {
             TableField field = new TableField();
-            val state = new State(fieldStr.toCharArray());
+            var state = new State(fieldStr.toCharArray());
             state.length = state.cs.length;
             field.name = next(state);
             field.type = next(state);
@@ -73,7 +72,7 @@ public class SqlSplit {
         while (state.hasNext() && Character.isWhitespace(state.getChar())) {
             state.next();
         }
-        val builder = new StringBuilder();
+        var builder = new StringBuilder();
         // ()
         int raw0 = 0;
         // ''
@@ -81,7 +80,7 @@ public class SqlSplit {
         // \
         boolean raw2 = false;
         while (state.hasNext()) {
-            val c = state.getChar();
+            var c = state.getChar();
             if (raw0 == 0 && !raw1 && !raw2) {
                 if (Character.isWhitespace(c)) {
                     break;
@@ -122,8 +121,8 @@ public class SqlSplit {
         }
 
         public void copy() {
-            val index = this.index;
-            val length = this.length - index;
+            var index = this.index;
+            var length = this.length - index;
             System.arraycopy(cs, index, cs, 0, length);
             this.length = length;
         }

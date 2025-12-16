@@ -3,7 +3,6 @@ package demo;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import lombok.val;
 
 import java.lang.invoke.MethodHandles;
 
@@ -33,10 +32,10 @@ public class MethodHandlerTest {
     }
 
     private static void test(Class<?> clazz) throws Throwable {
-        val clazzConstructor = clazz.getConstructors()[0];
+        varclazzConstructor = clazz.getConstructors()[0];
         clazzConstructor.setAccessible(true);
-        val count = clazzConstructor.getParameterCount();
-        val constructor = lookup.unreflectConstructor(clazzConstructor);
+        var count = clazzConstructor.getParameterCount();
+        var constructor = lookup.unreflectConstructor(clazzConstructor);
         final Object object;
         if (count == 0) {
             object = constructor.invoke();
@@ -46,11 +45,11 @@ public class MethodHandlerTest {
             throw new IllegalArgumentException("count is not 0 or 2");
         }
         System.out.println(object);
-        val getA = clazz.getDeclaredField("a");
+        var getA = clazz.getDeclaredField("a");
         getA.setAccessible(true);
-        val getter = lookup.unreflectGetter(getA);
+        var getter = lookup.unreflectGetter(getA);
         System.out.println(getter.invoke(object));
-        val varHandle = lookup.unreflectVarHandle(getA);
+        var varHandle = lookup.unreflectVarHandle(getA);
         System.out.println(varHandle.get(object));
     }
 }

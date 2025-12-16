@@ -1,26 +1,18 @@
 package demo.util;
 
-import lombok.val;
-
 import java.time.Duration;
 import java.util.HashMap;
 
-/**
- * @author bin
- * @since 2023/08/22
- */
+/// @author bin
+/// @since 2023/08/22
 public class CacheMap<K, V> {
     public static final long DEFAULT_TIMEOUT = Duration.ofMinutes(10).toMillis();
-    /**
-     * 过期时间,毫秒
-     */
+    /// 过期时间,毫秒
     private final long timeout;
 
     private final HashMap<K, Node> map = new HashMap<>();
 
-    /**
-     * @param timeout 过期时间,毫秒
-     */
+    /// @param timeout 过期时间,毫秒
     public CacheMap(long timeout) {
         this.timeout = timeout;
     }
@@ -32,14 +24,14 @@ public class CacheMap<K, V> {
     private long nextExpirationTime = Long.MAX_VALUE;
 
     private void expungeExpiredEntries() {
-        val time = System.currentTimeMillis();
+        var time = System.currentTimeMillis();
         if (nextExpirationTime > time) {
             return;
         }
         nextExpirationTime = Long.MAX_VALUE;
-        val iterator = map.values().iterator();
+        var iterator = map.values().iterator();
         while (iterator.hasNext()) {
-            val v = iterator.next();
+            var v = iterator.next();
             if (v.isBeOverdue(time)) {
                 iterator.remove();
             } else if (nextExpirationTime > v.time) {
@@ -60,7 +52,7 @@ public class CacheMap<K, V> {
 
     public void set(K key, V value, long timeout) {
         expungeExpiredEntries();
-        val node = new Node(value, timeout);
+        var node = new Node(value, timeout);
         map.put(key, node);
         if (this.nextExpirationTime > node.time) {
             this.nextExpirationTime = node.time;
@@ -72,7 +64,7 @@ public class CacheMap<K, V> {
     }
 
     public V get(K key) {
-        val node = map.get(key);
+        var node = map.get(key);
         if (node == null) {
             return null;
         }
@@ -84,7 +76,7 @@ public class CacheMap<K, V> {
     }
 
     public boolean contains(K key) {
-        val node = map.get(key);
+        var node = map.get(key);
         if (node == null) {
             return false;
         }
@@ -96,7 +88,7 @@ public class CacheMap<K, V> {
     }
 
     public V remove(K key) {
-        val node = map.remove(key);
+        var node = map.remove(key);
         if (node == null) {
             return null;
         }

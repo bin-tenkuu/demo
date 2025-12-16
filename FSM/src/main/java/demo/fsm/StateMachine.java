@@ -1,7 +1,6 @@
 package demo.fsm;
 
 import lombok.Setter;
-import lombok.val;
 
 import java.util.HashMap;
 import java.util.Objects;
@@ -92,7 +91,7 @@ public class StateMachine<S, E> {
     public S handleEvent(S currentState, E event) {
         BiFunction<S, E, S> transition = transitions.getOrDefault(currentState, defaultTransition);
 
-        val newState = transition.apply(currentState, event);
+        var newState = transition.apply(currentState, event);
 
         if (stateChangeListener != null) {
             stateChangeListener.onStateChanged(currentState, currentState, event);

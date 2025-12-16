@@ -3,9 +3,10 @@ package demo.repository;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import demo.entity.SysUserAuth;
 import demo.mapper.SysUserAuthMapper;
+import demo.util.CacheMap;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
+import java.time.Duration;
 
 /**
  * @author bin
@@ -13,22 +14,14 @@ import java.util.HashMap;
  */
 @Service
 public class SysUserAuthRepository extends ServiceImpl<SysUserAuthMapper, SysUserAuth> {
-    private static final HashMap<String, SysUserAuth> extryAuth = new HashMap<>();
+    private static final CacheMap<String, SysUserAuth> extryAuth = new CacheMap<>();
 
-    public static void addExtryAuth(SysUserAuth auth) {
-        extryAuth.put(auth.getUsername(), auth);
+    public void addExtryAuth(SysUserAuth auth, Duration duration) {
+        extryAuth.set(auth.getUsername(), auth, duration.toMillis());
     }
 
-    public static void addExtryAuth(String username, String password, Long id) {
-        SysUserAuth auth = new SysUserAuth();
-        auth.setUsername(username);
-        auth.setPassword("{noop}" + password);
-        auth.setUserId(id);
-        extryAuth.put(username, auth);
-    }
-
-    public static void removeExtryAuth(String username) {
-        extryAuth.remove(username);
+    public SysUserAuth getExtryAuth(String username) {
+        return extryAuth.get(username);
     }
 
     public SysUserAuth findByUsername(String username) {
@@ -37,6 +30,10 @@ public class SysUserAuthRepository extends ServiceImpl<SysUserAuthMapper, SysUse
             return auth;
         }
         return baseMapper.findByUsername(username);
+    }
+
+    public boolean checkUserNameExist(String username) {
+        return baseMapper.countByUsername(username) > 0;
     }
 
 }

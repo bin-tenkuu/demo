@@ -13,11 +13,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-/**
- * @author bin
- * @version 1.0.0
- * @since 2024/11/05
- */
+/// @author bin
+/// @version 1.0.0
+/// @since 2024/11/05
 @SuppressWarnings("unused")
 public enum TimeType {
     year("Y", "yyyy'年'", ChronoUnit.YEARS, ChronoField.YEAR) {
@@ -89,14 +87,10 @@ public enum TimeType {
         this.field = field;
     }
 
-    /**
-     * 舍弃低于或等于当前精度的时间
-     */
+    /// 舍弃低于或等于当前精度的时间
     public abstract LocalDateTime getPart(LocalDateTime time);
 
-    /**
-     * 舍弃低于当前精度的时间
-     */
+    /// 舍弃低于当前精度的时间
     public abstract LocalDateTime truncatedTo(LocalDateTime time);
 
     public LocalDateTime addTo(LocalDateTime time, long amountToAdd) {
@@ -111,13 +105,11 @@ public enum TimeType {
         return time.with(field, newValue);
     }
 
-    /**
-     * 获取时间间隔
-     *
-     * @param start 开始时间
-     * @param end 结束时间
-     * @return (end - start) / unit
-     */
+    /// 获取时间间隔
+    ///
+    /// @param start 开始时间
+    /// @param end 结束时间
+    /// @return (end - start) / unit
     public long between(LocalDateTime start, LocalDateTime end) {
         return unit.between(start, end);
     }
@@ -132,7 +124,7 @@ public enum TimeType {
     }
 
     public static DateTimeFormatter getFormatter(TimeType from, TimeType to) {
-        val builder = new DateTimeFormatterBuilder();
+        var builder = new DateTimeFormatterBuilder();
         for (int i = from.ordinal(); i <= to.ordinal(); i++) {
             builder.append(VALUES[i].formater);
         }
@@ -140,12 +132,12 @@ public enum TimeType {
     }
 
     public List<String> toString(List<LocalDateTime> timeList) {
-        val list = new ArrayList<String>(timeList.size());
+        var list = new ArrayList<String>(timeList.size());
         if (timeList.isEmpty()) {
             return list;
         }
-        val startDate = timeList.getFirst();
-        val endDate = timeList.getLast();
+        var startDate = timeList.getFirst();
+        var endDate = timeList.getLast();
         TimeType from = getTimeTypeFrom(startDate, endDate);
         val pattern = getFormatter(from, this);
         for (LocalDateTime x : timeList) {
@@ -268,4 +260,32 @@ public enum TimeType {
         }
 
     }
+
+    /// 获取同层级时间列表
+    public List<LocalDateTime> toList(LocalDateTime time) {
+        var base = truncatedTo(time);
+        val range = time.range(field);
+        long i = range.getMinimum(), end = range.getMaximum();
+        val list = new ArrayList<LocalDateTime>((int) (end - i));
+        for (; i < end; i++) {
+            list.add(with(base, i));
+        }
+        return list;
+    }
+
+    public List<LocalDateTime> toList(LocalDateTime start, LocalDateTime end) {
+        val length = between(start, end);
+        val list = new ArrayList<LocalDateTime>((int) length);
+        LocalDateTime time = truncatedTo(start);
+        if (!time.isAfter(end)) {
+            do {
+                list.add(time);
+                time = addTo(time);
+            } while (!time.isAfter(end));
+        } else {
+            list.add(start);
+        }
+        return list;
+    }
+
 }

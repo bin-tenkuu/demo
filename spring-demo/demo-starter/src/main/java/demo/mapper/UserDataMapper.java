@@ -1,6 +1,6 @@
 package demo.mapper;
 
-import demo.autoconfigure.mybatisSqlInject.TimeBaseMapper;
+import demo.autoconfigure.mybatis.TimeBaseMapper;
 import demo.entity.UserData;
 import org.apache.ibatis.annotations.Mapper;
 

@@ -18,7 +18,6 @@
         <module>test</module>
         <module>FSM</module>
         <module>spring-demo</module>
-        <module>easyDb</module>
     </modules>
 
     <properties>
@@ -73,7 +72,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.13.0</version>
+                    <version>3.14.1</version>
                     <configuration>
                         <compilerVersion>${java.version}</compilerVersion>
                         <source>${java.version}</source>

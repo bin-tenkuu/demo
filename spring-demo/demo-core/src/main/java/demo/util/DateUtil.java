@@ -1,8 +1,6 @@
 
 package demo.util;
 
-import demo.enums.TimeType;
-import lombok.val;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -18,11 +16,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-/**
- * 时间工具类
- *
- * @author bin
- */
+/// 时间工具类
+///
+/// @author bin
 @SuppressWarnings("unused")
 public class DateUtil {
     @NotNull
@@ -57,12 +53,10 @@ public class DateUtil {
         return instant.toEpochMilli();
     }
 
-    /**
-     * 日期型字符串转化为日期 格式
-     *
-     * @param str 日期字符串：`2021`, `2021-02`, `2021-02-03`, `2021-02-03 04`, `2021-02-03 04:05`, `2021-02-03 04:05:06`
-     * @return Date
-     */
+    /// 日期型字符串转化为日期 格式
+    ///
+    /// @param str 日期字符串：`2021`, `2021-02`, `2021-02-03`, `2021-02-03 04`, `2021-02-03 04:05`, `2021-02-03 04:05:06`
+    /// @return Date
     @Nullable
     @Contract(value = "!null -> !null;", pure = true)
     public static Date parseDate(String str) {
@@ -79,12 +73,10 @@ public class DateUtil {
 
     private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH[:mm[:ss]]");
 
-    /**
-     * 日期型字符串转化为日期 格式
-     *
-     * @param source 日期字符串：`2021`, `2021-02`, `2021-02-03`, `2021-02-03 04`, `2021-02-03 04:05`, `2021-02-03 04:05:06`
-     * @return LocalDateTime
-     */
+    /// 日期型字符串转化为日期 格式
+    ///
+    /// @param source 日期字符串：`2021`, `2021-02`, `2021-02-03`, `2021-02-03 04`, `2021-02-03 04:05`, `2021-02-03 04:05:06`
+    /// @return LocalDateTime
     @Nullable
     @Contract(value = "!null -> !null;", pure = true)
     public static LocalDateTime parseLocalDateTime(String source) {
@@ -101,12 +93,10 @@ public class DateUtil {
         }
     }
 
-    /**
-     * 日期型字符串转化为日期 格式
-     *
-     * @param source 日期字符串：`2021`, `2021-02`, `2021-02-03`
-     * @return LocalDate
-     */
+    /// 日期型字符串转化为日期 格式
+    ///
+    /// @param source 日期字符串：`2021`, `2021-02`, `2021-02-03`
+    /// @return LocalDate
     @Nullable
     @Contract(value = "!null -> !null;", pure = true)
     public static LocalDate parseLocalDate(String source) {
@@ -123,12 +113,10 @@ public class DateUtil {
         }
     }
 
-    /**
-     * 日期型字符串转化为日期 格式
-     *
-     * @param source 日期字符串：`04`, `04:05`, `04:05:06`
-     * @return LocalTime
-     */
+    /// 日期型字符串转化为日期 格式
+    ///
+    /// @param source 日期字符串：`04`, `04:05`, `04:05:06`
+    /// @return LocalTime
     @Nullable
     @Contract(value = "!null -> !null;", pure = true)
     public static LocalTime parseLocalTime(String source) {
@@ -200,7 +188,7 @@ public class DateUtil {
     };
 
     public static List<LocalDate> toDayList(LocalDate start, LocalDate end) {
-        val list = new ArrayList<LocalDate>();
+        var list = new ArrayList<LocalDate>();
         for (LocalDate time = start; !time.isAfter(end); time = time.plusDays(1)) {
             list.add(time);
         }
@@ -208,38 +196,9 @@ public class DateUtil {
     }
 
     public static List<LocalDate> toMonthList(int year) {
-        val list = new ArrayList<LocalDate>(12);
+        var list = new ArrayList<LocalDate>(12);
         for (var value = 1; value < 12; value++) {
             list.add(LocalDate.of(year, value, 1));
-        }
-        return list;
-    }
-
-    /**
-     * 获取同层级时间列表
-     */
-    public static List<LocalDateTime> toList(TimeType type, LocalDateTime time) {
-        val base = type.truncatedTo(time);
-        val range = time.range(type.field);
-        long i = range.getMinimum(), end = range.getMaximum();
-        val list = new ArrayList<LocalDateTime>((int) (end - i));
-        for (; i < end; i++) {
-            list.add(type.with(base, i));
-        }
-        return list;
-    }
-
-    public static List<LocalDateTime> toList(TimeType type, LocalDateTime start, LocalDateTime end) {
-        val length = type.between(start, end);
-        val list = new ArrayList<LocalDateTime>((int) length);
-        LocalDateTime time = type.truncatedTo(start);
-        if (!time.isAfter(end)) {
-            do {
-                list.add(time);
-                time = type.addTo(time);
-            } while (!time.isAfter(end));
-        } else {
-            list.add(start);
         }
         return list;
     }

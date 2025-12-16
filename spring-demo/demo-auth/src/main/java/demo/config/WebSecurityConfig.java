@@ -1,22 +1,16 @@
 package demo.config;
 
+import demo.service.auth.HandlerAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.DelegatingPasswordEncoder;
-import org.springframework.security.crypto.password.NoOpPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.cors.CorsConfiguration;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * @author bin
@@ -48,12 +42,17 @@ public class WebSecurityConfig {
         http.headers(configurer -> {
             configurer.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin);
         });
-        // 使用自己实现的登陆和登出逻辑
+        // 禁用默认的表单登录
         http.formLogin(AbstractHttpConfigurer::disable);
+        // 禁用默认的注销处理
         http.logout(AbstractHttpConfigurer::disable);
+        // 禁用记住我功能
         http.rememberMe(AbstractHttpConfigurer::disable);
+        // 禁用匿名用户
+        http.anonymous(AbstractHttpConfigurer::disable);
+        // 禁用HTTP Basic认证
         http.httpBasic(AbstractHttpConfigurer::disable);
-        http.addFilterAt(authenticationFilter, UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter.class);
         http.exceptionHandling(config -> {
             // config.disable();
             config.authenticationEntryPoint(authenticationFilter);
@@ -65,7 +64,7 @@ public class WebSecurityConfig {
         });
         http.authorizeHttpRequests((authorize) -> {
             authorize.requestMatchers(new String[]{
-                    // "/",
+                    "/",
                     "/**.html",
                     "/**.js",
                     "/**.css",
@@ -73,25 +72,15 @@ public class WebSecurityConfig {
                     "/v3/api-docs/**",
                     "/login",
                     "/register",
-                    "/tempLoginApply",
             }).permitAll();
             // 除上面外的所有请求全部需要鉴权认证
             authorize.anyRequest()
-                    // .permitAll();
-                    .authenticated();
+                    .permitAll();
+                    // .authenticated();
         });
         return http.build();
     }
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        String encodingId = "bcrypt";
-        Map<String, PasswordEncoder> encoders = new HashMap<>();
-        encoders.put(encodingId, new BCryptPasswordEncoder());
-        // noinspection deprecation
-        encoders.put("noop", NoOpPasswordEncoder.getInstance());
-        return new DelegatingPasswordEncoder(encodingId, encoders);
-    }
 }
 
 

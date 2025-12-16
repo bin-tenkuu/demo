@@ -1,7 +1,6 @@
 package demo.controller;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import demo.autoconfigure.page.PageDefault;
 import demo.model.ResultModel;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -38,7 +37,7 @@ public class MybatisPageController {
     @Operation(summary = "注解设置")
     @GetMapping("/annDefault")
     public ResultModel<List<String>> annDefaultPage(
-            @ParameterObject @PageDefault(page = 5, size = 10) IPage<String> page
+            @ParameterObject IPage<String> page
     ) {
         return ResultModel.success(page);
     }

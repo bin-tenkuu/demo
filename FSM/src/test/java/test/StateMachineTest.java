@@ -2,7 +2,6 @@ package test;
 
 import demo.fsm.StateMachine;
 import lombok.RequiredArgsConstructor;
-import lombok.val;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -18,7 +17,7 @@ public class StateMachineTest {
     @Test
     @DisplayName("基础状态机测试")
     public void homeDevice() {
-        val homeDevice = new StateMachine<String, String>();
+        var homeDevice = new StateMachine<String, String>();
         // 设置状态变化监听器
         homeDevice.setStateChangeListener((from, to, event) ->
                 System.out.printf("[状态变化] %s -> %s (事件: %s)%n", from, to, event)
@@ -110,7 +109,7 @@ public class StateMachineTest {
     @DisplayName("计算器状态机测试")
     public void mathCalc() {
 
-        val mathMachine = new StateMachine<String, MathState>((_, _) -> {
+        var mathMachine = new StateMachine<String, MathState>((_, _) -> {
             throw new UnsupportedOperationException("未定义的操作符");
         });
         mathMachine.registerState(null, _ -> "+");

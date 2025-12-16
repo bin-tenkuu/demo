@@ -2,7 +2,6 @@ package demo.IEC104.content;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.val;
 
 import java.time.LocalDateTime;
 
@@ -21,7 +20,7 @@ public class CP56Time2a extends CP32Time2a implements BaseContent {
 
     public CP56Time2a(byte[] content, int offset) {
         super(content, offset);
-        val b4 = content[offset + 4];
+        var b4 = content[offset + 4];
         year = content[offset + 6] & 0b01111111;
         month = content[offset + 5] & 0b00001111;
         day = b4 & 0b00011111;

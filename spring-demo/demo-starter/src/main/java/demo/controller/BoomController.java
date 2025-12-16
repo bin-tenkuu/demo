@@ -4,7 +4,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.val;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -29,9 +28,9 @@ public class BoomController {
             method = RequestMethod.GET
     )
     public void boom(HttpServletRequest req, HttpServletResponse res) throws IOException {
-        val headers = req.getHeaders(HttpHeaders.CONTENT_ENCODING);
+        var headers = req.getHeaders(HttpHeaders.CONTENT_ENCODING);
         while (headers.hasMoreElements()) {
-            val encoding = headers.nextElement();
+            var encoding = headers.nextElement();
             System.out.println(encoding);
         }
         ServletOutputStream out;
@@ -41,7 +40,7 @@ public class BoomController {
         } catch (IOException e) {
             return;
         }
-        try (val stream = new GZIPOutputStream(out)) {
+        try (var stream = new GZIPOutputStream(out)) {
             for (int i = 0; i < size; i++) {
                 stream.write(data, 0, size);
             }

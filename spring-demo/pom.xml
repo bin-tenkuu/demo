@@ -14,11 +14,9 @@
     <version>0.1</version>
     <packaging>pom</packaging>
     <modules>
+        <module>demo-auth</module>
         <module>demo-core</module>
         <module>demo-starter</module>
-        <module>demo-auth</module>
-        <module>demo-auth-client</module>
-        <module>demo-jdbc</module>
     </modules>
 
     <properties>
@@ -70,10 +68,22 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.13.0</version>
+                    <version>3.14.1</version>
                     <configuration>
                         <source>${java.version}</source>
                         <target>${java.version}</target>
+                        <annotationProcessorPaths>
+                            <path>
+                                <groupId>org.projectlombok</groupId>
+                                <artifactId>lombok</artifactId>
+                                <version>RELEASE</version>
+                            </path>
+                            <path>
+                                <groupId>org.mapstruct</groupId>
+                                <artifactId>mapstruct-processor</artifactId>
+                                <version>RELEASE</version>
+                            </path>
+                        </annotationProcessorPaths>
                     </configuration>
                 </plugin>
                 <!--拷贝依赖 copy-dependencies-->

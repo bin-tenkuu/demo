@@ -1,7 +1,7 @@
 package demo.util;
 
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.module.SimpleModule;
@@ -13,12 +13,12 @@ import com.fasterxml.jackson.datatype.jsr310.deser.LocalTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalTimeSerializer;
-import lombok.val;
 import org.intellij.lang.annotations.Language;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 
+import java.io.*;
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
@@ -35,14 +35,20 @@ import static demo.constant.DateConstant.*;
  */
 @SuppressWarnings("unused")
 public class JsonUtil {
+
     @FunctionalInterface
-    public interface Call<R> {
-        R call(ObjectMapper om) throws Exception;
+    public interface Func1<T, R> {
+        R run(T t) throws Exception;
     }
 
     @FunctionalInterface
-    public interface Call2<T, R> {
-        R call(ObjectMapper om, T t) throws Exception;
+    public interface Func2<T1, T2, R> {
+        R run(T1 t1, T2 t2) throws Exception;
+    }
+
+    @FunctionalInterface
+    public interface Call2<T1, T2> {
+        void call(T1 t, T2 t2) throws Exception;
     }
 
     public static final ObjectMapper objectMapper = new ObjectMapper();
@@ -50,7 +56,7 @@ public class JsonUtil {
     };
 
     static {
-        val sampleModel = new SimpleModule();
+        var sampleModel = new SimpleModule();
         sampleModel.addSerializer(Long.class, ToStringSerializer.instance)
                 .addSerializer(Long.TYPE, ToStringSerializer.instance)
                 .addSerializer(LocalDateTime.class, new LocalDateTimeSerializer(DATE_TIME_FORMATTER))
@@ -67,25 +73,30 @@ public class JsonUtil {
                 .registerModule(sampleModel);
     }
 
-    @Bean()
+    @Bean
     public ObjectMapper objectMapper() {
         return objectMapper;
     }
 
-    public static <R> R tryParse(Call<R> callable) {
+    public static <T, R> R tryParse(T t, Func1<T, R> callable) {
         try {
-            return callable.call(objectMapper);
+            return callable.run(t);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    public static <T, R> R tryParse(T t, Call2<T, R> callable) {
-        if (t == null) {
-            return null;
-        }
+    public static <T1, T2, R> R tryParse(T1 t1, T2 t2, Func2<T1, T2, R> callable) {
         try {
-            return callable.call(objectMapper, t);
+            return callable.run(t1, t2);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static <T1, T2> void tryCall(T1 t1, T2 t2, Call2<T1, T2> callable) {
+        try {
+            callable.call(t1, t2);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -103,11 +114,7 @@ public class JsonUtil {
         if (value instanceof CharSequence) {
             return value.toString();
         }
-        try {
-            return objectMapper.writeValueAsString(value);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        return tryParse(value, objectMapper::writeValueAsString);
     }
 
     public static <T> byte[] toJsonBytes(T value) {
@@ -117,33 +124,37 @@ public class JsonUtil {
         if (value instanceof CharSequence) {
             return value.toString().getBytes(StandardCharsets.UTF_8);
         }
-        try {
-            return objectMapper.writeValueAsBytes(value);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        return tryParse(value, objectMapper::writeValueAsBytes);
+    }
+
+    public static <T> void toJsonTo(T value, File file) {
+        tryCall(file, value, objectMapper::writeValue);
+    }
+
+    public static <T> void toJsonTo(T value, OutputStream out) {
+        tryCall(out, value, objectMapper::writeValue);
+    }
+
+    public static <T> void toJsonTo(T value, DataOutput out) {
+        tryCall(out, value, objectMapper::writeValue);
+    }
+
+    public static <T> void toJsonTo(T value, Writer w) {
+        tryCall(w, value, objectMapper::writeValue);
     }
 
     public static Map<String, Object> toMap(@Language("json") String json) {
         if (json == null || json.isBlank()) {
             return null;
         }
-        try {
-            return objectMapper.readValue(json, MAP_TYPE);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
+        return tryParse(json, MAP_TYPE, objectMapper::readValue);
     }
 
     public static JsonNode toBean(String json) {
         if (json == null || json.isBlank()) {
             return null;
         }
-        try {
-            return objectMapper.readTree(json);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        return tryParse(json, objectMapper::readTree);
     }
 
     @SuppressWarnings("unchecked")
@@ -154,33 +165,21 @@ public class JsonUtil {
         if (String.class.isAssignableFrom(clazz)) {
             return (T) json;
         }
-        try {
-            return objectMapper.readValue(json, clazz);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        return tryParse(json, clazz, objectMapper::readValue);
     }
 
     public static <T> T toBean(String json, TypeReference<T> clazz) {
         if (json == null || json.isBlank()) {
             return null;
         }
-        try {
-            return objectMapper.readValue(json, clazz);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        return tryParse(json, clazz, objectMapper::readValue);
     }
 
     public static <T> T toBean(String json, JavaType clazz) {
         if (json == null || json.isBlank()) {
             return null;
         }
-        try {
-            return objectMapper.readValue(json, clazz);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        return tryParse(json, clazz, objectMapper::readValue);
     }
 
     @SuppressWarnings("unchecked")
@@ -191,52 +190,40 @@ public class JsonUtil {
         if (String.class.isAssignableFrom(clazz)) {
             return (T) new String(json);
         }
-        try {
-            return objectMapper.readValue(json, clazz);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        return tryParse(json, clazz, objectMapper::readValue);
     }
 
     public static <T> T toBean(byte[] json, TypeReference<T> clazz) {
         if (json == null || json.length == 0) {
             return null;
         }
-        try {
-            return objectMapper.readValue(json, clazz);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        return tryParse(json, clazz, objectMapper::readValue);
     }
 
     public static <T> T toBean(byte[] json, JavaType clazz) {
         if (json == null || json.length == 0) {
             return null;
         }
-        try {
-            return objectMapper.readValue(json, clazz);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        return tryParse(json, clazz, objectMapper::readValue);
     }
 
     public static <T> List<T> toBeanList(String json, Class<T> clazz) {
-        val type = objectMapper.getTypeFactory().constructCollectionType(List.class, clazz);
+        var type = objectMapper.getTypeFactory().constructCollectionType(List.class, clazz);
         return toBean(json, type);
     }
 
     public static <T> List<T> toBeanList(String json, JavaType clazz) {
-        val type = objectMapper.getTypeFactory().constructCollectionType(List.class, clazz);
+        var type = objectMapper.getTypeFactory().constructCollectionType(List.class, clazz);
         return toBean(json, type);
     }
 
     public static <T> List<T> toBeanList(byte[] json, Class<T> clazz) {
-        val type = objectMapper.getTypeFactory().constructCollectionType(List.class, clazz);
+        var type = objectMapper.getTypeFactory().constructCollectionType(List.class, clazz);
         return toBean(json, type);
     }
 
     public static <T> List<T> toBeanList(byte[] json, JavaType clazz) {
-        val type = objectMapper.getTypeFactory().constructCollectionType(List.class, clazz);
+        var type = objectMapper.getTypeFactory().constructCollectionType(List.class, clazz);
         return toBean(json, type);
     }
 
@@ -244,39 +231,50 @@ public class JsonUtil {
         if (obj == null) {
             return null;
         }
-        try {
-            return objectMapper.convertValue(obj, clazz);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        return tryParse(obj, clazz, objectMapper::convertValue);
     }
 
     public static <T> T convertBean(Object obj, TypeReference<T> clazz) {
         if (obj == null) {
             return null;
         }
-        try {
-            return objectMapper.convertValue(obj, clazz);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        return tryParse(obj, clazz, objectMapper::convertValue);
     }
 
     public static <T> T convertBean(Object obj, JavaType clazz) {
         if (obj == null) {
             return null;
         }
-        try {
-            return objectMapper.convertValue(obj, clazz);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        return tryParse(obj, clazz, objectMapper::convertValue);
     }
 
     public static Map<String, Object> convertMap(Object obj) {
         return convertBean(obj, MAP_TYPE);
     }
 
+    // region toParser
+    public static JsonParser toParser(String json) {
+        return tryParse(json, objectMapper::createParser);
+    }
+
+    public static JsonParser toParser(byte[] json) {
+        return tryParse(json, objectMapper::createParser);
+    }
+
+    public static JsonParser toParser(File json) {
+        return tryParse(json, objectMapper::createParser);
+    }
+
+    public static JsonParser toParser(InputStream json) {
+        return tryParse(json, objectMapper::createParser);
+    }
+
+    public static JsonParser toParser(Reader json) {
+        return tryParse(json, objectMapper::createParser);
+    }
+
+    // endregion
+    // region toJavaType
     public static JavaType getJavaType(Type type) {
         return objectMapper.getTypeFactory().constructType(type);
     }
@@ -292,5 +290,5 @@ public class JsonUtil {
     public static <T> JavaType getJavaType(TypeReference<T> type) {
         return objectMapper.getTypeFactory().constructType(type);
     }
-
+    // endregion
 }

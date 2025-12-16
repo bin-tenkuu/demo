@@ -2,7 +2,6 @@ package demo.retrofit;
 
 import com.github.lianjiatech.retrofit.spring.boot.core.SourceOkHttpClientRegistrar;
 import com.github.lianjiatech.retrofit.spring.boot.core.SourceOkHttpClientRegistry;
-import lombok.val;
 import okhttp3.OkHttpClient;
 import org.springframework.stereotype.Component;
 
@@ -18,7 +17,7 @@ import java.security.cert.X509Certificate;
 public class TrustAllOkHttp implements SourceOkHttpClientRegistrar {
     @Override
     public void register(SourceOkHttpClientRegistry registry) {
-        val okHttpClient = new OkHttpClient().newBuilder()
+        var okHttpClient = new OkHttpClient().newBuilder()
                 .retryOnConnectionFailure(true)
                 .sslSocketFactory(createSSLSocketFactory(), new TrustAllCerts())
                 .hostnameVerifier(new TrustAllHostnameVerifier())

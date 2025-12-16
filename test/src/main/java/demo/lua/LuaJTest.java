@@ -24,10 +24,10 @@ import java.util.function.BiConsumer;
 @Slf4j
 public class LuaJTest {
     public static void main(String[] args) {
-        val start = System.currentTimeMillis();
-        val arg1 = new String[]{"aaa", "bbb"};
-        val arg2 = new String[]{"aaa", "bbb"};
-        try (val L = new LuaJit()) {
+        var start = System.currentTimeMillis();
+        var arg1 = new String[]{"aaa", "bbb"};
+        var arg2 = new String[]{"aaa", "bbb"};
+        try (var L = new LuaJit()) {
             // L.openLibrary("package");
             L.openLibrary("table");
             // L.openLibrary("debug");
@@ -87,7 +87,7 @@ public class LuaJTest {
         switch (v) {
             case ImmutableLuaValue<?> immutable -> System.out.print(immutable);
             case RefLuaValue ref -> {
-                val type = ref.type();
+                var type = ref.type();
                 System.out.print("<");
                 System.out.print(type);
                 System.out.print("> ");
@@ -96,8 +96,8 @@ public class LuaJTest {
                 System.out.print("<map> ");
                 for (var entry : table.entrySet()) {
                     System.out.println();
-                    val key = entry.getKey();
-                    val s = key.toString();
+                    var key = entry.getKey();
+                    var s = key.toString();
                     System.out.print(tab);
                     print(tab + "\t", key, set);
                     if (set.add(s)) {
@@ -120,12 +120,12 @@ public class LuaJTest {
 
     private static JFunction toJFunction(BiConsumer<String, Object[]> logger) {
         return L -> {
-            val size = L.getTop();
-            val objects = new Object[size - 1];
+            var size = L.getTop();
+            var objects = new Object[size - 1];
             for (var i = size - 2; i >= 0; i--) {
                 objects[i] = L.get().toJavaObject();
             }
-            val str = L.get().toString();
+            var str = L.get().toString();
             logger.accept(str, objects);
             return 0;
         };

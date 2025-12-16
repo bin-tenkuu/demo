@@ -4,7 +4,6 @@ import demo.enums.TimeType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
-import lombok.val;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -12,11 +11,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-/**
- * @author bin
- * @version 1.0.0
- * @since 2024/11/01
- */
+/// @author bin
+/// @version 1.0.0
+/// @since 2024/11/01
 @SuppressWarnings("unused")
 @Data
 @Schema(description = "图表数据")
@@ -48,7 +45,7 @@ public class ChartModel {
     }
 
     public void add(String name, double scale) {
-        val list = new ArrayList<Number>(xs.size());
+        var list = new ArrayList<Number>(xs.size());
         for (int i = 0; i < xs.size(); i++) {
             list.add(Math.random() * scale);
         }

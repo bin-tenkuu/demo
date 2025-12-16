@@ -1,6 +1,5 @@
 package demo.autoconfigure.swagger;
 
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import demo.constant.DateConstant;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeIn;
@@ -16,10 +15,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
-/**
- * @author bin
- * @since 2023/03/10
- */
+/// @author bin
+/// @since 2023/03/10
 @OpenAPIDefinition(
         info = @Info(
                 title = "接口",
@@ -42,7 +39,6 @@ import java.time.LocalTime;
 public class SwaggerCommonConfigure {
     static {
         SpringDocUtils.getConfig()
-                .replaceParameterObjectWithClass(IPage.class, Pageable.class)
                 .replaceWithSchema(LocalDate.class, new Schema<>()
                         .type("string")
                         .description(DateConstant.DATE_FORMAT)

@@ -1,85 +1,62 @@
 package demo.controller;
 
 import demo.entity.SysUserAuth;
-import demo.model.LoginBody;
-import demo.model.LoginUser;
 import demo.model.ResultModel;
-import demo.repository.SysUserAuthRepository;
-import demo.repository.SysUserRepository;
-import demo.service.TokenService;
+import demo.model.auth.LoginUser;
+import demo.service.auth.TokenService;
+import demo.util.SecurityUtils;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import lombok.val;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.time.LocalDateTime;
-import java.util.Random;
-
-/**
- * @author bin
- * @since 2025/07/16
- */
-@RestController()
+/// @author bin
+/// @since 2025/07/16
+@Tag(name = "用户认证", description = "用户认证相关接口")
+@Slf4j
+@RestController
 @RequiredArgsConstructor
 public class LoginController {
-    private final SysUserRepository sysUserRepository;
-    private final SysUserAuthRepository sysUserAuthRepository;
-    private final PasswordEncoder passwordEncoder;
     private final TokenService tokenService;
-    private final Random random = new Random();
 
-    /**
-     * 注册
-     */
+    @Operation(summary = "测试接口")
+    @GetMapping
+    public String hello() {
+        return "Hello, Spring Boot!";
+    }
+
+    @Operation(summary = "用户注册")
     @PostMapping("/register")
-    public ResultModel<?> register(@RequestBody LoginBody body) {
+    public ResultModel<?> register(@RequestBody SysUserAuth userAuth) {
+        log.info("Register user: {}", userAuth);
         return ResultModel.success();
     }
 
-    /**
-     * 临时登陆申请录入，例如验证码等临时令牌登陆
-     */
+    @Operation(summary = "临时登陆申请录入")
     @PostMapping("/tempLoginApply")
-    public ResultModel<String> tempLoginApply(String username, String type, Long userId) {
-        val userAuth = new SysUserAuth();
-        userAuth.setUsername(username);
-        userAuth.setType(type);
-        userAuth.setUserId(userId);
-        val password = String.valueOf(random.nextInt(111111, 999999));
-        userAuth.setPassword(passwordEncoder.encode(password));
-        SysUserAuthRepository.addExtryAuth(userAuth);
+    public ResultModel<String> tempLoginApply(@RequestBody SysUserAuth userAuth) {
+        var password = tokenService.addExtryAuth(userAuth);
         return ResultModel.success(password);
     }
 
+    @Operation(summary = "用户登录")
     @PostMapping("/login")
-    public ResultModel<String> login(@RequestBody LoginBody body) {
-        val userAuth = sysUserAuthRepository.findByUsername(body.getUsername());
-        if (userAuth == null) {
-            return ResultModel.fail("用户名或密码错误");
-        }
-        if (!passwordEncoder.matches(body.getPassword(), userAuth.getPassword())) {
-            return ResultModel.fail("用户名或密码错误");
-        }
-        val sysUser = sysUserRepository.getById(userAuth.getUserId());
-        if (sysUser == null) {
-            return ResultModel.fail("用户不存在");
-        }
-        if (sysUser.getExpireTime() != null && sysUser.getExpireTime().isBefore(LocalDateTime.now())
-            || sysUser.getStatus() == true
-        ) {
-            return ResultModel.fail("用户已过期或被禁用");
-        }
-
-        val loginUser = LoginUser.from(userAuth.getUsername(), userAuth.getPassword(), sysUser);
-        val token = tokenService.createToken(loginUser);
+    public ResultModel<String> login(@RequestBody SysUserAuth body) {
+        var token = tokenService.login(body);
         return ResultModel.success(token);
     }
 
+    @Operation(summary = "用户登出")
     @PostMapping("/logout")
     public ResultModel<?> logout() {
         // 这里可以添加注销逻辑，例如清除用户会话等
+        tokenService.delLoginUser(SecurityUtils.getLoginUser()
+                .map(LoginUser::getToken)
+                .orElse(null));
         return ResultModel.success("登出成功");
     }
 }

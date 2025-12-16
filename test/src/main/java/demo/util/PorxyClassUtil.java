@@ -21,7 +21,6 @@ import java.nio.file.Path;
  * @version 1.0.0
  * @since 2024/09/25
  */
-@SuppressWarnings({"preview"})
 public class PorxyClassUtil extends ClassLoader {
     private static final ClassFile cf = ClassFile.of();
     private static final MethodHandles.Lookup lookup = MethodHandles.lookup();
@@ -33,24 +32,24 @@ public class PorxyClassUtil extends ClassLoader {
     }
 
     private static byte[] proxy0(Class<?> clazz, String simpleNameProxy, boolean saveFile) throws IOException {
-        val nameWithPackage = clazz.getName().replace(".", "/");
-        val index = nameWithPackage.lastIndexOf('/');
-        val className = nameWithPackage.substring(index + 1);
-        val path = Path.of(clazz.getResource(className + ".class").getPath());
-        val classModel = cf.parse(path);
-        val build = cf.build(ClassDesc.ofInternalName(simpleNameProxy), classBuilder -> {
+        var nameWithPackage = clazz.getName().replace(".", "/");
+        var index = nameWithPackage.lastIndexOf('/');
+        var className = nameWithPackage.substring(index + 1);
+        var path = Path.of(clazz.getResource(className + ".class").getPath());
+        var classModel = cf.parse(path);
+        var build = cf.build(ClassDesc.ofInternalName(simpleNameProxy), classBuilder -> {
             classBuilder.withSuperclass(ClassFileUtil.ofClass(clazz));
             for (MethodModel methodModel : classModel.methods()) {
-                val methodName = methodModel.methodName().stringValue();
-                val flags = methodModel.flags();
+                var methodName = methodModel.methodName().stringValue();
+                var flags = methodModel.flags();
                 if (flags.has(AccessFlag.PRIVATE) || flags.has(AccessFlag.STATIC) || flags.has(AccessFlag.FINAL)) {
                     continue;
                 }
-                val methodTypeDesc = methodModel.methodTypeSymbol();
+                var methodTypeDesc = methodModel.methodTypeSymbol();
                 classBuilder.withMethod(methodName, methodTypeDesc, flags.flagsMask(), methodBuilder -> {
                     methodBuilder.withCode(codeBuilder -> {
-                        val returnType = methodTypeDesc.returnType();
-                        val returnKind = TypeKind.fromDescriptor(returnType.descriptorString());
+                        var returnType = methodTypeDesc.returnType();
+                        var returnKind = TypeKind.fromDescriptor(returnType.descriptorString());
                         ClassFileUtil.println(codeBuilder, className + "#" + methodName + " start");
                         ClassFileUtil.callSuper(codeBuilder, clazz, methodName, methodTypeDesc);
                         if (returnKind == TypeKind.VOID) {

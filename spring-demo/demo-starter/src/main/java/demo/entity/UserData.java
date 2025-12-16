@@ -1,6 +1,6 @@
 package demo.entity;
 
-import demo.autoconfigure.mybatisSqlInject.TimeBase;
+import demo.autoconfigure.mybatis.TimeBase;
 import lombok.Getter;
 import lombok.Setter;
 

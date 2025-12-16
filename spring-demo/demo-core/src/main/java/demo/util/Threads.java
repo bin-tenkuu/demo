@@ -2,17 +2,14 @@ package demo.util;
 
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import lombok.val;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.concurrent.*;
 
-/**
- * @author bin
- * @version 1.0.0
- * @since 2024/12/12
- */
+/// @author bin
+/// @version 1.0.0
+/// @since 2024/12/12
 @SuppressWarnings("unused")
 @Slf4j
 public class Threads {
@@ -20,7 +17,7 @@ public class Threads {
     private static final ThreadGroup group = new ThreadGroup("Threads");
     private static int threadInitNumber = 0;
     private static final ThreadFactory threadFactory = r -> {
-        val thread = new Thread(group, r, "Threads-" + threadInitNumber++);
+        var thread = new Thread(group, r, "Threads-" + threadInitNumber++);
         thread.setDaemon(true);
         return thread;
     };
@@ -68,11 +65,9 @@ public class Threads {
         }
     }
 
-    /**
-     * 防抖函数，固定延时函数,
-     * 用于防止短时间内多次触发，也用于固定延时时间内只执行一次,
-     * 如：表变化消息，连接断开消息
-     */
+    /// 防抖函数，固定延时函数,
+    /// 用于防止短时间内多次触发，也用于固定延时时间内只执行一次,
+    /// 如：表变化消息，连接断开消息
     public static void debounce(final Object key, final Runnable runnable, long delay, TimeUnit unit) {
         final Future<?> prev = DELAYED_MAP.put(key, SCHEDULE.schedule(new Command(key, runnable), delay, unit));
         if (prev != null) {
@@ -103,9 +98,7 @@ public class Threads {
         }
     }
 
-    /**
-     * 优先开新线程，然后放入队列
-     */
+    /// 优先开新线程，然后放入队列
     @Setter
     public static class TaskQueue extends LinkedBlockingQueue<Runnable> {
 
