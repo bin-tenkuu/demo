@@ -11,7 +11,6 @@ import demo.repository.SysUserRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import lombok.val;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -39,7 +38,7 @@ public class TokenService {
     private final PasswordEncoder passwordEncoder;
 
     public String addExtryAuth(SysUserAuth auth) {
-        val password = auth.getPassword();
+        var password = auth.getPassword();
         auth.setPassword(passwordEncoder.encode(password));
         sysUserAuthRepository.addExtryAuth(auth, expireTimeDelay);
         return password;

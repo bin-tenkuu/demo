@@ -1,6 +1,5 @@
 package demo.enums;
 
-import lombok.val;
 import org.jetbrains.annotations.NotNull;
 
 import java.time.Duration;
@@ -139,7 +138,7 @@ public enum TimeType {
         var startDate = timeList.getFirst();
         var endDate = timeList.getLast();
         TimeType from = getTimeTypeFrom(startDate, endDate);
-        val pattern = getFormatter(from, this);
+        var pattern = getFormatter(from, this);
         for (LocalDateTime x : timeList) {
             list.add(pattern.format(x));
         }
@@ -197,7 +196,7 @@ public enum TimeType {
 
         @Override
         public long between(Temporal temporal1Inclusive, Temporal temporal2Exclusive) {
-            val until = temporal1Inclusive.until(temporal2Exclusive, ChronoUnit.MINUTES);
+            var until = temporal1Inclusive.until(temporal2Exclusive, ChronoUnit.MINUTES);
             return until / 15 * 15;
         }
     }
@@ -264,9 +263,9 @@ public enum TimeType {
     /// 获取同层级时间列表
     public List<LocalDateTime> toList(LocalDateTime time) {
         var base = truncatedTo(time);
-        val range = time.range(field);
+        var range = time.range(field);
         long i = range.getMinimum(), end = range.getMaximum();
-        val list = new ArrayList<LocalDateTime>((int) (end - i));
+        var list = new ArrayList<LocalDateTime>((int) (end - i));
         for (; i < end; i++) {
             list.add(with(base, i));
         }
@@ -274,8 +273,8 @@ public enum TimeType {
     }
 
     public List<LocalDateTime> toList(LocalDateTime start, LocalDateTime end) {
-        val length = between(start, end);
-        val list = new ArrayList<LocalDateTime>((int) length);
+        var length = between(start, end);
+        var list = new ArrayList<LocalDateTime>((int) length);
         LocalDateTime time = truncatedTo(start);
         if (!time.isAfter(end)) {
             do {

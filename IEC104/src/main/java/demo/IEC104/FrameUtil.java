@@ -1,7 +1,6 @@
 package demo.IEC104;
 
 import demo.IEC104.content.BaseContent;
-import lombok.val;
 import org.jetbrains.annotations.NotNull;
 
 import java.nio.ByteBuffer;
@@ -119,7 +118,7 @@ public class FrameUtil {
                 yield new FrameU(bytes);
             }
             default -> {
-                val bytes = new byte[frameLength];
+                var bytes = new byte[frameLength];
                 System.arraycopy(data, 0, bytes, 0, frameLength);
                 yield new Frame(frameType, bytes);
             }
@@ -140,8 +139,8 @@ public class FrameUtil {
     }
 
     public static byte[] initContent(FrameI frameI) {
-        val typeID = TypeID.getByType(frameI.getTypeId());
-        val number = frameI.getNumber();
+        var typeID = TypeID.getByType(frameI.getTypeId());
+        var number = frameI.getNumber();
         int size = 0;
         for (ContentLayout layout : typeID.layout) {
             size += layout.length;
@@ -153,7 +152,7 @@ public class FrameUtil {
             size += ContentLayout.IOA.length + typeID.timeLayout.length;
             size *= number;
         }
-        val bytes = new byte[size];
+        var bytes = new byte[size];
         frameI.setContent(bytes);
         return bytes;
     }
@@ -165,13 +164,13 @@ public class FrameUtil {
      */
     @NotNull
     public static List<@NotNull List<BaseContent>> parseContentsList(FrameI frameI) {
-        val typeID = TypeID.getByType(frameI.getTypeId());
-        val content = frameI.getContent();
-        val number = frameI.getNumber();
+        var typeID = TypeID.getByType(frameI.getTypeId());
+        var content = frameI.getContent();
+        var number = frameI.getNumber();
         List<List<BaseContent>> contentList = new ArrayList<>(number);
         int offset = 0;
         List<BaseContent> contents;
-        val contentLayouts = typeID.layout;
+        var contentLayouts = typeID.layout;
         if (frameI.getSq()) {
             contents = new ArrayList<>(1);
             offset = parseContentsList(ContentLayout.IOA, content, offset, contents);
@@ -217,7 +216,7 @@ public class FrameUtil {
         if (contentsList.isEmpty()) {
             return new byte[0];
         }
-        val hasTime = timeLayout != ContentLayout.NULL;
+        var hasTime = timeLayout != ContentLayout.NULL;
         int size = contentsList.size();
         List<BaseContent> firstContents;
         if (sq) {
@@ -243,7 +242,7 @@ public class FrameUtil {
         if (sq) {
             totalSize += ContentLayout.IOA.length + timeLayout.length;
         }
-        val bytes = new byte[totalSize];
+        var bytes = new byte[totalSize];
         index = 0;
         for (List<BaseContent> contents : contentsList) {
             for (BaseContent content : contents) {
@@ -256,13 +255,13 @@ public class FrameUtil {
 
     // region toString
     public static String toString(Frame frame) {
-        val sb = new StringBuilder();
+        var sb = new StringBuilder();
         toString(sb, frame);
         return sb.toString();
     }
 
     public static void toString(StringBuilder sb, Frame frame) {
-        val data = frame.data;
+        var data = frame.data;
         sb.append("类型：").append(frame.type.name()).append(" 帧\n");
         sb.append(ByteUtil.toString(data[0])).append(" <起始符> ");
         sb.append(ByteUtil.toString(data[1])).append(" <长度>\n");
@@ -295,7 +294,7 @@ public class FrameUtil {
                 sb.append("<发送序号> ");
                 ByteUtil.toString(sb, data, 4, 2);
                 sb.append("<接收序号>\n");
-                val typeID = TypeID.getByType(i.getTypeId());
+                var typeID = TypeID.getByType(i.getTypeId());
                 sb.append(ByteUtil.toString(data[6])).append(" <类型标志：").append(typeID.name).append("> ");
                 sb.append(ByteUtil.toString(data[7])).append(" <地址");
                 if (!i.getSq()) {
@@ -313,14 +312,14 @@ public class FrameUtil {
                 } else {
                     sb.append("积极，");
                 }
-                val cot = CauseOfTransmission.getByType(i.getCot());
+                var cot = CauseOfTransmission.getByType(i.getCot());
                 sb.append("传送原因：").append(cot.name).append("> ");
                 sb.append(ByteUtil.toString(data[9])).append(" <源发站地址>\n");
                 ByteUtil.toString(sb, data, 10, 2);
                 sb.append("<通用地址>\n");
-                val contentsList = i.getContentsList();
-                for (val contents : contentsList) {
-                    for (val content : contents) {
+                var contentsList = i.getContentsList();
+                for (var contents : contentsList) {
+                    for (var content : contents) {
                         ByteUtil.toString(sb, content.toByteArray());
                         sb.append("<").append(content.getClass().getSimpleName()).append(":");
                         content.toString(sb);

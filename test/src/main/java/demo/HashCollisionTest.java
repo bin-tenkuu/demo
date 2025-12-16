@@ -1,7 +1,5 @@
 package demo;
 
-import lombok.val;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -30,7 +28,7 @@ public class HashCollisionTest {
     }
 
     public static List<String> createByList(List<String> list) {
-        val result = new ArrayList<String>();
+        var result = new ArrayList<String>();
         for (String s : SEED) {
             for (String str : list) {
                 result.add(s + str);

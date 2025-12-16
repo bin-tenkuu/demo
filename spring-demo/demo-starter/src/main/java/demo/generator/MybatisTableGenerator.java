@@ -5,7 +5,6 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import demo.entity.User;
 import lombok.AllArgsConstructor;
-import lombok.val;
 
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
@@ -22,15 +21,15 @@ public class MybatisTableGenerator {
     private final TypeMap typeMap;
 
     public static void main(String[] args) {
-        val a = new MybatisTableGenerator(MySql);
+        var a = new MybatisTableGenerator(MySql);
         System.out.println(a.generateTable(User.class));
     }
 
     private String generateTable(Class<?> clazz) {
-        val sb = new StringBuilder();
+        var sb = new StringBuilder();
         sb.append("create table if not exists ");
         // 获取表名
-        val name = clazz.getAnnotation(TableName.class);
+        var name = clazz.getAnnotation(TableName.class);
         if (name != null) {
             sb.append(name.value());
         } else {
@@ -39,8 +38,8 @@ public class MybatisTableGenerator {
         sb.append(" (\n");
         // 获取字段名
         for (Field field : clazz.getDeclaredFields()) {
-            val sqlType = typeMap.toSqlType(field.getType());
-            val tableId = field.getAnnotation(TableId.class);
+            var sqlType = typeMap.toSqlType(field.getType());
+            var tableId = field.getAnnotation(TableId.class);
             if (tableId != null) {
                 sb.append("    ");
                 if (tableId.value().isEmpty()) {
@@ -51,7 +50,7 @@ public class MybatisTableGenerator {
                 sb.append(" ").append(sqlType).append(" not null");
                 sb.append("\n").append("            primary key");
             } else {
-                val tableField = field.getAnnotation(TableField.class);
+                var tableField = field.getAnnotation(TableField.class);
                 if (tableField != null) {
                     if (!tableField.exist()) {
                         continue;
@@ -76,7 +75,7 @@ public class MybatisTableGenerator {
     }
 
     private String toSnakeCase(String name) {
-        val sb = new StringBuilder(name.length());
+        var sb = new StringBuilder(name.length());
         for (int i = 0; i < name.length(); i++) {
             char c = name.charAt(i);
             if (Character.isUpperCase(c)) {

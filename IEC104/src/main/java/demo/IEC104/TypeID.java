@@ -1,7 +1,5 @@
 package demo.IEC104;
 
-import lombok.val;
-
 import java.util.Objects;
 
 import static demo.IEC104.ContentLayout.*;
@@ -259,7 +257,7 @@ public enum TypeID {
     }
 
     public static TypeID getByType(byte type) {
-        val value = values[type & 0xFF];
+        var value = values[type & 0xFF];
         return Objects.requireNonNullElse(value, UNKOWN);
     }
 

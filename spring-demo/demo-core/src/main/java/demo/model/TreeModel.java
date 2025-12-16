@@ -3,7 +3,10 @@ package demo.model;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -40,10 +43,10 @@ public class TreeModel {
         for (var entity : list) {
             var id = getId.apply(entity);
             var children = midMap.remove(id);
-            val select = new TreeModel(entity, children);
+            var select = new TreeModel(entity, children);
             selectMap.put(id, select);
-            val parentId = getParentId.apply(entity);
-            val parent = selectMap.get(parentId);
+            var parentId = getParentId.apply(entity);
+            var parent = selectMap.get(parentId);
             if (parent != null) {
                 parent.getChildren().add(select);
             } else {
@@ -51,7 +54,7 @@ public class TreeModel {
             }
         }
         // 剩下的为根节点
-        val rootList = new ArrayList<TreeModel>();
+        var rootList = new ArrayList<TreeModel>();
         for (ArrayList<TreeModel> value : midMap.values()) {
             rootList.addAll(value);
         }

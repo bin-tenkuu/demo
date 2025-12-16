@@ -4,7 +4,6 @@ import demo.IEC104.ByteUtil;
 import demo.IEC104.Frame;
 import demo.IEC104.FrameUtil;
 import lombok.Setter;
-import lombok.val;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -52,7 +51,7 @@ public class Client implements CompletionHandler<Integer, ByteBuffer>, Closeable
 
     public void registerRead(int size) {
         if (!reading) {
-            val buffer = ByteBuffer.allocate(size);
+            var buffer = ByteBuffer.allocate(size);
             socketChannel.read(buffer, buffer, this);
             reading = true;
         }
@@ -103,7 +102,7 @@ public class Client implements CompletionHandler<Integer, ByteBuffer>, Closeable
 
     private void parseData(ByteBuffer buffer) {
         while (true) {
-            val frame = FrameUtil.parse(buffer);
+            var frame = FrameUtil.parse(buffer);
             if (frame == null) {
                 break;
             }
@@ -130,11 +129,11 @@ public class Client implements CompletionHandler<Integer, ByteBuffer>, Closeable
     public static void main(String[] args) throws IOException, InterruptedException {
         Thread.ofVirtual().start(() -> {
             try {
-                try (val serverSocket = new ServerSocket(9999)) {
-                    try (val socket = serverSocket.accept()) {
+                try (var serverSocket = new ServerSocket(9999)) {
+                    try (var socket = serverSocket.accept()) {
                         // redirect
-                        try (val in = socket.getInputStream();
-                             val out = socket.getOutputStream()) {
+                        try (var in = socket.getInputStream();
+                             var out = socket.getOutputStream()) {
                             int read;
                             while (!socket.isClosed() && (read = in.read()) >= 0) {
                                 out.write(read);
@@ -149,11 +148,11 @@ public class Client implements CompletionHandler<Integer, ByteBuffer>, Closeable
             }
         });
         Thread.sleep(500);
-        try (val client = new Client()) {
+        try (var client = new Client()) {
             client.setHandler(frame -> System.out.println(FrameUtil.toString(frame)));
             client.start(new InetSocketAddress("127.0.0.1", 9999));
             Thread.sleep(500);
-            val bs = ByteUtil.fromString("""
+            var bs = ByteUtil.fromString("""
                     68 d5 cc 07 fc 20 0f a8 25 00 01 00 01 64 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
                     a1 0d 00 00 00 be 01 00 00 00 5f 0f 00 00 00 8e 05 00 00 00 c0 03 00 00 00 05 00 00 00 00 c5 03 00 00 00
                     15 03 00 00 00 0b 00 00 00 00 94 01 00 00 00 9f 01 00 00 00 88 01 00 00 00 05 00 00 00 00 67 00 00 00 00

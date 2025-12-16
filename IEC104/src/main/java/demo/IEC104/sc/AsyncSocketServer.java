@@ -2,7 +2,6 @@ package demo.IEC104.sc;
 
 import demo.IEC104.FrameUtil;
 import lombok.extern.slf4j.Slf4j;
-import lombok.val;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -34,13 +33,13 @@ public class AsyncSocketServer implements CompletionHandler<AsynchronousSocketCh
     @Override
     public void completed(AsynchronousSocketChannel socketChannel, Void struct) {
         log.debug("有 Client 连接...");
-        val asyncSocketClient = new AsyncSocketClient(socketChannel);
+        var asyncSocketClient = new AsyncSocketClient(socketChannel);
         asyncSocketClient.setHandler(AsyncSocketServer::clientHandle);
         asyncSocketClient.registerRead(1024);
     }
 
     private static boolean clientHandle(AsyncSocketClient client, ByteBuffer buffer) {
-        val frame = FrameUtil.parse(buffer);
+        var frame = FrameUtil.parse(buffer);
         if (frame == null) {
             return false;
         }

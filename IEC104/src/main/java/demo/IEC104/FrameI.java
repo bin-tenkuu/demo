@@ -3,7 +3,6 @@ package demo.IEC104;
 import demo.IEC104.content.BaseContent;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.val;
 
 import java.util.List;
 
@@ -72,7 +71,7 @@ public class FrameI extends Frame {
 
     @Override
     public byte[] toByteArray() {
-        val bytes = new byte[12 + content.length];
+        var bytes = new byte[12 + content.length];
         System.arraycopy(data, 0, bytes, 0, 12);
         System.arraycopy(content, 0, bytes, 12, content.length);
         return bytes;

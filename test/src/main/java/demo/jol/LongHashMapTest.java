@@ -1,7 +1,6 @@
 package demo.jol;
 
 import demo.map.LongHashMap;
-import lombok.val;
 import org.apache.lucene.util.RamUsageEstimator;
 
 import java.util.HashMap;
@@ -9,9 +8,9 @@ import java.util.HashMap;
 
 public class LongHashMapTest {
     public static void main() {
-        val length = 1;
+        var length = 1;
         var map = new HashMap<Long, Long>(length);
-        val longMap = new LongHashMap<Long>(length);
+        var longMap = new LongHashMap<Long>(length);
         for (long i = 0; i < length; i++) {
             map.put(i, i);
             longMap.put(i, i);

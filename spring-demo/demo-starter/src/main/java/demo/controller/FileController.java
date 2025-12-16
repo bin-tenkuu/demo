@@ -5,7 +5,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import lombok.val;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
@@ -45,7 +44,7 @@ public class FileController {
                 throw new IllegalArgumentException("文件名不能为空");
             }
         }
-        val filePath = new File(uploadDir, name);
+        var filePath = new File(uploadDir, name);
         file.transferTo(filePath.toPath());
         return ResultModel.success("/download/path/" + name);
     }
@@ -56,16 +55,16 @@ public class FileController {
             @RequestHeader(value = HttpHeaders.RANGE, required = false) String rangeStr,
             @PathVariable("url") String url
     ) throws IOException {
-        val fullUrl = request.getRequestURI();
-        val fileName = fullUrl.substring(fullUrl.indexOf("/download/" + url) - 1 + "/download/".length());
-        val filePath = new File(uploadDir, fileName);
+        var fullUrl = request.getRequestURI();
+        var fileName = fullUrl.substring(fullUrl.indexOf("/download/" + url) - 1 + "/download/".length());
+        var filePath = new File(uploadDir, fileName);
         if (!filePath.exists() || !filePath.canRead()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
-        val contentLength = filePath.length();
-        val encodedFileName = encodedFileName(fileName);
+        var contentLength = filePath.length();
+        var encodedFileName = encodedFileName(fileName);
 
-        val httpRanges = HttpRange.parseRanges(rangeStr);
+        var httpRanges = HttpRange.parseRanges(rangeStr);
         if (httpRanges.isEmpty()) {
             // 完整文件下载
             return ResponseEntity.ok()
@@ -75,7 +74,7 @@ public class FileController {
                     .header(HttpHeaders.ACCEPT_RANGES, "bytes")
                     .body(new FileSystemResource(filePath));
         }
-        val range = httpRanges.getFirst();
+        var range = httpRanges.getFirst();
         long rangeStart = range.getRangeStart(contentLength);
         long rangeEnd = range.getRangeEnd(contentLength);
         long rangeLength = Math.min(rangeEnd - rangeStart + 1, contentLength - rangeStart);

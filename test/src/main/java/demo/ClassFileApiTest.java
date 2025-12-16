@@ -1,10 +1,6 @@
 package demo;
 
 import demo.util.PorxyClassUtil;
-import lombok.val;
-
-import java.io.IOException;
-import java.lang.invoke.MethodHandles;
 
 /**
  * @author bin
@@ -24,7 +20,7 @@ public class ClassFileApiTest {
     }
 
     public static void main(String[] args) throws Throwable {
-        val util = new PorxyClassUtil(true);
+        var util = new PorxyClassUtil(true);
         // util.helloworld();
         A a = util.proxy(A.class);
         a.test();

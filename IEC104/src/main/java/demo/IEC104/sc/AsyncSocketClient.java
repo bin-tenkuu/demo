@@ -3,7 +3,6 @@ package demo.IEC104.sc;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import lombok.val;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -53,7 +52,7 @@ public class AsyncSocketClient implements Closeable {
 
     public void registerRead(int size) {
         if (!reading) {
-            val buffer = ByteBuffer.allocate(size);
+            var buffer = ByteBuffer.allocate(size);
             socketChannel.read(buffer, buffer, new ReadedCallback());
             reading = true;
         }

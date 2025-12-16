@@ -1,7 +1,6 @@
 package demo.lua;
 
 import lombok.extern.slf4j.Slf4j;
-import lombok.val;
 import party.iroiro.luajava.JFunction;
 import party.iroiro.luajava.JuaAPI;
 import party.iroiro.luajava.Lua;
@@ -132,7 +131,7 @@ public class LuaJTest {
     }
 
     public static Map<String, JFunction> logTable() {
-        val map = new HashMap<String, JFunction>();
+        var map = new HashMap<String, JFunction>();
         map.put("info", toJFunction(log::info));
         map.put("debug", toJFunction(log::debug));
         map.put("warn", toJFunction(log::warn));

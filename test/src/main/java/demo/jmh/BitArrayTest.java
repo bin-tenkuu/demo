@@ -1,6 +1,5 @@
 package demo.jmh;
 
-import lombok.val;
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.runner.Runner;
 import org.openjdk.jmh.runner.RunnerException;
@@ -44,7 +43,7 @@ public class BitArrayTest {
 
     @Benchmark
     public void normal() {
-        val bs = new byte[8];
+        var bs = new byte[8];
         for (int n = 0; n < 1000000000; n++) {
             for (int i = 0; i < 255; i++) {
                 toBitArray_ge(bs, (byte) i);
@@ -54,7 +53,7 @@ public class BitArrayTest {
 
     @Benchmark
     public void simd() {
-        val bs = new byte[8];
+        var bs = new byte[8];
         for (int n = 0; n < 1000000000; n++) {
             for (int i = 0; i < 255; i++) {
                 toBitArraySIMD_ge(bs, (byte) i);
@@ -74,7 +73,7 @@ public class BitArrayTest {
     }
 
     private static void toBitArraySIMD_ge(byte[] bs, byte x) {
-        val m = 0x2040810204081L;
+        var m = 0x2040810204081L;
         long y = ((x & 0xfe) * m | x & 0xff) & M;
         LONG_ARRAY_B.set(bs, 0, y);
     }

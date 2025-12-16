@@ -1,7 +1,5 @@
 package demo;
 
-import lombok.val;
-
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
@@ -42,7 +40,7 @@ public class MoneyCalc {
         BigDecimal last = v0, now;
         for (int year = 1; year <= 10; year++) {
             now = calc(本金, new BigDecimal("1.0002"), 5000, year);
-            val subtract = now.subtract(last);
+            var subtract = now.subtract(last);
             System.out.printf("第 %s 年总：\t%s\t多:\t%s\t平均：\t%s\n", year, now, subtract,
                     now.subtract(v0).divide(new BigDecimal(year), 8, RoundingMode.DOWN));
             last = now;

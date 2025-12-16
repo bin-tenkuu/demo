@@ -1,7 +1,5 @@
 package demo;
 
-import lombok.val;
-
 import java.io.IOException;
 
 /**
@@ -15,10 +13,10 @@ public class SystemInTest {
 
     public static void main() throws IOException {
         System.out.println("请输入任意字符，回车确定：");
-        val in = System.in;
+        var in = System.in;
         Thread.ofVirtual().start(new PrintGlobalInt());
         while (true) {
-            val newInt = in.read();
+            var newInt = in.read();
             if (newInt == 10) {
                 if (readyExit) {
                     System.out.println("退出");

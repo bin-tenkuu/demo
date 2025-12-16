@@ -1,7 +1,6 @@
 package demo.IEC104.content;
 
 import demo.IEC104.ByteUtil;
-import lombok.val;
 
 import java.time.LocalDateTime;
 
@@ -16,7 +15,7 @@ public class CP32Time2a extends CP24Time2a implements BaseContent {
 
     public CP32Time2a(byte[] content, int offset) {
         super(content, offset);
-        val b3 = content[offset + 3];
+        var b3 = content[offset + 3];
         hour = b3 & 0b00011111;
         su = ByteUtil.getBit(b3, 7);
     }

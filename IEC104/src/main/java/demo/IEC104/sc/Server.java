@@ -2,7 +2,6 @@ package demo.IEC104.sc;
 
 import demo.IEC104.ByteUtil;
 import demo.IEC104.FrameUtil;
-import lombok.val;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -32,7 +31,7 @@ public class Server implements CompletionHandler<AsynchronousSocketChannel, Void
     @Override
     public void completed(AsynchronousSocketChannel socketChannel, Void struct) {
         System.out.println("有 Client 连接...");
-        val client = new Client(socketChannel);
+        var client = new Client(socketChannel);
         client.setHandler(frame -> client.write(frame.toByteArray()));
         client.registerRead(1024);
     }
@@ -48,11 +47,11 @@ public class Server implements CompletionHandler<AsynchronousSocketChannel, Void
     }
 
     public static void main(String[] args) throws IOException, InterruptedException {
-        val address = new InetSocketAddress("127.0.0.1", 9999);
-        try (val server = new Server()) {
+        var address = new InetSocketAddress("127.0.0.1", 9999);
+        try (var server = new Server()) {
             server.start(address);
             Thread.sleep(500);
-            try (val client = new Client()) {
+            try (var client = new Client()) {
                 client.setHandler(frame -> System.out.println(FrameUtil.toString(frame)));
                 client.start(address);
                 Thread.sleep(500);

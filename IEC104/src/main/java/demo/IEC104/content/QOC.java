@@ -3,7 +3,6 @@ package demo.IEC104.content;
 import demo.IEC104.ByteUtil;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.val;
 
 /**
  * @author bin
@@ -60,7 +59,7 @@ public class QOC implements BaseContent {
 
     @Override
     public String toString() {
-        val sb = new StringBuilder();
+        var sb = new StringBuilder();
         toString(sb);
         return sb.toString();
     }

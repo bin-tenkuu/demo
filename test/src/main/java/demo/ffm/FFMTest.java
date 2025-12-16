@@ -1,7 +1,5 @@
 package demo.ffm;
 
-import lombok.val;
-
 import java.lang.foreign.*;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
@@ -42,7 +40,7 @@ public class FFMTest {
         MethodHandle yHandle = handleLayout.sliceHandle(PathElement.groupElement("y"));
         MemorySegment xString = arena.allocateFrom("12345678");
         MemorySegment yString = arena.allocateFrom("abcdefghijklmnopqrstuvwxyz");
-        val segment = arena.allocate(handleLayout);
+        var segment = arena.allocate(handleLayout);
         ((MemorySegment) xHandle.invoke(segment, 0L)).copyFrom(xString);
         ((MemorySegment) yHandle.invoke(segment, 0L)).copyFrom(yString);
         System.out.println(((MemorySegment) xHandle.invoke(segment, 0L)).getString(0));
@@ -81,7 +79,7 @@ public class FFMTest {
         VarHandle xPHandle = pointLayout.varHandle(PathElement.groupElement("x"));
         VarHandle yPHandle = pointLayout.varHandle(PathElement.groupElement("y"));
         for (int i = 0; i < pointsLayout.elementCount(); i++) {
-            val point = (MemorySegment) sliceHandle.invoke(segment, 0L, (long) i);
+            var point = (MemorySegment) sliceHandle.invoke(segment, 0L, (long) i);
             System.out.printf("index[%d].x=%s,%s%n",
                     i, xHandle.get(segment, 0L, i), xPHandle.get(point, 0));
             System.out.printf("index[%d].y=%s,%s%n",

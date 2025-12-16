@@ -82,7 +82,7 @@ public class SysUserController {
         sysUserAuth.setPassword(encrypt);
         sysUserAuthRepository.save(sysUserAuth);
         sysUserRepository.save(sysUser);
-        val roleIds = vo.getRoleIds();
+        var roleIds = vo.getRoleIds();
         if (roleIds != null && !roleIds.isEmpty()) {
             sysUserRoleMapper.insertUserRoles(sysUser.getId(), roleIds);
         }
@@ -121,11 +121,11 @@ public class SysUserController {
     @Operation(summary = "删除系统用户")
     @PostMapping("/delete")
     public ResultModel<?> deleteSysUser(@RequestBody @Valid RequestModel<List<Long>> model) {
-        val ids = new HashSet<>(model.getData());
+        var ids = new HashSet<>(model.getData());
         if (ids.contains(0L)) {
             return ResultModel.fail("超级管理员不能删除");
         }
-        val list = sysUserRepository.query()
+        var list = sysUserRepository.query()
                 .select(SysUser.ID)
                 .eq(SysUser.STATUS, "1")
                 .in(SysUser.ID, ids)
@@ -163,7 +163,7 @@ public class SysUserController {
     @PostMapping("/menus")
     public ResultModel<List<SysMenu>> listMenusByUserId() {
         Long userId = SecurityUtils.getUserId().orElseThrow(() -> new RuntimeException("未登陆用户"));
-        val menus = sysMenuRepository.listMenuByUserId(userId);
+        var menus = sysMenuRepository.listMenuByUserId(userId);
         return ResultModel.success(menus);
     }
 
@@ -171,7 +171,7 @@ public class SysUserController {
     @PostMapping("/grantRole")
     public ResultModel<Integer> grantRoleToUser(@RequestBody @Valid GrantVo vo) {
         sysUserRoleMapper.deleteByUserId(vo.getId());
-        val roleIds = vo.getTargetIds();
+        var roleIds = vo.getTargetIds();
         if (roleIds != null && !roleIds.isEmpty()) {
             val result = sysUserRoleMapper.insertUserRoles(vo.getId(), roleIds);
             return ResultModel.success(result);

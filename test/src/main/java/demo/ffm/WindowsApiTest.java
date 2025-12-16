@@ -1,7 +1,5 @@
 package demo.ffm;
 
-import lombok.val;
-
 import java.lang.foreign.Arena;
 import java.lang.foreign.ValueLayout;
 
@@ -21,13 +19,13 @@ public class WindowsApiTest {
 
     private static void test() throws Throwable {
         System.out.println(Kernel32.GetLastError());
-        val currentProcessId = Kernel32.GetCurrentProcessId();
+        var currentProcessId = Kernel32.GetCurrentProcessId();
         System.out.println(currentProcessId);
-        val handle = Kernel32.OpenProcess(PROCESS_ALL_ACCESS, false, currentProcessId);
+        var handle = Kernel32.OpenProcess(PROCESS_ALL_ACCESS, false, currentProcessId);
         System.out.println(Integer.toHexString(Kernel32.GetPriorityClass(handle)));
         System.out.println(Kernel32.GetLastError());
-        val low = arena.allocate(ValueLayout.JAVA_LONG);
-        val high = arena.allocate(ValueLayout.JAVA_LONG);
+        var low = arena.allocate(ValueLayout.JAVA_LONG);
+        var high = arena.allocate(ValueLayout.JAVA_LONG);
         Kernel32.GetCurrentThreadStackLimits(low, high);
         System.out.println("LowLimit:" + low.get(ValueLayout.JAVA_LONG, 0));
         System.out.println("HighLimit" + high.get(ValueLayout.JAVA_LONG, 0));

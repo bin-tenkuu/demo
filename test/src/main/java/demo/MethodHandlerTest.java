@@ -32,7 +32,7 @@ public class MethodHandlerTest {
     }
 
     private static void test(Class<?> clazz) throws Throwable {
-        varclazzConstructor = clazz.getConstructors()[0];
+        var clazzConstructor = clazz.getConstructors()[0];
         clazzConstructor.setAccessible(true);
         var count = clazzConstructor.getParameterCount();
         var constructor = lookup.unreflectConstructor(clazzConstructor);

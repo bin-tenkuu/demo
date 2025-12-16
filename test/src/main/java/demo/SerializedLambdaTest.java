@@ -1,7 +1,5 @@
 package demo;
 
-import lombok.val;
-
 import java.io.Serializable;
 import java.lang.invoke.SerializedLambda;
 import java.lang.reflect.InvocationTargetException;
@@ -15,11 +13,11 @@ public class SerializedLambdaTest {
             throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         SFunction lambda = SerializedLambdaTest::costum;
 
-        val lambdaClass = lambda.getClass();
-        val method = lambdaClass.getDeclaredMethod("writeReplace");
+        var lambdaClass = lambda.getClass();
+        var method = lambdaClass.getDeclaredMethod("writeReplace");
         method.setAccessible(Boolean.TRUE);
-        val serializedLambda = (SerializedLambda) method.invoke(lambda);
-        val getterMethod = serializedLambda.getImplMethodName();
+        var serializedLambda = (SerializedLambda) method.invoke(lambda);
+        var getterMethod = serializedLambda.getImplMethodName();
 
         System.out.println(getterMethod);
     }

@@ -1,7 +1,5 @@
 package demo.IEC104;
 
-import lombok.val;
-
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.VarHandle;
 import java.nio.ByteOrder;
@@ -112,36 +110,36 @@ public interface ByteUtil {
     }
 
     static String toString(byte[] array) {
-        val sb = new StringBuilder(array.length * 3);
+        var sb = new StringBuilder(array.length * 3);
         toString(sb, array);
         return sb.toString();
     }
 
     static String toString(byte b) {
-        val i = b & 0xFF;
+        var i = b & 0xFF;
         return (i < 16 ? "0" : "") + Integer.toHexString(i);
     }
 
     static byte[] fromString(String string) {
-        val length = string.length();
-        val bytes = new byte[length / 2];
+        var length = string.length();
+        var bytes = new byte[length / 2];
         int bi = 0;
         for (int i = 0; i < length; i++) {
-            val c = string.charAt(i);
+            var c = string.charAt(i);
             if (Character.isDigit(c) || Character.isLetter(c)) {
                 bytes[bi] = (byte) Integer.parseInt(string.substring(i, i + 2), 16);
                 bi++;
                 i++;
             }
         }
-        val copy = new byte[bi];
+        var copy = new byte[bi];
         System.arraycopy(bytes, 0, copy, 0, bi);
 
         return copy;
     }
 
     static void main(String[] args) {
-        val bytes = fromString("00 00 00 00 00 e0 90 40");
+        var bytes = fromString("00 00 00 00 00 e0 90 40");
         System.out.println(getDouble(bytes, 0));
     }
 }

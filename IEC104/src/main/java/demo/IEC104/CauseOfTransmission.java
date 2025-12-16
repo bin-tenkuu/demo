@@ -1,8 +1,6 @@
 package demo.IEC104;
 
 
-import lombok.val;
-
 import java.util.Objects;
 
 public enum CauseOfTransmission {
@@ -73,7 +71,7 @@ public enum CauseOfTransmission {
     }
 
     public static CauseOfTransmission getByType(byte type) {
-        val value = values[type & 0xFF];
+        var value = values[type & 0xFF];
         return Objects.requireNonNullElse(value, UNKOWN);
     }
 
