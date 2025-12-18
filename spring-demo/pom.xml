@@ -133,7 +133,7 @@
                                 <addClasspath>true</addClasspath>
                                 <addBuildEnvironmentEntries>true</addBuildEnvironmentEntries>
                                 <classpathPrefix>lib/</classpathPrefix>
-                                <mainClass>demo.ApplicationStarter</mainClass>
+                                <!-- <mainClass>demo.ApplicationStarter</mainClass> -->
                             </manifest>
                             <manifestEntries>
                                 <Class-Path>.</Class-Path>

@@ -1,37 +1,38 @@
 package demo;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 /**
  * @author bin
  * @since 2025/12/16
  */
 public class MapTest {
-    private static Set<String> keys;
-    // 实际场景这里是 AtomicReference<HashMap<String, Integer>>
-    private static Map<String, Integer> map;
+    private static final List<String> keys = new ArrayList<>();
+    private static HashMap<String, Integer> map;
 
     public static void main() throws InterruptedException {
         var hashArr = new String[]{"Aa", "BB"};
         // size=32-1
         var size = 0b11111;
         var bit = 5;
-        var keyList = new HashSet<String>();
-        // hash 正常分布 31 个
-        for (var i = 0; i < size; i++) {
+        // hash 正常分布 32 个
+        for (var i = 0; i <= size; i++) {
             var s = String.valueOf(i);
-            keyList.add(s);
-            System.out.printf("hash %s = %s\n", s, s.hashCode());
+            keys.add(s);
+            // System.out.printf("hash %s = %s\n", s, s.hashCode());
         }
-        map = buildMap(keyList);
-        keys = keyList;
+        map = buildMap();
         var threads = new Thread[16];
         for (var i = 0; i < threads.length; i++) {
             var id = i;
             threads[i] = new Thread(() -> {
                 while (true) {
-                    for (var s : keys) {
-                        map.put(s, id);
+                    // noinspection ForLoopReplaceableByForEach
+                    for (int n = 0; n < keys.size(); n++) {
+                        var s = keys.get(n);
+                        map.computeIfPresent(s, (_, _) -> id);
                     }
                     Thread.yield();
                 }
@@ -41,34 +42,27 @@ public class MapTest {
         }
         Thread.sleep(1000);
         // 第一次读取
-        var newKeys = new HashSet<String>();
-        // 更新keys: hash 碰撞分布 31 个
-        for (var i = 0; i < size; i++) {
+        // 更新keys: hash 碰撞分布 32 个
+        for (var i = 0; i <= size; i++) {
             var s = generateKey(i, hashArr, bit);
-            newKeys.add(s);
-            System.out.printf("hash %s = %s\n", s, s.hashCode());
+            keys.add(s);
+            // System.out.printf("hash %s = %s\n", s, s.hashCode());
         }
-        readMap(newKeys);
+        readMap();
         Thread.sleep(1000);
         // 第二次读取
-        readMap(null);
+        // 删除 key: hash 正常分布 32 个
+        keys.subList(0, size + 1).clear();
+        readMap();
         Thread.sleep(1000);
         // 第三次读取
-        readMap(null);
+        readMap();
     }
 
-    private static void readMap(Collection<String> newKeys) {
-        Set<String> keysSnapshot;
-        if (newKeys == null) {
-            keysSnapshot = keys;
-        } else {
-            keysSnapshot = new HashSet<>(keys);
-            keysSnapshot.addAll(newKeys);
-        }
-        var newMap = buildMap(keysSnapshot);
+    private static void readMap() {
+        var newMap = buildMap();
         var mapSnapshot = map;
         map = newMap;
-        keys = keysSnapshot;
         new Thread(() -> {
             for (var entry : mapSnapshot.entrySet()) {
                 System.out.println(entry.getKey() + " -> " + entry.getValue());
@@ -76,9 +70,10 @@ public class MapTest {
         }).start();
     }
 
-    private static HashMap<String, Integer> buildMap(Collection<String> list) {
-        var map = new HashMap<String, Integer>();
-        for (var s : list) {
+    private static HashMap<String, Integer> buildMap() {
+        var map = new HashMap<String, Integer>(keys.size());
+        // 这边是同步的，所以可以用 for-each
+        for (var s : keys) {
             map.put(s, -1);
         }
         return map;
