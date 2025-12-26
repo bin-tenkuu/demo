@@ -1,0 +1,7 @@
+spring:
+  application:
+    name: spring-auth
+  profiles:
+    active:
+      - common
+      - ${spring.application.name}

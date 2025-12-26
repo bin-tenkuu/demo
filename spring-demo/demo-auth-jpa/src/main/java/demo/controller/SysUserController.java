@@ -1,8 +1,6 @@
 package demo.controller;
 
-import demo.entity.SysMenu;
-import demo.entity.SysUser;
-import demo.mapper.SysUserRoleMapper;
+import demo.entity.*;
 import demo.model.RequestModel;
 import demo.model.ResultModel;
 import demo.model.auth.GrantVo;
@@ -12,17 +10,19 @@ import demo.model.auth.SysUserQuery;
 import demo.repository.SysMenuRepository;
 import demo.repository.SysUserAuthRepository;
 import demo.repository.SysUserRepository;
+import demo.repository.SysUserRoleRepository;
 import demo.service.auth.TokenService;
 import demo.util.SecurityUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.persistence.criteria.JoinType;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /// @author bin
 /// @since 2025/07/15
@@ -35,12 +35,12 @@ public class SysUserController {
     private final SysUserAuthRepository sysUserAuthRepository;
     private final SysMenuRepository sysMenuRepository;
     private final TokenService tokenService;
-    private final SysUserRoleMapper sysUserRoleMapper;
+    private final SysUserRoleRepository sysUserRoleRepository;
 
     @Operation(summary = "查询系统用户列表")
     @PostMapping("/list")
     public ResultModel<List<SysUser>> list(@RequestBody SysUserQuery query) {
-        var sysUserPage = sysUserRepository.page(query.toPage(), query.toQuery());
+        var sysUserPage = sysUserRepository.findAll(query, query.toPage());
         return ResultModel.success(sysUserPage);
     }
 
@@ -50,13 +50,20 @@ public class SysUserController {
             @RequestBody @Valid SysUserQuery vo,
             @PathVariable Long roleId
     ) {
-        return ResultModel.success(sysUserRepository.page(vo.toPage(), roleId, vo.toQuery()));
+        Specification<SysUser> join = (root, query, cb) -> {
+            var roleMenu = root.join("userRoles", JoinType.INNER);
+            return cb.equal(roleMenu.get("id").get("roleId"), roleId);
+        };
+        return ResultModel.success(sysUserRepository.findAll(join.and(vo), vo.toPage()));
     }
 
     @Operation(summary = "查询系统用户列表-未分配角色")
     @PostMapping("/list/unallocated")
     public ResultModel<List<SysUser>> unallocatedList(@RequestBody @Valid SysUserQuery vo) {
-        return ResultModel.success(sysUserRepository.pageUnAlloced(vo.toPage(), vo.toQuery()));
+        Specification<SysUser> join = (root, query, cb) -> {
+            return cb.isEmpty(root.get("userRoles"));
+        };
+        return ResultModel.success(sysUserRepository.findAll(join.and(vo), vo.toPage()));
     }
 
     @Operation(summary = "新增系统用户")
@@ -75,15 +82,21 @@ public class SysUserController {
         if (sysUserAuthRepository.checkUserNameExist(username)) {
             return ResultModel.fail("新增用户'" + username + "'失败，账号已存在");
         }
+        sysUserRepository.save(sysUser);
+        var id = sysUser.getId();
         var encrypt = tokenService.encode(password);
-        var sysUserAuth = new demo.entity.SysUserAuth();
+        var sysUserAuth = new SysUserAuth();
         sysUserAuth.setUsername(username);
         sysUserAuth.setPassword(encrypt);
+        sysUserAuth.setType(SysUserAuthType.STATIC);
+        sysUserAuth.setUserId(id);
         sysUserAuthRepository.save(sysUserAuth);
-        sysUserRepository.save(sysUser);
         var roleIds = vo.getRoleIds();
         if (roleIds != null && !roleIds.isEmpty()) {
-            sysUserRoleMapper.insertUserRoles(sysUser.getId(), roleIds);
+            var stream = roleIds.stream()
+                    .map(roleId -> new SysUserRole(id, roleId))
+                    .toList();
+            sysUserRoleRepository.saveAll(stream);
         }
         return ResultModel.success();
     }
@@ -91,14 +104,14 @@ public class SysUserController {
     @Operation(summary = "修改系统用户")
     @PostMapping("/update")
     public ResultModel<?> updateSysUser(@RequestBody @Valid SysUser sysUser) {
-        sysUserRepository.updateById(sysUser);
+        sysUserRepository.save(sysUser);
         return ResultModel.success();
     }
 
     @Operation(summary = "更新密码")
     @PostMapping("/updatePassword")
     public ResultModel<?> updatePassword(@RequestBody @Valid SysUserAuthUpdate update) {
-        var auth = sysUserAuthRepository.findByUsername(update.getUsername());
+        var auth = sysUserAuthRepository.findAllByUsername(update.getUsername());
         if (auth == null) {
             return ResultModel.fail("用户不存在");
         }
@@ -113,7 +126,7 @@ public class SysUserController {
         }
         var encode = tokenService.encode(update.getNewPassword());
         auth.setPassword(encode);
-        sysUserAuthRepository.updateById(auth);
+        sysUserAuthRepository.save(auth);
         return ResultModel.success();
     }
 
@@ -124,28 +137,16 @@ public class SysUserController {
         if (ids.contains(0L)) {
             return ResultModel.fail("超级管理员不能删除");
         }
-        var list = sysUserRepository.query()
-                .select(SysUser.ID)
-                .eq(SysUser.STATUS, "1")
-                .in(SysUser.ID, ids)
-                .list()
-                .stream().map(SysUser::getId)
-                .collect(Collectors.toList());
+        var list = sysUserRepository.findIdByStatusAndIdIn(1, ids);
         if (!list.isEmpty()) {
             // 已经停用的用户可以直接删除
-            for (Long id : list) {
-                sysUserRoleMapper.deleteByUserId(id);
-                ids.remove(id);
-            }
-            sysUserRepository.removeByIds(list);
+            sysUserRoleRepository.deleteByUserIdIn(list);
+            list.forEach(ids::remove);
+            sysUserRepository.deleteAllById(list);
         }
         if (!ids.isEmpty()) {
             // 批量停用
-            sysUserRepository.update()
-                    .set(SysUser.STATUS, "1")
-                    .set(SysUser.UPDATE_BY, SecurityUtils.getUsername().get())
-                    .in(SysUser.ID, ids)
-                    .update();
+            sysUserRepository.updateAllByIdIn(SecurityUtils.getUsername().orElse(null), ids);
         }
         return ResultModel.success();
     }
@@ -154,7 +155,7 @@ public class SysUserController {
     @GetMapping(value = "/info")
     public ResultModel<SysUser> getInfo() {
         Long userId = SecurityUtils.getUserId().orElseThrow(() -> new RuntimeException("未登陆用户"));
-        SysUser sysUser = sysUserRepository.getById(userId);
+        SysUser sysUser = sysUserRepository.findById(userId).orElse(null);
         return ResultModel.success(sysUser);
     }
 
@@ -169,10 +170,13 @@ public class SysUserController {
     @Operation(summary = "批量授权角色", description = "id为用户id,ids为角色id")
     @PostMapping("/grantRole")
     public ResultModel<?> grantRoleToUser(@RequestBody @Valid GrantVo vo) {
-        sysUserRoleMapper.deleteByUserId(vo.getId());
+        sysUserRoleRepository.deleteByUserId(vo.getId());
         var roleIds = vo.getTargetIds();
         if (roleIds != null && !roleIds.isEmpty()) {
-            sysUserRoleMapper.insertUserRoles(vo.getId(), roleIds);
+            var list = roleIds.stream()
+                    .map(roleId -> new SysUserRole(vo.getId(), roleId))
+                    .toList();
+            sysUserRoleRepository.saveAll(list);
         }
         return ResultModel.success();
     }
@@ -180,7 +184,7 @@ public class SysUserController {
     @Operation(summary = "批量取消授权角色", description = "id为用户id,ids为角色id")
     @PostMapping("/revokeRole")
     public ResultModel<?> revokeRoleFromUser(@RequestBody @Valid GrantVo vo) {
-        sysUserRoleMapper.deleteByUserRoles(vo.getId(), vo.getTargetIds());
+        sysUserRoleRepository.deleteByUserIdAndRoleIdIn(vo.getId(), vo.getTargetIds());
         return ResultModel.success();
     }
 

@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.data.domain.Page;
 import org.springframework.lang.Nullable;
 
 import java.util.HashMap;
@@ -89,12 +90,25 @@ public class ResultModel<T> {
         return success(page.getRecords(), page);
     }
 
+    public static <T> ResultModel<List<T>> success(Page<T> page) {
+        return success(page.getContent(), page);
+    }
+
     public static <T> ResultModel<List<T>> success(List<T> list, IPage<?> page) {
         return ResultModel.success(list, new PageModel(
                 (int) page.getCurrent(),
                 (int) page.getSize(),
                 (int) page.getPages(),
                 page.getTotal()
+        ));
+    }
+
+    public static <T> ResultModel<List<T>> success(List<T> list, Page<?> page) {
+        return ResultModel.success(list, new PageModel(
+                page.getNumber(),
+                page.getSize(),
+                page.getTotalPages(),
+                page.getTotalElements()
         ));
     }
 

@@ -15,6 +15,7 @@
     <packaging>pom</packaging>
     <modules>
         <module>demo-auth</module>
+        <module>demo-auth-jpa</module>
         <module>demo-core</module>
         <module>demo-starter</module>
     </modules>

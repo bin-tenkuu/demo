@@ -2,25 +2,28 @@ package demo.controller;
 
 import demo.entity.SysMenu;
 import demo.entity.SysRole;
-import demo.mapper.SysRoleMenuMapper;
-import demo.mapper.SysUserRoleMapper;
+import demo.entity.SysRoleMenu;
+import demo.entity.SysUserRole;
 import demo.model.RequestModel;
 import demo.model.ResultModel;
 import demo.model.auth.GrantVo;
 import demo.model.auth.SysRoleQuery;
+import demo.repository.SysRoleMenuRepository;
 import demo.repository.SysRoleRepository;
+import demo.repository.SysUserRoleRepository;
 import demo.util.SecurityUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.persistence.criteria.JoinType;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /// @author bin
 /// @since 2023/05/30
@@ -30,13 +33,13 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class SysRoleController {
     private final SysRoleRepository sysRoleRepository;
-    private final SysUserRoleMapper sysUserRoleMapper;
-    private final SysRoleMenuMapper sysRoleMenuMapper;
+    private final SysUserRoleRepository sysUserRoleRepository;
+    private final SysRoleMenuRepository sysRoleMenuRepository;
 
     @Operation(summary = "系统角色列表")
     @PostMapping("/list")
     public ResultModel<List<SysRole>> listSysRole(@RequestBody @NotNull @Valid SysRoleQuery vo) {
-        return ResultModel.success(sysRoleRepository.page(vo.toPage(), vo.toQuery()));
+        return ResultModel.success(sysRoleRepository.findAll(vo, vo.toPage()));
     }
 
     @Operation(summary = "系统角色列表")
@@ -45,7 +48,11 @@ public class SysRoleController {
             @RequestBody @NotNull @Valid SysRoleQuery vo,
             @PathVariable Long menuId
     ) {
-        return ResultModel.success(sysRoleRepository.page(vo.toPage(), menuId, vo.toQuery()));
+        Specification<SysRole> join = (root, query, cb) -> {
+            var roleMenu = root.join("roleMenus", JoinType.INNER);
+            return cb.equal(roleMenu.get("id").get("menuId"), menuId);
+        };
+        return ResultModel.success(sysRoleRepository.findAll(join.and(vo), vo.toPage()));
     }
 
     @Operation(summary = "新增系统角色")
@@ -62,9 +69,9 @@ public class SysRoleController {
     @PostMapping("/update")
     public ResultModel<?> updateSysRole(@RequestBody @NotNull @Valid SysRole sysRole) {
         if (sysRoleRepository.checkRoleKeyExist(sysRole)) {
-            return ResultModel.fail("新增角色'" + sysRole.getRoleName() + "'失败，角色权限已存在");
+            return ResultModel.fail("修改角色'" + sysRole.getRoleName() + "'失败，角色权限已存在");
         }
-        sysRoleRepository.updateById(sysRole);
+        sysRoleRepository.save(sysRole);
         return ResultModel.success();
     }
 
@@ -75,29 +82,16 @@ public class SysRoleController {
         if (ids.isEmpty()) {
             return ResultModel.success();
         }
-        val list = sysRoleRepository.query()
-                .select(SysRole.ID)
-                .eq(SysRole.STATUS, "1")
-                .in(SysRole.ID, ids)
-                .list()
-                .stream().map(SysRole::getId)
-                .collect(Collectors.toList());
+        val list = sysRoleRepository.findIdByStatusAndIdIn(1, ids);
         if (!list.isEmpty()) {
             // 已经停用的角色可以直接删除
-            sysUserRoleMapper.deleteByRoleId(list);
-            for (Long id : list) {
-                sysRoleMenuMapper.deleteByRoleId(id);
-                ids.remove(id);
-            }
-            sysRoleRepository.removeBatchByIds(list);
+            sysUserRoleRepository.deleteByRoleIdIn(list);
+            list.forEach(ids::remove);
+            sysRoleRepository.deleteAllById(list);
         }
         if (!ids.isEmpty()) {
             // 批量停用
-            sysRoleRepository.update()
-                    .set(SysRole.STATUS, "1")
-                    .set(SysRole.UPDATE_BY, SecurityUtils.getUsername().get())
-                    .in(SysRole.ID, ids)
-                    .update();
+            sysRoleRepository.updateAllByIdIn(SecurityUtils.getUsername().orElse(null), ids);
         }
         return ResultModel.success();
     }
@@ -105,18 +99,21 @@ public class SysRoleController {
     @Operation(summary = "根据角色编号获取菜单")
     @PostMapping("/menus/{roleId}")
     public ResultModel<List<SysMenu>> listRolesByUserId(@PathVariable Long roleId) {
-        val roles = sysRoleMenuMapper.selectMenuByRoleId(roleId);
+        val roles = sysRoleMenuRepository.findMenuByRoleId(roleId);
         return ResultModel.success(roles);
     }
 
     @Operation(summary = "批量授权菜单", description = "id为角色id,ids为菜单id")
     @PostMapping("/grantMenu")
     public ResultModel<?> grantMenuToRole(@RequestBody @NotNull @Valid GrantVo vo) {
-        sysRoleMenuMapper.deleteByRoleId(vo.getId());
+        var id = vo.getId();
+        sysRoleMenuRepository.deleteByRoleId(id);
         val menuIds = vo.getTargetIds();
         if (menuIds != null && !menuIds.isEmpty()) {
-            sysRoleMenuMapper.insertRoleMenu(vo.getId(), menuIds);
-            return ResultModel.success();
+            var list = menuIds.stream()
+                    .map(menuId -> new SysRoleMenu(id, menuId))
+                    .toList();
+            sysRoleMenuRepository.saveAll(list);
         }
         return ResultModel.success();
     }
@@ -124,21 +121,25 @@ public class SysRoleController {
     @Operation(summary = "批量取消授权菜单", description = "id为角色id,ids为菜单id")
     @PostMapping("/revokeMenu")
     public ResultModel<?> revokeMenuFromRole(@RequestBody @NotNull @Valid GrantVo vo) {
-        sysRoleMenuMapper.deleteByRoleMenu(vo.getId(), vo.getTargetIds());
+        sysRoleMenuRepository.deleteByRoleIdAndMenuIdIn(vo.getId(), vo.getTargetIds());
         return ResultModel.success();
     }
 
     @Operation(summary = "批量授权用户", description = "id为用户id,ids为角色id")
     @PostMapping("/grantUser")
     public ResultModel<?> grantRoleToUser(@RequestBody @NotNull @Valid GrantVo vo) {
-        sysUserRoleMapper.insertUsersRole(vo.getId(), vo.getTargetIds());
+        var id = vo.getId();
+        var list = vo.getTargetIds().stream()
+                .map(roleId -> new SysUserRole(roleId, id))
+                .toList();
+        sysUserRoleRepository.saveAll(list);
         return ResultModel.success();
     }
 
     @Operation(summary = "批量取消授权用户", description = "id为角色id,ids为用户id")
     @PostMapping("/revokeUser")
     public ResultModel<?> revokeRoleFromUser(@RequestBody @NotNull @Valid GrantVo vo) {
-        sysUserRoleMapper.deleteByUsersRole(vo.getId(), vo.getTargetIds());
+        sysUserRoleRepository.deleteByRoleIdAndUserIdIn(vo.getId(), vo.getTargetIds());
         return ResultModel.success();
     }
 

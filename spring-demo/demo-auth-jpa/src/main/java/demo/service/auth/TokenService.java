@@ -71,14 +71,17 @@ public class TokenService {
         var password = auth.getPassword();
         loginPreCheck(username, password);
         var userAuth = switch (auth.getType()) {
-            case STATIC -> sysUserAuthRepository.getExtryAuth(username);
-            case DYNAMIC -> sysUserAuthRepository.findByUsername(username);
+            case STATIC -> sysUserAuthRepository.findByUsername(username);
+            case DYNAMIC -> sysUserAuthRepository.getExtryAuth(username);
             case null -> null;
         };
         if (userAuth == null) {
             throw new UsernameNotFoundException("User not found: " + username);
         }
-        var sysUser = sysUserRepository.getById(userAuth.getUserId());
+        var sysUser = sysUserRepository.findById(userAuth.getUserId()).orElse(null);
+        if (sysUser == null) {
+            throw new UsernameNotFoundException("User not found: " + username);
+        }
         var user = LoginUser.from(userAuth.getUsername(), userAuth.getPassword(), sysUser);
         if (!user.isEnabled()) {
             log.info("登录用户：{} 已被停用.", username);
@@ -95,14 +98,10 @@ public class TokenService {
     }
 
     private void recordLoginInfo(Long userId) {
-        SysUser sysUser = new SysUser();
-        sysUser.setId(userId);
-        // sysUser.setLoginIp(IpUtils.getIpAddr());
-        sysUser.setLoginDate(LocalDateTime.now());
         // UserAgent userAgent = UserAgent.parseUserAgentString(ServletUtils.getRequest().getHeader("User-Agent"));
         // loginUser.setBrowser(userAgent.getBrowser().getName());
         // loginUser.setOs(userAgent.getOperatingSystem().getName());
-        sysUserRepository.updateById(sysUser);
+        sysUserRepository.updateLoginById(LocalDateTime.now(), userId);
     }
 
 
@@ -137,7 +136,7 @@ public class TokenService {
 
     /// 创建令牌
     public String createToken(LoginUser loginUser) {
-        String token = UUID.randomUUID().toString().replace("-", "");
+        String token = UUID.randomUUID().toString();
         loginUser.setToken(token);
         refreshToken(loginUser);
         return token;

@@ -1,0 +1,96 @@
+server:
+  error:
+    path: /error
+    include-exception: true
+    include-stacktrace: always
+    include-message: always
+    include-binding-errors: always
+
+spring:
+  messages:
+    encoding: UTF-8
+  main:
+    banner-mode: off
+  output:
+    ansi:
+      enabled: always
+  # 前端请求配置
+  servlet:
+    # 文件请求配置
+    multipart:
+      enabled: true
+      max-file-size: 50MB
+      max-request-size: 50MB
+  # json序列化配置
+  jackson:
+    default-property-inclusion: always
+    time-zone: GMT+8
+    date-format: yyyy-MM-dd HH:mm:ss
+    serialization:
+      write-bigdecimal-as-plain: true
+      write-dates-as-timestamps: false
+    deserialization:
+      fail-on-unknown-properties: false
+      adjust-dates-to-context-time-zone: false
+  # 数据源 hiraki 连接配置
+  datasource:
+    hikari:
+      connection-timeout: 30000
+      connection-test-query: SELECT 1
+      max-lifetime: 10000
+      maximum-pool-size: 10
+      minimum-idle: 1
+
+logging:
+  file:
+    name: ./logs/${spring.application.name}.log
+  pattern:
+    console: '%d{yyyy-MM-dd HH:mm:ss} %highlight(%-5level) [%blue(%thread)] - %cyan(%logger{50}) : %msg%n'
+    file: '%d{yyyy-MM-dd HH:mm:ss} %-5level [%thread] - %logger{50} - %msg%n'
+  logback:
+    rollingpolicy:
+      max-history: 30
+      clean-history-on-start: true
+      max-file-size: 1GB
+  level:
+    root: info
+    org.hibernate: warn
+
+# mybatis-plus配置
+mybatis-plus:
+  # 全局配置
+  global-config:
+    db-config:
+      #主键类型  AUTO :"数据库ID自增", INPUT :"用户输入ID",ID_WORKER :"全局唯一ID (数字类型唯一ID)",
+      #ID_WORKER_STR :"字符串全局唯一ID"  UUID :"全局唯一ID UUID" NONE: 该类型为未设置主键类型
+      id-type: AUTO
+    banner: false
+  configuration:
+    map-underscore-to-camel-case: true
+    cache-enabled: true
+    local-cache-scope: session
+    # 查看 SQL 执行日志
+    log-impl: org.apache.ibatis.logging.nologging.NoLoggingImpl
+
+# 接口文档配置
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+  group-configs:
+    - group: default
+      packages-to-scan:
+        - demo.controller
+
+# 接口文档配置
+knife4j:
+  enable: true
+  setting:
+    enable-after-script: false
+    enable-dynamic-parameter: true
+    enable-footer: true
+    enable-footer-custom: true
+    footer-custom-content: 内部开发文档
+    enable-version: true
+    enable-response-code: false

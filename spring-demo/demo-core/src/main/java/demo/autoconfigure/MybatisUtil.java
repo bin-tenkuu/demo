@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.ibatis.session.ExecutorType;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.SqlSessionTemplate;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 
 import javax.sql.DataSource;
@@ -25,6 +26,7 @@ import java.util.List;
 /// @since 2024/12/10
 @RequiredArgsConstructor
 @EnableConfigurationProperties({MybatisPlusProperties.class})
+@ConditionalOnClass(MybatisPlusProperties.class)
 public class MybatisUtil {
     private final MybatisPlusProperties properties;
     private final List<AbstractSqlInjector> sqlInjectors;
