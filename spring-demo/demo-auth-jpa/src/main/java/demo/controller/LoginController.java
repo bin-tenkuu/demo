@@ -44,7 +44,7 @@ public class LoginController {
     }
 
     @Operation(summary = "用户登录")
-    @PostMapping("/sys/login")
+    @PostMapping("/login")
     public ResultModel<String> login(@RequestBody SysUserAuth body) {
         var token = tokenService.login(body);
         return ResultModel.success(token);

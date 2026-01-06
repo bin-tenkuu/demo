@@ -27,7 +27,11 @@ public class SysRoleMenu {
     private SysMenu menu;
 
     public SysRoleMenu(Long roleId, Long menuId) {
-        this.id = new Id(roleId, menuId);
+        id = new Id(roleId, menuId);
+        role = new SysRole();
+        role.setId(roleId);
+        menu = new SysMenu();
+        menu.setId(menuId);
     }
 
     @Data

@@ -22,17 +22,18 @@ public interface SysMenuRepository extends JpaRepositoryImplementation<SysMenu, 
     @Query("select m from SysMenu m where m.menuName = :name")
     List<SysMenu> listByMenuName(String name);
 
-    @Query(value = """
-            select *
-            from (select distinct menu_id
-                  from sys_user_role sur
-                           inner join sys_role_menu srm on sur.role_id = srm.role_id
-                where user_id = :userId
-            ) sur
-                inner join sys_menu sm on sm.id = sur.menu_id
-            where sm.`status` = 0
-            order by parent_id, order_num
-            """, nativeQuery = true)
+    @Query("""
+            select sm
+            from (
+                select distinct srm.id.menuId as menuId
+                from SysUserRole sur
+                    inner join SysRoleMenu srm on sur.id.roleId = srm.id.roleId
+                where sur.id.userId = :userId
+            ) srm
+                inner join SysMenu sm on sm.id = srm.menuId
+            where sm.status = 0
+            order by sm.parentId, sm.orderNum
+            """)
     List<SysMenu> listByUserId(@Param("userId") Long userId);
 
     @Query("select m from SysMenu m order by m.parentId asc, m.orderNum asc")

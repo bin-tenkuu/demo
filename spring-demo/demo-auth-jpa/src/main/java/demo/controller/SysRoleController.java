@@ -106,15 +106,12 @@ public class SysRoleController {
     @Operation(summary = "批量授权菜单", description = "id为角色id,ids为菜单id")
     @PostMapping("/grantMenu")
     public ResultModel<?> grantMenuToRole(@RequestBody @NotNull @Valid GrantVo vo) {
-        var id = vo.getId();
-        sysRoleMenuRepository.deleteByRoleId(id);
-        val menuIds = vo.getTargetIds();
-        if (menuIds != null && !menuIds.isEmpty()) {
-            var list = menuIds.stream()
-                    .map(menuId -> new SysRoleMenu(id, menuId))
-                    .toList();
-            sysRoleMenuRepository.saveAll(list);
-        }
+        var roleId = vo.getId();
+        // sysRoleMenuRepository.deleteByRoleId(roleId);
+        var list = vo.getTargetIds().stream()
+                .map(menuId -> new SysRoleMenu(roleId, menuId))
+                .toList();
+        sysRoleMenuRepository.saveAll(list);
         return ResultModel.success();
     }
 
@@ -128,9 +125,9 @@ public class SysRoleController {
     @Operation(summary = "批量授权用户", description = "id为用户id,ids为角色id")
     @PostMapping("/grantUser")
     public ResultModel<?> grantRoleToUser(@RequestBody @NotNull @Valid GrantVo vo) {
-        var id = vo.getId();
+        var userId = vo.getId();
         var list = vo.getTargetIds().stream()
-                .map(roleId -> new SysUserRole(roleId, id))
+                .map(roleId -> new SysUserRole(userId, roleId))
                 .toList();
         sysUserRoleRepository.saveAll(list);
         return ResultModel.success();

@@ -27,7 +27,11 @@ public class SysUserRole {
     private SysRole role;
 
     public SysUserRole(Long userId, Long roleId) {
-        this.id = new Id(userId, roleId);
+        id = new Id(userId, roleId);
+        user= new SysUser();
+        user.setId(userId);
+        role = new SysRole();
+        role.setId(roleId);
     }
 
     @Data

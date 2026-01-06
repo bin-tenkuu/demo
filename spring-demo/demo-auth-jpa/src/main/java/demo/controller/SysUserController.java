@@ -154,15 +154,15 @@ public class SysUserController {
     @Operation(summary = "根据当前用户编号获取详细信息")
     @GetMapping(value = "/info")
     public ResultModel<SysUser> getInfo() {
-        Long userId = SecurityUtils.getUserId().orElseThrow(() -> new RuntimeException("未登陆用户"));
-        SysUser sysUser = sysUserRepository.findById(userId).orElse(null);
+        var userId = SecurityUtils.getUserId().orElseThrow(() -> new RuntimeException("未登陆用户"));
+        var sysUser = sysUserRepository.findById(userId).orElse(null);
         return ResultModel.success(sysUser);
     }
 
     @Operation(summary = "根据当前用户获取菜单")
     @PostMapping("/menus")
     public ResultModel<List<SysMenu>> listMenusByUserId() {
-        Long userId = SecurityUtils.getUserId().orElseThrow(() -> new RuntimeException("未登陆用户"));
+        var userId = SecurityUtils.getUserId().orElseThrow(() -> new RuntimeException("未登陆用户"));
         var menus = sysMenuRepository.listMenuByUserId(userId);
         return ResultModel.success(menus);
     }
@@ -170,14 +170,12 @@ public class SysUserController {
     @Operation(summary = "批量授权角色", description = "id为用户id,ids为角色id")
     @PostMapping("/grantRole")
     public ResultModel<?> grantRoleToUser(@RequestBody @Valid GrantVo vo) {
-        sysUserRoleRepository.deleteByUserId(vo.getId());
-        var roleIds = vo.getTargetIds();
-        if (roleIds != null && !roleIds.isEmpty()) {
-            var list = roleIds.stream()
-                    .map(roleId -> new SysUserRole(vo.getId(), roleId))
-                    .toList();
-            sysUserRoleRepository.saveAll(list);
-        }
+        var userId = vo.getId();
+        // sysUserRoleRepository.deleteByUserId(userId);
+        var list = vo.getTargetIds().stream()
+                .map(roleId -> new SysUserRole(userId, roleId))
+                .toList();
+        sysUserRoleRepository.saveAll(list);
         return ResultModel.success();
     }
 
