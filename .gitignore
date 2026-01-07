@@ -2,6 +2,7 @@ target/
 !.mvn/wrapper/maven-wrapper.jar
 /.fastRequest
 *.sqlite
+application-datasource.yml
 
 ### IntelliJ IDEA ###
 .idea

@@ -1,5 +1,6 @@
 package demo.config;
 
+import com.mysql.cj.jdbc.MysqlDataSource;
 import jakarta.persistence.EntityManagerFactory;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.boot.archive.scan.internal.DisabledScanner;
@@ -23,9 +24,9 @@ import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.persistenceunit.PersistenceUnitManager;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
-import org.sqlite.SQLiteDataSource;
 
 import javax.sql.DataSource;
 import java.util.HashMap;
@@ -35,27 +36,27 @@ import java.util.Map;
  * @author bin
  * @since 2025/12/15
  */
-// @Component
+@Component
 @RequiredArgsConstructor
 @EnableTransactionManagement
 @EnableJpaRepositories(
-        entityManagerFactoryRef = "sqliteEntityManagerFactory",
-        transactionManagerRef = "sqliteTransactionManager",
+        entityManagerFactoryRef = "mysqlEntityManagerFactory",
+        transactionManagerRef = "mysqlTransactionManager",
         basePackages = "demo.repository"
 )
-public class DataSourceSqlite {
+public class DataSourceMysql {
 
-    @Bean("sqliteDataSource")
-    @ConfigurationProperties("spring.datasource.sqlite")
-    public SQLiteDataSource dataSource() {
-        return new SQLiteDataSource();
+    @Bean("mysqlDataSource")
+    @ConfigurationProperties("spring.datasource.mysql")
+    public MysqlDataSource dataSource() {
+        return new MysqlDataSource();
     }
 
-    @Bean("sqliteEntityManagerFactory")
+    @Bean("mysqlEntityManagerFactory")
     public LocalContainerEntityManagerFactoryBean entityManagerFactoryBuilder(
             ObjectProvider<PersistenceUnitManager> persistenceUnitManager,
             ObjectProvider<EntityManagerFactoryBuilderCustomizer> customizers,
-            @Qualifier("sqliteDataSource") DataSource dataSource
+            @Qualifier("mysqlDataSource") DataSource dataSource
     ) {
         var jpaVendorAdapter = new HibernateJpaVendorAdapter();
         jpaVendorAdapter.setShowSql(true);
@@ -71,7 +72,7 @@ public class DataSourceSqlite {
         return builder
                 .dataSource(dataSource)
                 .packages("demo.entity")
-                .persistenceUnit("sqlite")
+                .persistenceUnit("mysql")
                 .build();
     }
 
@@ -86,9 +87,9 @@ public class DataSourceSqlite {
         return map;
     }
 
-    @Bean(name = "sqliteTransactionManager")
+    @Bean(name = "mysqlTransactionManager")
     public PlatformTransactionManager transactionManager(
-            @Qualifier("sqliteEntityManagerFactory") EntityManagerFactory customerEntityManagerFactory
+            @Qualifier("mysqlEntityManagerFactory") EntityManagerFactory customerEntityManagerFactory
     ) {
         return new JpaTransactionManager(customerEntityManagerFactory);
     }

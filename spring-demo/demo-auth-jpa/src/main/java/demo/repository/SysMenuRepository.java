@@ -24,13 +24,13 @@ public interface SysMenuRepository extends JpaRepositoryImplementation<SysMenu, 
 
     @Query("""
             select sm
-            from (
-                select distinct srm.id.menuId as menuId
-                from SysUserRole sur
-                    inner join SysRoleMenu srm on sur.id.roleId = srm.id.roleId
-                where sur.id.userId = :userId
-            ) srm
-                inner join SysMenu sm on sm.id = srm.menuId
+            from SysMenu sm
+                inner join (
+                    select distinct srm.id.menuId as menuId
+                    from SysUserRole sur
+                        inner join SysRoleMenu srm on sur.id.roleId = srm.id.roleId
+                    where sur.id.userId = :userId
+                ) srm on sm.id = srm.menuId
             where sm.status = 0
             order by sm.parentId, sm.orderNum
             """)

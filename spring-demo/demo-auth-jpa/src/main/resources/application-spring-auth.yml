@@ -5,17 +5,6 @@ server:
 #    context-path: /demo
 
 spring:
-  datasource:
-    sqlite:
-      url: jdbc:sqlite:./data.sqlite
-  jpa:
-    database-platform: org.hibernate.community.dialect.SQLiteDialect
-    generate-ddl: false
-    show-sql: true
-    hibernate:
-      ddl-auto: none
-
-
   web:
     resources:
       static-locations:
