@@ -4,12 +4,92 @@ import org.jetbrains.annotations.Nullable;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.List;
 
 /**
  * @author bin
  * @since 2025/12/23
  */
 public final class NumberUtil {
+    // region value
+
+    public static double toDouble(BigDecimal v) {
+        return v == null ? 0 : v.doubleValue();
+    }
+
+    public static float toFloat(BigDecimal v) {
+        return v == null ? 0 : v.floatValue();
+    }
+
+    public static long toLong(BigDecimal v) {
+        return v == null ? 0 : v.longValue();
+    }
+
+    public static int toInt(BigDecimal v) {
+        return v == null ? 0 : v.intValue();
+    }
+
+    public static short toShort(BigDecimal v) {
+        return v == null ? 0 : v.shortValue();
+    }
+
+    public static byte toByte(BigDecimal v) {
+        return v == null ? 0 : v.byteValue();
+    }
+
+    public static boolean toBoolean(BigDecimal v) {
+        return v != null && v.compareTo(BigDecimal.ZERO) != 0;
+    }
+
+    public static <T> T toArray(Class<T> clazz, List<BigDecimal> vs) {
+        if (clazz == double[].class) {
+            var arr = new double[vs.size()];
+            for (int i = 0; i < vs.size(); i++) {
+                arr[i] = toDouble(vs.get(i));
+            }
+            return (T) arr;
+        } else if (clazz == float[].class) {
+            var arr = new float[vs.size()];
+            for (int i = 0; i < vs.size(); i++) {
+                arr[i] = toFloat(vs.get(i));
+            }
+            return (T) arr;
+        } else if (clazz == long[].class) {
+            var arr = new long[vs.size()];
+            for (int i = 0; i < vs.size(); i++) {
+                arr[i] = toLong(vs.get(i));
+            }
+            return (T) arr;
+        } else if (clazz == int[].class) {
+            var arr = new int[vs.size()];
+            for (int i = 0; i < vs.size(); i++) {
+                arr[i] = toInt(vs.get(i));
+            }
+            return (T) arr;
+        } else if (clazz == short[].class) {
+            var arr = new short[vs.size()];
+            for (int i = 0; i < vs.size(); i++) {
+                arr[i] = toShort(vs.get(i));
+            }
+            return (T) arr;
+        } else if (clazz == byte[].class) {
+            var arr = new byte[vs.size()];
+            for (int i = 0; i < vs.size(); i++) {
+                arr[i] = toByte(vs.get(i));
+            }
+            return (T) arr;
+        } else if (clazz == boolean[].class) {
+            var arr = new boolean[vs.size()];
+            for (int i = 0; i < vs.size(); i++) {
+                arr[i] = toBoolean(vs.get(i));
+            }
+            return (T) arr;
+        }
+        throw new IllegalArgumentException("Unsupported array type: " + clazz);
+
+    }
+
+    // endregion
     // region valueOf
 
     @Nullable
