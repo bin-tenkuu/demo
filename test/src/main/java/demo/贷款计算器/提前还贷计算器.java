@@ -144,15 +144,15 @@ public class 提前还贷计算器 {
         var 报告 = new 报告();
         // var 提前还款Index = 0;
         var 总利息 = 0.0;
-        var 存钱 = 2000.0;
+        var 剩余钱 = 2000.0;
         printHead();
         while (报告.剩余期数 > 0) {
             index++;
             报告.print(index);
             总利息 += 报告.偿还利息;
-            if (存钱 > 0) {
-                var next = 报告.提前还款(提前还款方式E.缩短还款期限, 存钱);
-                存钱 += 报告.偿还本金 - next.偿还本金;
+            if (剩余钱 > 0) {
+                var next = 报告.提前还款(提前还款方式E.减少月还款额, 剩余钱);
+                // 剩余钱 += 报告.偿还本金 - next.偿还本金;
                 报告 = next;
             }
             // while (提前还款Index < 提前还款方案.length &&
