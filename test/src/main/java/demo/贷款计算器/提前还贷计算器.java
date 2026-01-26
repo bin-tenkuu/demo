@@ -84,11 +84,13 @@ public class 提前还贷计算器 {
         }
 
         @NotNull
-        public 报告 提前还款(提前还款方式E 方式, double 提前还款金额) {
+        public 报告 提前还款(Object 期次, 提前还款方式E 方式, double 提前还款金额) {
             报告 nbg;
             if (还后本金 <= 提前还款金额) {
                 // 提前结清
-                System.out.printf("--->\t%s\t\t%9s\t\t已结清\n", 还款日期, f(提前还款金额));
+                System.out.printf("%4s\t%s\t\t%9s\t\t已结清\n",
+                        期次, 还款日期, f(提前还款金额)
+                );
                 return new 报告(
                         还款日期,
                         0,
@@ -105,9 +107,9 @@ public class 提前还贷计算器 {
                                 还后本金 - 提前还款金额
                         );
                         var 减少月还款额 = 偿还本金 - nbg.偿还本金;
-                        System.out.printf("--->\t%s\t\t%9s\t\t(减少月还款额) 少 %s 元\t\t%9s\t->\t%9s\n",
-                                还款日期, f(提前还款金额), f(减少月还款额), f(nbg.还前本金), f(nbg.还后本金)
-                        );
+                        // System.out.printf("%4s\t%s\t\t%9s\t\t(减少月还款额) 少 %s 元\t\t%9s\t->\t%9s\n",
+                        //         期次, 还款日期, f(提前还款金额), f(减少月还款额), f(nbg.还前本金), f(nbg.还后本金)
+                        // );
                         return nbg;
                     }
                 }
@@ -122,9 +124,10 @@ public class 提前还贷计算器 {
                                 Math.max(2, 新剩余期数),
                                 还后本金 - 提前还款金额
                         );
-                        System.out.printf(
-                                "--->\t%s\t\t%9s\t(缩短还款期限) 剩余期数 %d -> %d 期\t%9s\t->\t%9s\n",
-                                还款日期, f(提前还款金额), 剩余期数, nbg.剩余期数, f(nbg.还前本金), f(nbg.还后本金));
+                        // System.out.printf(
+                        //         "%4s\t%s\t\t%9s\t(缩短还款期限) 剩余期数 %d -> %d 期\t%9s\t->\t%9s\n",
+                        //         期次, 还款日期, f(提前还款金额), 剩余期数, nbg.剩余期数, f(nbg.还前本金),
+                        //         f(nbg.还后本金));
                         return nbg;
                     }
                 }
@@ -144,15 +147,21 @@ public class 提前还贷计算器 {
         var 报告 = new 报告();
         // var 提前还款Index = 0;
         var 总利息 = 0.0;
-        var 剩余钱 = 2000.0;
+        var 剩余钱1 = 1000.0;
+        var 剩余钱2 = 1000.0;
         printHead();
         while (报告.剩余期数 > 0) {
             index++;
             报告.print(index);
             总利息 += 报告.偿还利息;
-            if (剩余钱 > 0) {
-                var next = 报告.提前还款(提前还款方式E.减少月还款额, 剩余钱);
-                // 剩余钱 += 报告.偿还本金 - next.偿还本金;
+            if (剩余钱2 > 0) {
+                var next = 报告.提前还款(index, 提前还款方式E.缩短还款期限, 剩余钱2);
+                // 剩余钱2 += 报告.偿还本金 - next.偿还本金;
+                报告 = next;
+            }
+            if (剩余钱1 > 0) {
+                var next = 报告.提前还款(index, 提前还款方式E.减少月还款额, 剩余钱1);
+                // 剩余钱2 += 报告.偿还本金 - next.偿还本金;
                 报告 = next;
             }
             // while (提前还款Index < 提前还款方案.length &&
@@ -173,6 +182,10 @@ public class 提前还贷计算器 {
 
     private static String f(double v) {
         return df.format(v);
+    }
+
+    private static String f(int v) {
+        return String.format("%4s", v);
     }
 
     private enum 还款方式E {
