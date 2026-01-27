@@ -14,7 +14,7 @@ import java.util.Formatter;
  * @since 2026/01/26
  */
 public class MemorySegmentFileTest {
-    private static final Path path = Path.of("/home/bin-/Downloads/openjdk-21+35_windows-x64_bin.zip");
+    private static final Path path = Path.of("/home/bin-/Downloads/home/extraData.img");
 
     static void main() {
         try (var arena = Arena.ofConfined();
@@ -25,7 +25,6 @@ public class MemorySegmentFileTest {
                     size,
                     arena
             );
-            memorySegment.force();
 
             System.out.println("成功映射文件，大小：" + printSize(size));
             System.out.println("内存段地址：" + memorySegment.address());
@@ -35,6 +34,13 @@ public class MemorySegmentFileTest {
                 byte b = memorySegment.get(ValueLayout.JAVA_BYTE, i);
                 System.out.printf("0x%02X ", b);
             }
+            System.out.println();
+            System.out.println("内存段内容后16字节：");
+            for (long i = size - 16; i < size; i++) {
+                byte b = memorySegment.get(ValueLayout.JAVA_BYTE, i);
+                System.out.printf("0x%02X ", b);
+            }
+            System.out.println();
 
         } catch (IOException e) {
             throw new RuntimeException(e);
