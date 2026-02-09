@@ -2,11 +2,20 @@ server:
   port: 9999
   servlet:
     # 应用访问名称，小写
-    context-path: /demo
+    context-path: /
 
 spring:
+  servlet:
+    multipart:
+      max-request-size: 128KB
+      max-file-size: 128KB
   datasource:
     url: jdbc:sqlite:./data.sqlite
     driver-class-name: org.sqlite.JDBC
     username:
     password:
+  jpa:
+    database: default
+    properties:
+      hibernate:
+        dialect: org.hibernate.community.dialect.SQLiteDialect

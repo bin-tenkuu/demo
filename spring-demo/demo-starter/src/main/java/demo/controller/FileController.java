@@ -1,15 +1,14 @@
 package demo.controller;
 
-import demo.model.ResultModel;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpServletRequest;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.*;
-import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -18,7 +17,11 @@ import java.net.URI;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * @author bin
@@ -32,37 +35,48 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class FileController {
 
-    private final File uploadDir = new File("/home/bin-/code/cms-huabei/target");
+    private final File uploadDir = new File("/home/bin-/Downloads");
 
-    @PostMapping("/upload")
-    public ResultModel<String> upload(@RequestParam(required = false) String name, @RequestPart MultipartFile file)
-            throws IOException {
-        uploadDir.mkdirs();
-        if (name == null) {
-            name = file.getOriginalFilename();
-            if (name == null) {
-                throw new IllegalArgumentException("文件名不能为空");
-            }
+    @GetMapping("/list")
+    public ResponseEntity<List<FileModel>> list(@RequestParam(defaultValue = "/") String path) {
+        var resolve = new File(uploadDir, path);
+        var files = resolve.listFiles();
+        if (files == null) {
+            return ResponseEntity.ok(Collections.emptyList());
         }
-        var filePath = new File(uploadDir, name);
-        file.transferTo(filePath.toPath());
-        return ResultModel.success("/download/path/" + name);
+        Arrays.sort(files);
+        var list = Arrays.stream(files)
+                .map(FileModel::new)
+                .sorted()
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(list);
     }
 
-    @GetMapping("/download/{url}/**")
+    @PostMapping("/upload")
+    public ResponseEntity<String> upload(@RequestParam String path, @RequestPart MultipartFile file)
+            throws IOException {
+        var name = file.getOriginalFilename();
+        if (name == null) {
+            throw new IllegalArgumentException("文件名不能为空");
+        }
+        var parent = new File(uploadDir, path);
+        parent.mkdirs();
+        var filePath = new File(parent, name);
+        file.transferTo(filePath.toPath());
+        return ResponseEntity.ok(path + "/" + name);
+    }
+
+    @GetMapping("/download")
     public ResponseEntity<Resource> download(
-            HttpServletRequest request,
             @RequestHeader(value = HttpHeaders.RANGE, required = false) String rangeStr,
-            @PathVariable("url") String url
+            @RequestParam("path") String path
     ) throws IOException {
-        var fullUrl = request.getRequestURI();
-        var fileName = fullUrl.substring(fullUrl.indexOf("/download/" + url) - 1 + "/download/".length());
-        var filePath = new File(uploadDir, fileName);
+        var filePath = new File(uploadDir, path);
         if (!filePath.exists() || !filePath.canRead()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            return ResponseEntity.notFound().build();
         }
         var contentLength = filePath.length();
-        var encodedFileName = encodedFileName(fileName);
+        var encodedFileName = encodedFileName(filePath.getName());
 
         var httpRanges = HttpRange.parseRanges(rangeStr);
         if (httpRanges.isEmpty()) {
@@ -86,12 +100,36 @@ public class FileController {
                 .header(HttpHeaders.CONTENT_DISPOSITION, encodedFileName)
                 .header(HttpHeaders.ACCEPT_RANGES, "bytes")
                 .header(HttpHeaders.CONTENT_RANGE, "bytes " + rangeStart + "-" +
-                                                   (rangeStart + rangeLength - 1) + "/" + contentLength)
+                        (rangeStart + rangeLength - 1) + "/" + contentLength)
                 .body(new RegionFileResource(filePath, rangeStart, rangeLength));
     }
 
     private static String encodedFileName(String url) {
         return "attachment;filename=" + URLEncoder.encode(Objects.requireNonNull(url), StandardCharsets.UTF_8);
+    }
+
+    @Getter
+    public final static class FileModel implements Comparable<FileModel> {
+        private final String name;
+        private final long size;
+        private final boolean dir;
+
+        public FileModel(File file) {
+            this.name = file.getName();
+            this.size = file.length();
+            this.dir = file.isDirectory();
+        }
+
+        @Override
+        public int compareTo(@NonNull FileModel r) {
+            if (dir == r.isDir()) {
+                return name.compareTo(r.name);
+            } else if (isDir()) {
+                return -1;
+            } else {
+                return 1;
+            }
+        }
     }
 
     private final static class RegionFileResource extends InputStream implements Resource {
@@ -174,12 +212,12 @@ public class FileController {
         }
 
         @Override
-        public boolean equals(@Nullable Object other) {
+        public boolean equals(Object other) {
             return this == other
-                   || other instanceof RegionFileResource that
-                      && file.equals(that.file)
-                      && position == that.position
-                      && length == that.length;
+                    || other instanceof RegionFileResource that
+                    && file.equals(that.file)
+                    && position == that.position
+                    && length == that.length;
         }
 
         @Override

@@ -23,8 +23,8 @@ public class TimeBaseSqlInjector extends AbstractSqlInjector {
                 "%s" = #{time} and "%s" = #{id}"""
                 .formatted(TimeBase.TIME, TimeBase.ID)),
         TimeAndIds("""
-                "%s" = #{time}
-                <foreach collection="ids" item="id" open="and "%s" in (" close=")" separator=",">#{id}</foreach>"""
+                "%s" = #{time} and "%s" in
+                <foreach collection="ids" item="id" open="(" close=")" separator=",">#{id}</foreach>"""
                 .formatted(TimeBase.TIME, TimeBase.ID)),
         TimeRangeAndId("""
                 "%s" between #{start} and #{end} and "%s" = #{id}"""

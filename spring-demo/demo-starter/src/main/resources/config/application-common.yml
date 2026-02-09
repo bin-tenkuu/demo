@@ -42,6 +42,7 @@ logging:
       max-file-size: 1GB
   level:
     root: info
+    org.hibernate: warn
 
 # mybatis-plus配置
 mybatis-plus:

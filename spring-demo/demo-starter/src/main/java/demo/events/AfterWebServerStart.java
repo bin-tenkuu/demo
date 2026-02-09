@@ -1,7 +1,7 @@
 package demo.events;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.web.servlet.context.ServletWebServerInitializedEvent;
+import org.springframework.boot.web.server.context.WebServerInitializedEvent;
 import org.springframework.context.ApplicationListener;
 
 import java.awt.*;
@@ -13,9 +13,9 @@ import java.net.URI;
  */
 @Slf4j
 // @Component
-public class AfterWebServerStart implements ApplicationListener<ServletWebServerInitializedEvent> {
+public class AfterWebServerStart implements ApplicationListener<WebServerInitializedEvent> {
     @Override
-    public void onApplicationEvent(ServletWebServerInitializedEvent event) {
+    public void onApplicationEvent(WebServerInitializedEvent event) {
         var webServer = event.getWebServer();
         var port = webServer.getPort();
         log.info("""
