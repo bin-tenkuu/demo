@@ -4,4 +4,4 @@ demo.autoconfigure.converter.String2LocalTime
 demo.autoconfigure.mybatis.TimeBaseSqlInjector
 demo.autoconfigure.swagger.SwaggerCommonConfigure
 demo.autoconfigure.MybatisUtil
-demo.util.JsonUtil
+demo.autoconfigure.MyJsonMapperBuilderCustomizer

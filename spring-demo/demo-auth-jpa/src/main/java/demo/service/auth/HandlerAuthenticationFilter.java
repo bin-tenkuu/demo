@@ -2,15 +2,15 @@ package demo.service.auth;
 
 import demo.model.ResultModel;
 import demo.model.auth.LoginUser;
-import demo.util.JsonUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration;
+import org.springframework.boot.security.autoconfigure.UserDetailsServiceAutoConfiguration;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
@@ -20,6 +20,7 @@ import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.io.IOException;
 
@@ -33,6 +34,7 @@ import java.io.IOException;
 public class HandlerAuthenticationFilter extends OncePerRequestFilter
         implements AuthenticationEntryPoint, AccessDeniedHandler {
     private final TokenService tokenService;
+    private final JsonMapper jsonMapper;
 
     @Override
     protected void doFilterInternal(
@@ -59,11 +61,11 @@ public class HandlerAuthenticationFilter extends OncePerRequestFilter
      */
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response,
-            AuthenticationException authException) throws IOException {
+            @NonNull AuthenticationException authException) throws IOException {
         String msg = String.format("请求访问：%s，认证失败", request.getRequestURI());
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.setContentType("application/json;charset=utf-8");
-        response.getWriter().write(JsonUtil.toJson(ResultModel.fail(msg)));
+        response.getWriter().write(jsonMapper.writeValueAsString(ResultModel.fail(msg)));
     }
 
     /**
@@ -71,11 +73,11 @@ public class HandlerAuthenticationFilter extends OncePerRequestFilter
      */
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response,
-            AccessDeniedException accessDeniedException) throws IOException {
+            @NonNull AccessDeniedException accessDeniedException) throws IOException {
         String msg = String.format("请求访问：%s，没有对应的权限", request.getRequestURI());
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.setContentType("application/json;charset=utf-8");
-        response.getWriter().write(JsonUtil.toJson(ResultModel.fail(msg)));
+        response.getWriter().write(jsonMapper.writeValueAsString(ResultModel.fail(msg)));
     }
 
 }

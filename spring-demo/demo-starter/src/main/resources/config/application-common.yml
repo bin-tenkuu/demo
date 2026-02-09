@@ -1,11 +1,3 @@
-server:
-  error:
-    path: /error
-    include-exception: true
-    include-stacktrace: always
-    include-message: always
-    include-binding-errors: always
-
 spring:
   messages:
     encoding: UTF-8
@@ -21,17 +13,13 @@ spring:
       enabled: true
       max-file-size: 50MB
       max-request-size: 50MB
-  # json序列化配置
-  jackson:
-    default-property-inclusion: always
-    time-zone: GMT+8
-    date-format: yyyy-MM-dd HH:mm:ss
-    serialization:
-      write-bigdecimal-as-plain: true
-      write-dates-as-timestamps: false
-    deserialization:
-      fail-on-unknown-properties: false
-      adjust-dates-to-context-time-zone: false
+  web:
+    error:
+      path: /error
+      include-exception: true
+      include-stacktrace: always
+      include-message: always
+      include-binding-errors: always
   # 数据源 hiraki 连接配置
   datasource:
     hikari:
