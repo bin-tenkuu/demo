@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.val;
 
-import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 /**
  * @author bin
@@ -31,11 +31,8 @@ public class CP16Time2a implements BaseContent {
         ByteUtil.setShort(data, offset, (short) millisecond);
     }
 
-    public LocalDateTime toLocalDateTime() {
-        return LocalDateTime.of(
-                0,
-                1,
-                1,
+    public LocalTime toLocalTime() {
+        return LocalTime.of(
                 0,
                 0,
                 millisecond / 1000,
@@ -45,7 +42,7 @@ public class CP16Time2a implements BaseContent {
 
     @Override
     public void toString(StringBuilder builder) {
-        builder.append("时间=").append(toLocalDateTime().toLocalTime());
+        builder.append("时间=").append(toLocalTime());
     }
 
     @Override

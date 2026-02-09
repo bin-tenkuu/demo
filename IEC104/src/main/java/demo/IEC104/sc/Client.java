@@ -8,7 +8,6 @@ import lombok.Setter;
 import java.io.Closeable;
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.net.ServerSocket;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.CompletionHandler;
@@ -127,30 +126,30 @@ public class Client implements CompletionHandler<Integer, ByteBuffer>, Closeable
     }
 
     public static void main(String[] args) throws IOException, InterruptedException {
-        Thread.ofVirtual().start(() -> {
-            try {
-                try (var serverSocket = new ServerSocket(9999)) {
-                    try (var socket = serverSocket.accept()) {
-                        // redirect
-                        try (var in = socket.getInputStream();
-                             var out = socket.getOutputStream()) {
-                            int read;
-                            while (!socket.isClosed() && (read = in.read()) >= 0) {
-                                out.write(read);
-                            }
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
-        Thread.sleep(500);
+        // Thread.ofVirtual().start(() -> {
+        //     try {
+        //         try (var serverSocket = new ServerSocket(9999)) {
+        //             try (var socket = serverSocket.accept()) {
+        //                 // redirect
+        //                 try (var in = socket.getInputStream();
+        //                      var out = socket.getOutputStream()) {
+        //                     int read;
+        //                     while (!socket.isClosed() && (read = in.read()) >= 0) {
+        //                         out.write(read);
+        //                     }
+        //                 } catch (IOException e) {
+        //                     e.printStackTrace();
+        //                 }
+        //             }
+        //         }
+        //     } catch (IOException e) {
+        //         e.printStackTrace();
+        //     }
+        // });
+        // Thread.sleep(500);
         try (var client = new Client()) {
             client.setHandler(frame -> System.out.println(FrameUtil.toString(frame)));
-            client.start(new InetSocketAddress("127.0.0.1", 9999));
+            client.start(new InetSocketAddress("127.0.0.1", 2406));
             Thread.sleep(500);
             var bs = ByteUtil.fromString("""
                     68 d5 cc 07 fc 20 0f a8 25 00 01 00 01 64 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
@@ -161,7 +160,7 @@ public class Client implements CompletionHandler<Integer, ByteBuffer>, Closeable
                     3b 06 00 00 00 11 00 00 00 00 4d 06 00 00 00 cf 03 00 00 00 d7 10 00 00 00 8e 01 00 00 00 66 12 00 00 00
                     c0 08 00 00 00""");
             client.write(bs);
-            Thread.sleep(500);
+            Thread.sleep(5000);
         }
     }
 }

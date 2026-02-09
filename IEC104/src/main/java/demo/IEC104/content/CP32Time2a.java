@@ -2,7 +2,7 @@ package demo.IEC104.content;
 
 import demo.IEC104.ByteUtil;
 
-import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 /**
  * @author bin
@@ -32,11 +32,8 @@ public class CP32Time2a extends CP24Time2a implements BaseContent {
     }
 
     @Override
-    public LocalDateTime toLocalDateTime() {
-        return LocalDateTime.of(
-                0,
-                1,
-                1,
+    public LocalTime toLocalTime() {
+        return LocalTime.of(
                 hour,
                 minute,
                 millisecond / 1000,

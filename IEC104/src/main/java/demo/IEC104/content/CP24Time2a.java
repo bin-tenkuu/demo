@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.val;
 
-import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 /**
  * @author bin
@@ -37,11 +37,8 @@ public class CP24Time2a extends CP16Time2a implements BaseContent {
     }
 
     @Override
-    public LocalDateTime toLocalDateTime() {
-        return LocalDateTime.of(
-                0,
-                1,
-                1,
+    public LocalTime toLocalTime() {
+        return LocalTime.of(
                 0,
                 minute,
                 millisecond / 1000,

@@ -3,17 +3,21 @@ package demo.IEC104;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.VarHandle;
 import java.nio.ByteOrder;
+import java.util.Objects;
 
 /**
  * @author bin
  * @since 2024/06/13
  */
 public interface ByteUtil {
+    VarHandle SHORT_ARRAY = MethodHandles
+            .byteArrayViewVarHandle(short[].class, ByteOrder.LITTLE_ENDIAN)
+            .withInvokeExactBehavior();
     VarHandle INT_ARRAY = MethodHandles
             .byteArrayViewVarHandle(int[].class, ByteOrder.LITTLE_ENDIAN)
             .withInvokeExactBehavior();
-    VarHandle SHORT_ARRAY = MethodHandles
-            .byteArrayViewVarHandle(short[].class, ByteOrder.LITTLE_ENDIAN)
+    VarHandle LONG_ARRAY = MethodHandles
+            .byteArrayViewVarHandle(long[].class, ByteOrder.LITTLE_ENDIAN)
             .withInvokeExactBehavior();
     VarHandle FLOAT_ARRAY = MethodHandles
             .byteArrayViewVarHandle(float[].class, ByteOrder.LITTLE_ENDIAN)
@@ -21,6 +25,20 @@ public interface ByteUtil {
     VarHandle DOUBLE_ARRAY = MethodHandles
             .byteArrayViewVarHandle(double[].class, ByteOrder.LITTLE_ENDIAN)
             .withInvokeExactBehavior();
+
+    /**
+     * 从字节数组中字节数组索引位置向后获取 short
+     */
+    static short getShort(byte[] bytes, int index) {
+        return (short) SHORT_ARRAY.get(bytes, index);
+    }
+
+    /**
+     * 从字节数组中字节数组索引位置向后设置 short
+     */
+    static void setShort(byte[] bytes, int index, short value) {
+        SHORT_ARRAY.set(bytes, index, value);
+    }
 
     /**
      * 从字节数组中字节数组索引位置向后获取 int
@@ -37,17 +55,17 @@ public interface ByteUtil {
     }
 
     /**
-     * 从字节数组中字节数组索引位置向后获取 short
+     * 从字节数组中字节数组索引位置向后获取 long
      */
-    static short getShort(byte[] bytes, int index) {
-        return (short) SHORT_ARRAY.get(bytes, index);
+    static long getLong(byte[] bytes, int index) {
+        return (long) LONG_ARRAY.get(bytes, index);
     }
 
     /**
-     * 从字节数组中字节数组索引位置向后设置 short
+     * 从字节数组中字节数组索引位置向后设置 long
      */
-    static void setShort(byte[] bytes, int index, short value) {
-        SHORT_ARRAY.set(bytes, index, value);
+    static void setLong(byte[] bytes, int index, long value) {
+        LONG_ARRAY.set(bytes, index, value);
     }
 
     /**
@@ -96,17 +114,26 @@ public interface ByteUtil {
         return (b & 1 << index) != 0;
     }
 
+    String HEX = "0123456789ABCDEF";
+
     static void toString(StringBuilder sb, byte[] array, int offset, int length) {
         for (; length > 0; length--, offset++) {
             byte b = array[offset];
-            sb.append(toString(b)).append(' ');
+            toString(sb, b);
+            sb.append(' ');
         }
     }
 
     static void toString(StringBuilder sb, byte[] array) {
         for (byte b : array) {
-            sb.append(toString(b)).append(' ');
+            toString(sb, b);
+            sb.append(' ');
         }
+    }
+
+    static void toString(StringBuilder sb, byte b) {
+        sb.append(HEX.charAt(b >> 4 & 0xF));
+        sb.append(HEX.charAt(b & 0xF));
     }
 
     static String toString(byte[] array) {
@@ -116,30 +143,42 @@ public interface ByteUtil {
     }
 
     static String toString(byte b) {
-        var i = b & 0xFF;
-        return (i < 16 ? "0" : "") + Integer.toHexString(i);
+        return new String(new char[]{
+                HEX.charAt(b >> 4 & 0xF),
+                HEX.charAt(b & 0xF)
+        });
     }
 
-    static byte[] fromString(String string) {
-        var length = string.length();
-        var bytes = new byte[length / 2];
-        int bi = 0;
-        for (int i = 0; i < length; i++) {
-            var c = string.charAt(i);
-            if (Character.isDigit(c) || Character.isLetter(c)) {
-                bytes[bi] = (byte) Integer.parseInt(string.substring(i, i + 2), 16);
-                bi++;
-                i++;
+    static byte[] fromString(String hexString) {
+        Objects.requireNonNull(hexString, "Input hexString cannot be null");
+        int length = hexString.length();
+        var hexChars = new char[length];
+        var charSize = 0;
+        for (var i = 0; i < length; i++) {
+            var c = hexString.charAt(i);
+            if ((c >= '0' && c <= '9') ||
+                    (c >= 'a' && c <= 'f') ||
+                    (c >= 'A' && c <= 'F')) {
+                hexChars[charSize] = c;
+                charSize++;
             }
         }
-        var copy = new byte[bi];
-        System.arraycopy(bytes, 0, copy, 0, bi);
-
-        return copy;
+        if (charSize % 2 != 0) {
+            throw new IllegalArgumentException("Invalid hex string: odd number of hex digits");
+        }
+        var bytes = new byte[charSize / 2];
+        for (int i = 0; i < charSize; i += 2) {
+            var high = Character.digit(hexChars[i], 16);
+            var low = Character.digit(hexChars[i + 1], 16);
+            var b = (byte) ((high << 4) + low);
+            bytes[i / 2] = b;
+        }
+        return bytes;
     }
 
     static void main(String[] args) {
         var bytes = fromString("00 00 00 00 00 e0 90 40");
         System.out.println(getDouble(bytes, 0));
+        System.out.println(toString(bytes));
     }
 }
