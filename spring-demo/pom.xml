@@ -6,7 +6,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.5.5</version>
+        <version>3.5.10</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>my</groupId>
@@ -23,7 +23,6 @@
     <properties>
         <java.version>21</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <spring-boot.version>3.4.0</spring-boot.version>
         <mapstruct.version>1.5.5.Final</mapstruct.version>
         <outDir>${user.dir}/target</outDir>
         <mainClass/>
@@ -143,22 +142,6 @@
                         </archive>
                     </configuration>
                 </plugin>
-                <!-- <plugin>
-                    <groupId>org.springframework.boot</groupId>
-                    <artifactId>spring-boot-maven-plugin</artifactId>
-                    <version>${spring-boot.version}</version>
-                    <configuration>
-                        <classifier>exec</classifier>
-                        <outputDirectory>${outDir}</outputDirectory>
-                        <includeSystemScope>true</includeSystemScope>
-                        <includes>
-                            <include>
-                                <groupId>non-exists</groupId>
-                                <artifactId>non-exists</artifactId>
-                            </include>
-                        </includes>
-                    </configuration>
-                </plugin> -->
             </plugins>
         </pluginManagement>
     </build>
