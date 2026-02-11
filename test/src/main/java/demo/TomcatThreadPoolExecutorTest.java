@@ -3,7 +3,7 @@ package demo;
 import demo.util.Threads;
 
 public class TomcatThreadPoolExecutorTest {
-    public static void main() throws InterruptedException {
+    static void main() throws InterruptedException {
         for (int i = 0; i < 100; i++) {
             addRun();
             Threads.debug();

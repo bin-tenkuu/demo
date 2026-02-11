@@ -1,7 +1,7 @@
-demo.autoconfigure.converter.String2LocalDate
-demo.autoconfigure.converter.String2LocalDateTime
-demo.autoconfigure.converter.String2LocalTime
-demo.autoconfigure.mybatis.TimeBaseSqlInjector
-demo.autoconfigure.swagger.SwaggerCommonConfigure
-demo.autoconfigure.MybatisUtil
-demo.autoconfigure.MyJsonMapperBuilderCustomizer
+demo.core.autoconfigure.converter.String2LocalDate
+demo.core.autoconfigure.converter.String2LocalDateTime
+demo.core.autoconfigure.converter.String2LocalTime
+demo.core.autoconfigure.mybatis.TimeBaseSqlInjector
+demo.core.autoconfigure.swagger.SwaggerCommonConfigure
+demo.core.autoconfigure.MybatisUtil
+demo.core.autoconfigure.MyJsonMapperBuilderCustomizer

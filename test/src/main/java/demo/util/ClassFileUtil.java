@@ -15,7 +15,7 @@ import java.lang.invoke.TypeDescriptor;
  * @version 1.0.0
  * @since 2024/09/25
  */
-@SuppressWarnings({"preview", "UnusedReturnValue"})
+@SuppressWarnings({"UnusedReturnValue"})
 public interface ClassFileUtil {
     static ClassDesc ofClass(Class<?> descriptor) {
         return ClassDesc.ofDescriptor(descriptor.descriptorString());

@@ -2,7 +2,7 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="demo.mapper.SysRoleMenuMapper">
+<mapper namespace="demo.auth.mapper.SysRoleMenuMapper">
     <insert id="insertRoleMenu">
         insert into sys_role_menu(role_id, menu_id)
         values
@@ -35,7 +35,7 @@
         </foreach>
     </delete>
 
-    <select id="selectMenuByRoleId" resultMap="demo.mapper.SysMenuMapper.BaseResultMap">
+    <select id="selectMenuByRoleId" resultMap="demo.auth.mapper.SysMenuMapper.BaseResultMap">
         select id, menu_name, parent_id, order_num, path, component, query, is_frame, is_cache, menu_type, visible,
             perms, icon
         from sys_role_menu

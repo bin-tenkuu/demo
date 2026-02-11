@@ -19,7 +19,7 @@ public class ClassFileApiTest {
         }
     }
 
-    public static void main(String[] args) throws Throwable {
+    static void main(String[] args) throws Throwable {
         var util = new PorxyClassUtil(true);
         // util.helloworld();
         A a = util.proxy(A.class);
