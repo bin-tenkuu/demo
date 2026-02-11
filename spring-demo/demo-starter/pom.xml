@@ -13,7 +13,8 @@
     <packaging>jar</packaging>
 
     <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <outDir>${user.dir}/target</outDir>
+        <mainClass>demo.starter.ApplicationStarter</mainClass>
     </properties>
 
     <dependencies>
