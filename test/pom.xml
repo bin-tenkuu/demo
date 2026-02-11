@@ -101,6 +101,11 @@
             <type>pom</type>
         </dependency>
         <!-- endregion -->
+        <dependency>
+            <groupId>tools.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>3.0.2</version>
+        </dependency>
     </dependencies>
 
     <build>

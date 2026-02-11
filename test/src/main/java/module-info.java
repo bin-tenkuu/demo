@@ -18,4 +18,5 @@ open module demo {
     requires java.sql;
     requires jcuda;
     requires org.graalvm.polyglot;
+    requires tools.jackson.databind;
 }
