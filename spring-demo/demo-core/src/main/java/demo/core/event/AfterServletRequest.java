@@ -14,8 +14,8 @@ import org.springframework.web.context.support.ServletRequestHandledEvent;
 public class AfterServletRequest implements ApplicationListener<ServletRequestHandledEvent> {
     @Override
     public void onApplicationEvent(ServletRequestHandledEvent event) {
-        log.info("请求完成: {} {} {} {}ms",
-                event.getStatusCode(), event.getMethod(), event.getRequestUrl(), event.getProcessingTimeMillis());
+        log.info("请求完成: {} {} {}ms {}",
+                event.getStatusCode(), event.getMethod(), event.getProcessingTimeMillis(), event.getRequestUrl());
     }
 
 }
