@@ -20,6 +20,18 @@ spring:
       include-stacktrace: always
       include-message: always
       include-binding-errors: always
+    resources:
+      static-locations: classpath:/META-INF/resources/,classpath:/resources/,classpath:/static/,classpath:/public/
+      chain:
+        enabled: true
+        cache: true
+        compressed: false
+      cache:
+        period: 1d
+        use-last-modified: true
+        cachecontrol:
+          cache-public: true
+          max-age: 1d
   # 数据源 hiraki 连接配置
   datasource:
     hikari:
