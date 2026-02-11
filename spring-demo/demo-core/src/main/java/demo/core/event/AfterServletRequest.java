@@ -15,7 +15,7 @@ public class AfterServletRequest implements ApplicationListener<ServletRequestHa
     @Override
     public void onApplicationEvent(ServletRequestHandledEvent event) {
         log.info("请求完成: {} {} {}ms {}",
-                event.getStatusCode(), event.getMethod(), event.getProcessingTimeMillis(), event.getRequestUrl());
+                event.getMethod(), event.getStatusCode(), event.getProcessingTimeMillis(), event.getRequestUrl());
     }
 
 }
