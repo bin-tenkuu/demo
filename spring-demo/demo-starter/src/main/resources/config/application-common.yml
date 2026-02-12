@@ -25,13 +25,16 @@ spring:
       chain:
         enabled: true
         cache: true
-        compressed: false
+        compressed: true
+        strategy:
+          content:
+            enabled: true
+            paths: /**
       cache:
-        period: 1d
         use-last-modified: true
         cachecontrol:
           cache-public: true
-          max-age: 1d
+          max-age: 365d
   # 数据源 hiraki 连接配置
   datasource:
     hikari:
