@@ -137,8 +137,11 @@ let cheat = window.cheat = {
     get hero() {
         return core.status.hero;
     },
-    getItem() {
-        delete cheat.getItem;
+    getItem(b = true) {
+        if (!b) {
+            delete core.events.getItem;
+            return;
+        }
         core.events.getItem = function (a, g, j, i, c, k) {
             if (g > 0) {
                 let cls = core.material.items[a].cls;
