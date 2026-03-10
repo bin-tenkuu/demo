@@ -41,12 +41,8 @@ public class BaseSysMetaObjectHandler implements MetaObjectHandler {
         var username = SecurityUtils.getUsername().orElse(null);
         var entity = metaObject.getOriginalObject();
         if (entity instanceof BaseSys sys) {
-            if (sys.getUpdateBy() == null) {
-                sys.setUpdateBy(username);
-            }
-            if (sys.getUpdateTime() == null) {
-                sys.setUpdateTime(LocalDateTime.now());
-            }
+            sys.setUpdateBy(username);
+            sys.setUpdateTime(LocalDateTime.now());
         }
     }
 }
