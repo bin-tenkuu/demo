@@ -24,7 +24,7 @@ import java.util.Map;
 public class ResultModel<T> {
     private static final int SUCCESS_CODE = 200;
 
-    @Schema(description = "返回码，0成功", example = "0")
+    @Schema(description = "返回码，" + SUCCESS_CODE + "E成功", example = SUCCESS_CODE + "")
     private int code;
     @Schema(description = "返回消息")
     private String message;
