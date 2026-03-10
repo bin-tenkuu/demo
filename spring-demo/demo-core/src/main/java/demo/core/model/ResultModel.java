@@ -22,6 +22,8 @@ import java.util.Map;
 @Schema(description = "返回")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ResultModel<T> {
+    private static final int SUCCESS_CODE = 200;
+
     @Schema(description = "返回码，0成功", example = "0")
     private int code;
     @Schema(description = "返回消息")
@@ -37,7 +39,7 @@ public class ResultModel<T> {
     private Map<String, Object> extra = new HashMap<>();
 
     public ResultModel() {
-        this.code = 0;
+        this.code = SUCCESS_CODE;
         this.message = "成功";
     }
 
@@ -47,13 +49,13 @@ public class ResultModel<T> {
     }
 
     public ResultModel(@Nullable final T data) {
-        this.code = 0;
+        this.code = SUCCESS_CODE;
         this.message = "成功";
         this.data = data;
     }
 
     public ResultModel(@Nullable final T data, @Nullable final PageModel page) {
-        this.code = 0;
+        this.code = SUCCESS_CODE;
         this.message = "成功";
         this.data = data;
         this.page = page;
