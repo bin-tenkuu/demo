@@ -23,6 +23,9 @@ import java.util.Map;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ResultModel<T> {
     private static final int SUCCESS_CODE = 200;
+    private static final String SUCCESS_MESSAGE = "Success";
+    private static final int FAIL_CODE = 500;
+    private static final String FAIL_MESSAGE = "Fail";
 
     @Schema(description = "返回码，" + SUCCESS_CODE + "成功", example = SUCCESS_CODE + "")
     private int code;
@@ -40,7 +43,7 @@ public class ResultModel<T> {
 
     public ResultModel() {
         this.code = SUCCESS_CODE;
-        this.message = "成功";
+        this.message = SUCCESS_MESSAGE;
     }
 
     public ResultModel(final int code, final String message) {
@@ -50,13 +53,13 @@ public class ResultModel<T> {
 
     public ResultModel(@Nullable final T data) {
         this.code = SUCCESS_CODE;
-        this.message = "成功";
+        this.message = SUCCESS_MESSAGE;
         this.data = data;
     }
 
     public ResultModel(@Nullable final T data, @Nullable final PageModel page) {
         this.code = SUCCESS_CODE;
-        this.message = "成功";
+        this.message = SUCCESS_MESSAGE;
         this.data = data;
         this.page = page;
     }
@@ -115,11 +118,11 @@ public class ResultModel<T> {
     }
 
     public static <T> ResultModel<T> fail() {
-        return new ResultModel<>(1, "失败");
+        return new ResultModel<>(FAIL_CODE, FAIL_MESSAGE);
     }
 
     public static <T> ResultModel<T> fail(String message) {
-        return new ResultModel<>(1, message);
+        return new ResultModel<>(FAIL_CODE, message);
     }
 
     public static <T> ResultModel<T> fail(int code, String message) {
