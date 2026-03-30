@@ -5,3 +5,4 @@ demo.core.autoconfigure.mybatis.TimeBaseSqlInjector
 demo.core.autoconfigure.swagger.SwaggerCommonConfigure
 demo.core.autoconfigure.MybatisUtil
 demo.core.autoconfigure.MyJsonMapperBuilderCustomizer
+demo.core.config.ExceptionHandleAdvice

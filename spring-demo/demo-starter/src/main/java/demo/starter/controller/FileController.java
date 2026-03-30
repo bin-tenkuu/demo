@@ -34,7 +34,6 @@ import java.util.stream.Collectors;
 @RequestMapping("/file")
 @RequiredArgsConstructor
 public class FileController {
-
     private final File uploadDir = new File("/home/bin-/Downloads");
 
     @GetMapping("/list")

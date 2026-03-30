@@ -14,12 +14,13 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 import java.util.List;
 
 @Slf4j
 @RestControllerAdvice
-public class ExceptionHandleAdvice  {
+public class ExceptionHandleAdvice {
 
     @ExceptionHandler(MissingServletRequestParameterException.class)
     public ResultModel<String> HttpMessageNotReadableException(HttpServletRequest request,
@@ -82,4 +83,9 @@ public class ExceptionHandleAdvice  {
         return ResultModel.fail();
     }
 
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public ResultModel<?> handleMaxUploadSizeExceededException(MaxUploadSizeExceededException ex) {
+        log.error("", ex);
+        return ResultModel.fail(String.format("文件大小超过限制，请上传小于 %s B 的文件", ex.getMaxUploadSize()));
+    }
 }
