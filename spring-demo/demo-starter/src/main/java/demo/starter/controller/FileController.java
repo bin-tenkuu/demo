@@ -61,6 +61,7 @@ public class FileController {
         var parent = new File(uploadDir, path);
         parent.mkdirs();
         var filePath = new File(parent, name);
+        log.info("保存文件大小：{}，路径：{}", file.getSize(), filePath);
         file.transferTo(filePath.toPath());
         return ResponseEntity.ok(path + "/" + name);
     }
@@ -70,7 +71,7 @@ public class FileController {
             @RequestHeader(value = HttpHeaders.RANGE, required = false) String rangeStr,
             @RequestParam("path") String path
     ) throws IOException {
-        var filePath = new File(uploadDir, path);
+        var filePath = new File(uploadDir, path.startsWith("/") ? path.substring(1) : path);
         if (!filePath.exists() || !filePath.canRead()) {
             return ResponseEntity.notFound().build();
         }
