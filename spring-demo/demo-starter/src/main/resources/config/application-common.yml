@@ -28,7 +28,7 @@ spring:
       include-message: always
       include-binding-errors: always
     resources:
-      static-locations: classpath:/META-INF/resources/,classpath:/resources/,classpath:/static/,classpath:/public/
+      static-locations: file:./dist/,classpath:/META-INF/resources/,classpath:/resources/,classpath:/static/,classpath:/public/
       chain:
         enabled: true
         cache: true
