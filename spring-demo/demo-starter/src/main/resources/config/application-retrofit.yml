@@ -6,6 +6,8 @@ retrofit:
     log-strategy: basic
   global-retry:
     enable: true
+    max-retries: 2
+    interval-ms: 100
   # 全局超时时间配置
   global-timeout:
     # 全局读取超时时间
