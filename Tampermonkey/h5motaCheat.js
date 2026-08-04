@@ -18,15 +18,15 @@ function hookAfter(raw, after) {
 
 let cheat = window.cheat = {
     start() {
-        cheat.itemGem = 2
         cheat.autoBattle?.()
+        cheat.hotkey?.()
         delete cheat.start
     },
     set itemGem(count) {
         for (let item of Object.values(core.items.items)) {
             if (item.itemEffect) {
                 item.itemEffect = item.itemEffect.replace(/(?<=(?:def) *\+=)(\d+\*)?/g, x => count + "*");
-                item.itemEffect = item.itemEffect.replace(/(?<=(?:atk|hp|max) *\+=)(\d+\*)?/g, x => count * 1.5 + "*");
+                item.itemEffect = item.itemEffect.replace(/(?<=(?:atk|hp|max|money|exp) *\+=)(\d+\*)?/g, x => count * 1.5 + "*");
                 console.log(item);
             }
         }
@@ -162,6 +162,10 @@ let cheat = window.cheat = {
         })
     },
     hotkeyMap: {
+        Numpad0: event => {
+            cheat.__auto__ = 0;
+            console.log("自动关闭");
+        },
         Numpad1: event => {
             cheat.__auto__ = 1;
             console.log("自动清怪开启");
