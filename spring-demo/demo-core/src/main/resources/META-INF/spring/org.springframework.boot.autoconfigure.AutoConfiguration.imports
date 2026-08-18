@@ -6,3 +6,7 @@ demo.core.autoconfigure.swagger.SwaggerCommonConfigure
 demo.core.autoconfigure.MybatisUtil
 demo.core.autoconfigure.MyJsonMapperBuilderCustomizer
 demo.core.config.ExceptionHandleAdvice
+demo.core.event.AfterCommandLine
+demo.core.event.AfterContextRefreshed
+demo.core.event.AfterServletRequest
+demo.core.event.AfterWebServerStart

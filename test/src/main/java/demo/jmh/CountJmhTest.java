@@ -1,8 +1,9 @@
 package demo.jmh;
 
-import jdk.incubator.vector.*;
+import jdk.incubator.vector.ByteVector;
+import jdk.incubator.vector.VectorOperators;
+import jdk.incubator.vector.VectorSpecies;
 import org.openjdk.jmh.annotations.*;
-import org.openjdk.jmh.results.format.ResultFormatType;
 import org.openjdk.jmh.runner.Runner;
 import org.openjdk.jmh.runner.RunnerException;
 import org.openjdk.jmh.runner.options.Options;
@@ -41,32 +42,29 @@ public class CountJmhTest {
         System.out.println(sum);
     }
 
-    public static void main() {
+    public static void main() throws RunnerException {
         Options opt = new OptionsBuilder()
                 .include(CountJmhTest.class.getSimpleName())
-                .result("result.json")
-                .resultFormat(ResultFormatType.JSON)
+                // .result("result.json")
+                // .resultFormat(ResultFormatType.JSON)
                 .build();
-        try {
-            new Runner(opt).run();
-        } catch (RunnerException e) {
-            throw new RuntimeException(e);
-        }
+        new Runner(opt).run();
+        // System.out.println(results);
 
-        // java.util.function.BiConsumer<String, java.util.function.Consumer<Main>> consumer = (name, func) -> {
-        //     Main main = new Main();
-        //     main.prepare();
-        //     long start = System.nanoTime();
-        //     func.accept(main);
-        //     System.out.println((System.nanoTime() - start) / 1000000000.0);
-        //     System.out.println(STR."\{name}\tsum = \{main.sum}");
-        // };
-        // consumer.accept("sample", Main::sample);
-        // consumer.accept("noIf", Main::noIf);
-        // consumer.accept("withSort", Main::withSort);
-        // consumer.accept("withSortAndBranchPrediction", Main::withSortAndBranchPrediction);
-        // consumer.accept("withSimdNoIf", Main::withSimdNoIf);
-        // consumer.accept("withSimdAndIf", Main::withSimdAndIf);
+        java.util.function.BiConsumer<String, java.util.function.Consumer<CountJmhTest>> consumer = (name, func) -> {
+            CountJmhTest main = new CountJmhTest();
+            main.prepare();
+            long start = System.nanoTime();
+            func.accept(main);
+            System.out.println((System.nanoTime() - start) / 1000000000.0);
+            System.out.println(name + "\tsum = " + main.sum);
+        };
+        consumer.accept("sample", CountJmhTest::sample);
+        consumer.accept("noIf", CountJmhTest::noIf);
+        consumer.accept("withSort", CountJmhTest::withSort);
+        consumer.accept("withSortAndBranchPrediction", CountJmhTest::withSortAndBranchPrediction);
+        consumer.accept("withSimdNoIf", CountJmhTest::withSimdNoIf);
+        consumer.accept("withSimdAndIf", CountJmhTest::withSimdAndIf);
     }
 
     // @Benchmark
@@ -98,7 +96,7 @@ public class CountJmhTest {
         this.sum = sum;
     }
 
-    // @Benchmark
+    @Benchmark
     public void withSortAndSearch() {
         long sum = 0;
         for (int i = 0; i < dataLength; i++) {
@@ -130,7 +128,7 @@ public class CountJmhTest {
         this.sum = sum;
     }
 
-    // @Benchmark
+    @Benchmark
     public void noIf() {
         long sum = 0;
         for (int i = 0; i < dataLength; i++) {
@@ -145,16 +143,17 @@ public class CountJmhTest {
 
     @Benchmark
     public void withSimdNoIf() {
-        VectorSpecies<Byte> SPECIES = ByteVector.SPECIES_MAX;
+        VectorSpecies<Byte> SPECIES = ByteVector.SPECIES_PREFERRED;
         final int length = SPECIES.length();
 
         long sum = 0;
         final byte[] bytes = new byte[length];
+        var bv = ByteVector.fromArray(SPECIES, bytes, 0);
         for (int i = 0; i < dataLength; i++) {
             byte[] data = datas[i];
 
             for (int j = 0; j < data.length; j += length) {
-                var m = SPECIES.indexInRange(i, data.length);
+                var m = SPECIES.indexInRange(j, data.length);
                 ByteVector tmp = ByteVector.fromArray(SPECIES, data, j, m)
                         .lanewise(VectorOperators.ASHR, 7)
                         .not()
@@ -163,13 +162,15 @@ public class CountJmhTest {
                 sum += sum(bytes);
             }
         }
+        bv.intoArray(bytes, 0);
+        sum += sum(bytes);
 
         this.sum = sum;
     }
 
     @Benchmark
     public void withSimdAndIf() {
-        VectorSpecies<Byte> SPECIES = ByteVector.SPECIES_MAX;
+        VectorSpecies<Byte> SPECIES = ByteVector.SPECIES_PREFERRED;
         final int length = SPECIES.length();
 
         long sum = 0;
@@ -178,10 +179,9 @@ public class CountJmhTest {
             byte[] data = datas[i];
 
             for (int j = 0; j < data.length; j += length) {
-                var m = SPECIES.indexInRange(i, data.length);
+                var m = SPECIES.indexInRange(j, data.length);
                 ByteVector tmp = ByteVector.fromArray(SPECIES, data, j, m);
-                VectorMask<Byte> compare = tmp.compare(VectorOperators.LT, 0);
-                tmp = tmp.blend(SPECIES.zero(), compare);
+                tmp = tmp.blend(SPECIES.zero(), tmp.test(VectorOperators.IS_NEGATIVE));
                 tmp.intoArray(bytes, 0);
                 sum += sum(bytes);
             }
@@ -198,7 +198,7 @@ public class CountJmhTest {
         return sum;
     }
 
-    // @Benchmark
+    @Benchmark
     public void noOp() {
         this.sum = 68183805086L;
     }

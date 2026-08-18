@@ -91,7 +91,7 @@ springdoc:
   group-configs:
     - group: default
       packages-to-scan:
-        - demo.controller
+        - demo.starter.controller
 
 # 接口文档配置
 knife4j:

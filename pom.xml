@@ -21,7 +21,7 @@
     </modules>
 
     <properties>
-        <java.version>25</java.version>
+        <java.version>26</java.version>
         <mapstruct.version>1.5.5.Final</mapstruct.version>
     </properties>
 
@@ -93,6 +93,11 @@
                                 <artifactId>mapstruct-processor</artifactId>
                                 <version>RELEASE</version>
                             </path>
+                        <path>
+                            <groupId>org.openjdk.jmh</groupId>
+                            <artifactId>jmh-generator-annprocess</artifactId>
+                            <version>RELEASE</version>
+                        </path>
                         </annotationProcessorPaths>
                     </configuration>
                 </plugin>
