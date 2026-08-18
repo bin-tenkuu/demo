@@ -25,9 +25,10 @@ public class HelloController {
     @GetMapping("/hello")
     public String hello() {
         n++;
-        if (n % 3 != 0) {
+        if (n < 3) {
             throw new RuntimeException("test exception");
         }
+        n = 0;
         return "Hello, Spring Boot!";
     }
 
