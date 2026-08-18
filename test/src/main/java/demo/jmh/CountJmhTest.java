@@ -51,20 +51,20 @@ public class CountJmhTest {
         new Runner(opt).run();
         // System.out.println(results);
 
-        java.util.function.BiConsumer<String, java.util.function.Consumer<CountJmhTest>> consumer = (name, func) -> {
-            CountJmhTest main = new CountJmhTest();
-            main.prepare();
-            long start = System.nanoTime();
-            func.accept(main);
-            System.out.println((System.nanoTime() - start) / 1000000000.0);
-            System.out.println(name + "\tsum = " + main.sum);
-        };
-        consumer.accept("sample", CountJmhTest::sample);
-        consumer.accept("noIf", CountJmhTest::noIf);
-        consumer.accept("withSort", CountJmhTest::withSort);
-        consumer.accept("withSortAndBranchPrediction", CountJmhTest::withSortAndBranchPrediction);
-        consumer.accept("withSimdNoIf", CountJmhTest::withSimdNoIf);
-        consumer.accept("withSimdAndIf", CountJmhTest::withSimdAndIf);
+        // java.util.function.BiConsumer<String, java.util.function.Consumer<CountJmhTest>> consumer = (name, func) -> {
+        //     CountJmhTest main = new CountJmhTest();
+        //     main.prepare();
+        //     long start = System.nanoTime();
+        //     func.accept(main);
+        //     System.out.println((System.nanoTime() - start) / 1000000000.0);
+        //     System.out.println(name + "\tsum = " + main.sum);
+        // };
+        // consumer.accept("sample", CountJmhTest::sample);
+        // consumer.accept("noIf", CountJmhTest::noIf);
+        // consumer.accept("withSort", CountJmhTest::withSort);
+        // consumer.accept("withSortAndBranchPrediction", CountJmhTest::withSortAndBranchPrediction);
+        // consumer.accept("withSimdNoIf", CountJmhTest::withSimdNoIf);
+        // consumer.accept("withSimdAndIf", CountJmhTest::withSimdAndIf);
     }
 
     // @Benchmark
