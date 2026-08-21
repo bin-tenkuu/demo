@@ -34,10 +34,10 @@ public class CP56Time2a implements BaseContent {
         hour = b3 & 0b00011111;
         su = ByteUtil.getBit(b3, 7);
         var b4 = content[offset + 4];
-        year = content[offset + 6] & 0b01111111;
-        month = content[offset + 5] & 0b00001111;
         day = b4 & 0b00011111;
         week = (b4 & 0xFF) >>> 5;
+        month = content[offset + 5] & 0b00001111;
+        year = content[offset + 6] & 0b01111111;
     }
 
     @Override
