@@ -7,7 +7,7 @@ import retrofit2.http.GET;
  * @author bin
  * @since 2025/04/13
  */
-@RetrofitClient(baseUrl = "http://127.0.0.1:9999"/* , sourceOkHttpClient = "trustAllOkHttp" */)
+@RetrofitClient(baseUrl = "http://127.0.0.1:9999", sourceOkHttpClient = "TrustAllOkHttp")
 public interface TestApi {
     @GET("/hello")
     String hello();

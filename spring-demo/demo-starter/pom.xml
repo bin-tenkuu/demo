@@ -21,7 +21,18 @@
         <dependency>
             <groupId>my</groupId>
             <artifactId>demo-core</artifactId>
-            <version>0.1</version>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>my</groupId>
+            <artifactId>apt-annotion</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>my</groupId>
+            <artifactId>apt-processor</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -58,7 +69,7 @@
         <dependency>
             <groupId>com.github.lianjiatech</groupId>
             <artifactId>retrofit-spring-boot-starter</artifactId>
-            <version>3.1.3</version>
+            <version>4.2.1</version>
         </dependency>
         <!-- region JDBC -->
         <dependency>
@@ -71,13 +82,27 @@
 
     <build>
         <plugins>
-            <plugin>
+            <!-- <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
-            </plugin>
+            </plugin> -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                            <version>RELEASE</version>
+                        </path>
+                        <path>
+                            <groupId>my</groupId>
+                            <artifactId>apt-processor</artifactId>
+                            <version>${project.version}</version>
+                        </path>
+                    </annotationProcessorPaths>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

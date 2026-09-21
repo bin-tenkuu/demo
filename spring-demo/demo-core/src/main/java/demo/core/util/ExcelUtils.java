@@ -75,7 +75,7 @@ public class ExcelUtils {
      * @param sheetName 输出的excel的sheet的名称 也就是页的名称
      * @param clazz 输出数据的模板
      */
-    public static <T> void WriteExcel(HttpServletResponse response, List<T> data,
+    public static <T> void writeExcel(HttpServletResponse response, List<T> data,
             String fileName, String sheetName, Class<T> clazz) {
         HorizontalCellStyleStrategy horizontalCellStyleStrategy = getWriteHandler();
         try {
@@ -98,7 +98,7 @@ public class ExcelUtils {
      * @param sheetName 输出的excel的sheet的名称 也就是页的名称
      * @param clazz 输出数据的模板
      */
-    public static <T> ResponseEntity<Resource> WriteExcel(List<T> data,
+    public static <T> ResponseEntity<Resource> writeExcel(List<T> data,
             String fileName, String sheetName, Class<T> clazz) {
         HorizontalCellStyleStrategy horizontalCellStyleStrategy = getWriteHandler();
         try {
@@ -108,14 +108,14 @@ public class ExcelUtils {
                     .sheet(sheetName)
                     .registerWriteHandler(horizontalCellStyleStrategy)
                     .doWrite(data);
-            return WriteExcel(tempFile, fileName);
+            return writeExcel(tempFile, fileName);
         } catch (Exception e) {
             log.error("输出excel文件失败", e);
             throw new RuntimeException("输出excel文件失败", e);
         }
     }
 
-    public static ResponseEntity<Resource> WriteExcel(File tempFile, String fileName) {
+    public static ResponseEntity<Resource> writeExcel(File tempFile, String fileName) {
         var name = URLEncoder.encode(fileName, StandardCharsets.UTF_8);
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=" + name + ".xlsx")
@@ -134,7 +134,7 @@ public class ExcelUtils {
      */
     public static <T> void writeTemplate(HttpServletResponse response,
             String fileName, String sheetName, Class<T> clazz) {
-        WriteExcel(response, Collections.emptyList(), fileName, sheetName, clazz);
+        writeExcel(response, Collections.emptyList(), fileName, sheetName, clazz);
     }
 
     public static ExcelWriter buildExcel(HttpServletResponse response, String fileName) throws IOException {

@@ -3,11 +3,14 @@ package demo.starter.retrofit;
 import com.github.lianjiatech.retrofit.spring.boot.core.SourceOkHttpClientRegistrar;
 import com.github.lianjiatech.retrofit.spring.boot.core.SourceOkHttpClientRegistry;
 import okhttp3.OkHttpClient;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
 import javax.net.ssl.*;
 import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
+import java.util.List;
 
 /**
  * @author bin
@@ -15,6 +18,14 @@ import java.security.cert.X509Certificate;
  */
 @Component
 public class TrustAllOkHttp implements SourceOkHttpClientRegistrar {
+    @Bean
+    public SourceOkHttpClientRegistry sourceOkHttpClientRegistry(
+            @Autowired(required = false) List<SourceOkHttpClientRegistrar> sourceOkHttpClientRegistrars) {
+        var registry = new SourceOkHttpClientRegistry(sourceOkHttpClientRegistrars);
+        registry.init();
+        return registry;
+    }
+
     @Override
     public void register(SourceOkHttpClientRegistry registry) {
         var okHttpClient = new OkHttpClient().newBuilder()
