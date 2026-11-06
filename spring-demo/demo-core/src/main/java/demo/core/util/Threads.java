@@ -59,9 +59,11 @@ public class Threads {
         return executor.remove(task);
     }
 
-    public static void waitList(List<Future<?>> list) throws ExecutionException, InterruptedException {
-        for (Future<?> future : list) {
-            future.get();
+    public static void waitList(List<Future<?>> list) throws InterruptedException {
+        for (var i = list.size() - 1; i >= 0; i--) {
+            var future = list.get(i);
+            Threads.get(future);
+            list.remove(i);
         }
     }
 
@@ -77,6 +79,18 @@ public class Threads {
 
     public static void shutdown() {
         SCHEDULE.shutdownNow();
+    }
+
+    public static <T> T get(Future<T> future) throws InterruptedException {
+        if (future == null) {
+            return null;
+        }
+        try {
+            return future.get();
+        } catch (ExecutionException e) {
+            log.warn("task error", e);
+            return null;
+        }
     }
 
     private static class Command implements Runnable {
