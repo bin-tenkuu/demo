@@ -1,0 +1,15 @@
+[package]
+name = "rustdemo"
+version = "0.1.0"
+edition = "2024"
+
+[lib]
+#crate-type = ["cdylib", "rlib"]
+crate-type = ["cdylib"]
+name = "rustdemo"
+
+[profile]
+release = { panic = "abort" }
+
+[dependencies]
+jni = "0.22"
